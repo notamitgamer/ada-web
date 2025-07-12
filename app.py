@@ -1,9 +1,11 @@
 from flask import Flask, request, jsonify
-from Backend.Chatbot import ChatBot # Make sure this path is correct: Backend/Chatbot.py
+from flask_cors import CORS # <--- ADD THIS IMPORT
+from Backend.Chatbot import ChatBot
 import uuid
-import os # Import os for directory check
+import os
 
 app = Flask(__name__)
+CORS(app) # <--- ADD THIS LINE: Enables CORS for all routes
 
 # --- Ensure Data directory exists (same as in Chatbot.py) ---
 if not os.path.exists("Data"):
@@ -29,25 +31,19 @@ def chat():
         return jsonify({"response": "Error: 'message' field is required.", "user_id": user_id}), 400
 
     if not user_id:
-        # If no user_id is provided by the frontend, generate a new one for a guest session.
-        # In a real application, you'd manage this with user authentication or persistent sessions.
         user_id = str(uuid.uuid4())
         print(f"New guest session initiated: {user_id}")
 
-    # Construct a sender_number compatible with your ChatBot logic
-    # Using 'web_user_' prefix to distinguish from WhatsApp users
     sender_for_chatbot = f"web_user_{user_id}@website.com"
 
     try:
-        # Call your core AI logic
         ai_response = ChatBot(user_message, sender_for_chatbot)
         return jsonify({"response": ai_response, "user_id": user_id})
     except Exception as e:
         print(f"Error processing chat request: {e}")
-        return jsonify({"response": "I'm sorry, something went wrong on my end.", "user_id": user_id}), 500
+        # Return a more informative error for debugging if needed, but keep it generic for production
+        return jsonify({"response": "I'm sorry, something went wrong on my end. Please check server logs.", "user_id": user_id}), 500
 
 if __name__ == '__main__':
-    # When deployed to Railway, Railway will usually set the PORT environment variable.
-    # For local testing, you can run it on port 5000.
     port = int(os.environ.get('PORT', 5000))
     app.run(debug=True, host='0.0.0.0', port=port)

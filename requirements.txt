@@ -1,0 +1,6 @@
+Flask
+groq
+requests
+wikipedia
+beautifulsoup4
+soupsieve

@@ -4,3 +4,4 @@ requests
 wikipedia
 beautifulsoup4
 soupsieve
+Flask-Cors

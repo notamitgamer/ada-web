@@ -5,3 +5,5 @@ wikipedia
 beautifulsoup4
 soupsieve
 Flask-Cors
+Pillow
+python-dotenv

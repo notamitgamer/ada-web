@@ -16,26 +16,30 @@ HUGGINGFACE_API_KEY = os.getenv("Image") # New: Hugging Face API Key
 
 client = Groq(api_key=GROQ_API)
 
+# Function to get real-time information, now explicitly including "IST"
+def RealtimeInformation():
+    now = datetime.datetime.now()
+    # Explicitly state that this time is IST
+    return f"{now.strftime('%A, %d %B %Y')} {now.strftime('%H:%M:%S')} IST"
+
 # Updated SystemChatBot to include more explicit language instruction and emphasis on USER_INFO
 SystemChatBot = [{"role": "system", "content": f"""You are {ASSISTANT_NAME}, a powerful AI created by {USERNAME}. Your creator, {USERNAME}, has provided the following information about themselves: {USER_INFO}
 
 Your primary goal is to provide accurate, clear, and helpful answers.
 You are capable of communicating in English, Hindi, and Bengali.
-IMPORTANT: When the user speaks in English, Hindi, or Bengali, you MUST respond entirely in that specific language. Do NOT mix languages.
-Example: If the user asks in Bengali, your entire response must be in Bengali.
+STRICT RULE: When the user speaks in English, Hindi, or Bengali, you MUST respond ENTIRELY in that specific language. Do NOT mix languages.
+Example: If the user asks in Bengali, your WHOLE response must be in Bengali.
 If the user speaks in any other language, you MUST respond with: "I do not know this language currently."
 
-When asked about your creator, {USERNAME}, ensure you include all the details provided in the '{USERNAME}'s information' section.
-Always refer to the 'RealtimeInformation' provided in the system message when asked about the current date, time, or "now". For example, if asked "What is the time now?", use the provided RealtimeInformation to answer.
+When a user asks about your creator, {USERNAME}, you MUST provide ALL the information from the '{USERNAME}'s information' section, verbatim if possible, and ensure it is in the language the user used for the query.
+
+The 'RealtimeInformation' provided in a subsequent system message is the CURRENT DATE AND TIME in Indian Standard Time (IST). You MUST use this exact 'RealtimeInformation' to answer questions about the current date, time, or "now". Do NOT use any other source or perform any timezone conversions on it.
 """}]
 
 # Hugging Face API configuration for image generation
 HF_IMAGE_API_URL = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0"
 HF_HEADERS = {"Authorization": f"Bearer {HUGGINGFACE_API_KEY}"}
 
-def RealtimeInformation():
-    now = datetime.datetime.now()
-    return f"Use this real-time info:\n{now.strftime('%A, %d %B %Y')} {now.strftime('%H:%M:%S')}"
 
 def AnswerModifier(text): return '\n'.join([line for line in text.split('\n') if line.strip()])
 
@@ -144,6 +148,7 @@ def ChatBot(Query, sender_number=None):
 
     # 🤖 LLM fallback
     messages.append({"role": "user", "content": Query})
+    # Pass RealtimeInformation as a separate system message for dynamic updates
     full_messages = SystemChatBot + [{"role": "system", "content": RealtimeInformation()}] + messages
 
     try:
@@ -153,8 +158,7 @@ def ChatBot(Query, sender_number=None):
         )
 
         answer = completion.choices[0].message.content.strip()
-        if is_owner:
-            answer += "\n" + " " * 72 + "- Ada AI" # This might be specific to a different platform
+        # Removed the platform-specific owner formatting
         messages.append({"role": "assistant", "content": answer})
         json.dump(messages, open("Data/ChatLog.json", "w"), indent=4)
         return answer

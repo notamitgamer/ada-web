@@ -116,6 +116,10 @@ def generate_image_response(prompt: str):
         return f"An unexpected error occurred while processing your image request: {e}"
 
 def ChatBot(Query, sender_number=None):
+    """
+    Main chatbot function that processes queries and generates responses.
+    Now yields chunks of the response for streaming.
+    """
     try:
         messages = json.load(open("Data/ChatLog.json"))
     except FileNotFoundError:
@@ -129,44 +133,54 @@ def ChatBot(Query, sender_number=None):
 
     # 🧠 Identity
     if not is_owner and any(kw in lowered for kw in ["who am i", "amar naam", "ami ke", "আমার নাম"]):
-        return "🤔 I don’t know your name yet!\nReply like this:\n`name: YourName`"
+        yield "� I don’t know your name yet!\nReply like this:\n`name: YourName`"
+        return # Exit generator after yielding
 
     name = extract_name(Query)
     if name and not is_owner:
         guest_names[sender_number] = name
         save_guest_names(guest_names)
-        return f"✅ Got it! I’ll remember you as {name}."
+        yield f"✅ Got it! I’ll remember you as {name}."
+        return # Exit generator after yielding
 
     if guest_names.get(sender_number) and lowered in ["hi", "hello", "hey"]:
-        return f"👋 Welcome back, {guest_names[sender_number]}!"
+        yield f"👋 Welcome back, {guest_names[sender_number]}!"
+        return # Exit generator after yielding
 
     # 🖼️ Image Generation Logic (NEW FEATURE)
     if lowered.startswith("image "):
         prompt = Query[len("image "):].strip()
-        return generate_image_response(prompt)
+        # Image generation is a single, non-streamed response
+        # Yield the full response from generate_image_response
+        yield generate_image_response(prompt)
+        return
 
     # 🔎 Google / YouTube Logic
     if lowered.startswith("search ") or "search" in lowered:
-        return search_google(Query.replace("search", "").strip())
+        # For search, we still return the full result at once, not stream it word by word
+        yield search_google(Query.replace("search", "").strip())
+        return
     elif "youtube" in lowered:
-        return search_youtube(Query.replace("youtube", "").strip())
+        # For YouTube, also return the full result at once
+        yield search_youtube(Query.replace("youtube", "").strip())
+        return
 
-    # 🤖 LLM fallback
+    # 🤖 LLM fallback - now streams
     messages.append({"role": "user", "content": Query})
-    # Pass RealtimeInformation as a separate system message for dynamic updates
     full_messages = SystemChatBot + [{"role": "system", "content": RealtimeInformation()}] + messages
 
     try:
         completion = client.chat.completions.create(
-            model="llama3-70b-8192", messages=full_messages,
-            max_tokens=1024, temperature=0.7
+            model="llama3-70b-8192",
+            messages=full_messages,
+            stream=True # <--- IMPORTANT: Enable streaming
         )
 
-        answer = completion.choices[0].message.content.strip()
-        # Removed the platform-specific owner formatting
-        messages.append({"role": "assistant", "content": answer})
-        json.dump(messages, open("Data/ChatLog.json", "w"), indent=4)
-        return answer
+        # Yield chunks as they arrive
+        for chunk in completion:
+            if chunk.choices[0].delta.content:
+                yield chunk.choices[0].delta.content # Yield each content chunk
     except Exception as e:
-        print(f"Error with LLM fallback: {e}")
-        return "I'm sorry, I couldn't process that request with the AI. Please try again."
+        print(f"Error during LLM streaming: {e}")
+        yield f"I'm sorry, I encountered an error while processing your request: {e}"
+

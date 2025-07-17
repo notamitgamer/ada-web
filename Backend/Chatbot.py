@@ -15,13 +15,17 @@ YOUTUBE_KEY = os.getenv("Youtube")
 HUGGINGFACE_API_KEY = os.getenv("Image") # New: Hugging Face API Key
 
 client = Groq(api_key=GROQ_API)
-SystemChatBot = [{"role": "system", "content": f"""You are {ASSISTANT_NAME}, a powerful AI created by {USERNAME}. {USERNAME}'s information: {USER_INFO}
+
+# Updated SystemChatBot to include more explicit language instruction and emphasis on USER_INFO
+SystemChatBot = [{"role": "system", "content": f"""You are {ASSISTANT_NAME}, a powerful AI created by {USERNAME}. Your creator, {USERNAME}, has provided the following information about themselves: {USER_INFO}
 
 Your primary goal is to provide accurate, clear, and helpful answers.
-You can communicate in English, Hindi, and Bengali.
-If the user speaks in English, Hindi, or Bengali, respond in that language.
-If the user speaks in any other language, respond with: "I do not know this language currently."
+You are capable of communicating in English, Hindi, and Bengali.
+IMPORTANT: When the user speaks in English, Hindi, or Bengali, you MUST respond entirely in that specific language. Do NOT mix languages.
+Example: If the user asks in Bengali, your entire response must be in Bengali.
+If the user speaks in any other language, you MUST respond with: "I do not know this language currently."
 
+When asked about your creator, {USERNAME}, ensure you include all the details provided in the '{USERNAME}'s information' section.
 Always refer to the 'RealtimeInformation' provided in the system message when asked about the current date, time, or "now". For example, if asked "What is the time now?", use the provided RealtimeInformation to answer.
 """}]
 
@@ -157,4 +161,3 @@ def ChatBot(Query, sender_number=None):
     except Exception as e:
         print(f"Error with LLM fallback: {e}")
         return "I'm sorry, I couldn't process that request with the AI. Please try again."
-

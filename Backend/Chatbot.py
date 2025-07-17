@@ -8,13 +8,22 @@ from io import BytesIO # For handling image bytes in memory
 # ─── Configuration ─────────────────────────────────────────────────────────────
 USERNAME = "Amit Dutta"
 ASSISTANT_NAME = "Ada"
+USER_INFO = "I am Amit Dutta, a student who just completed high school this year from New Barrackpore Colony Boys High School, New Barrackpore. My current plan is to pursue BSc Hons in Computer Science. I live in Madhyamgram, North 24 Parganas. I was born on 05/07/2006, which makes me 19 years old. I tend to talk more than me!"
 GROQ_API = os.getenv("Groq")
 SERPER_KEY = os.getenv("Serper")
 YOUTUBE_KEY = os.getenv("Youtube")
 HUGGINGFACE_API_KEY = os.getenv("Image") # New: Hugging Face API Key
 
 client = Groq(api_key=GROQ_API)
-SystemChatBot = [{"role": "system", "content": f"You are {ASSISTANT_NAME}, a powerful AI created by {USERNAME}. Answer accurately, clearly, and in English only."}]
+SystemChatBot = [{"role": "system", "content": f"""You are {ASSISTANT_NAME}, a powerful AI created by {USERNAME}. {USERNAME}'s information: {USER_INFO}
+
+Your primary goal is to provide accurate, clear, and helpful answers.
+You can communicate in English, Hindi, and Bengali.
+If the user speaks in English, Hindi, or Bengali, respond in that language.
+If the user speaks in any other language, respond with: "I do not know this language currently."
+
+Always refer to the 'RealtimeInformation' provided in the system message when asked about the current date, time, or "now". For example, if asked "What is the time now?", use the provided RealtimeInformation to answer.
+"""}]
 
 # Hugging Face API configuration for image generation
 HF_IMAGE_API_URL = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0"

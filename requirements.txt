@@ -7,3 +7,4 @@ soupsieve
 Flask-Cors
 Pillow
 python-dotenv
+pytz

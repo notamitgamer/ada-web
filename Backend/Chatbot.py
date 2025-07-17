@@ -4,6 +4,7 @@ import os
 import base64 # Import base64 for image encoding
 from PIL import Image # Import PIL for image processing (though not strictly needed if just passing bytes)
 from io import BytesIO # For handling image bytes in memory
+import pytz # Import pytz for timezone handling
 
 # ─── Configuration ─────────────────────────────────────────────────────────────
 USERNAME = "Amit Dutta"
@@ -16,11 +17,15 @@ HUGGINGFACE_API_KEY = os.getenv("Image") # New: Hugging Face API Key
 
 client = Groq(api_key=GROQ_API)
 
-# Function to get real-time information, now explicitly including "IST"
+# Define the Indian Standard Timezone
+IST = pytz.timezone('Asia/Kolkata')
+
+# Function to get real-time information, now explicitly timezone-aware
 def RealtimeInformation():
-    now = datetime.datetime.now()
+    now_utc = datetime.datetime.now(pytz.utc) # Get current UTC time
+    now_ist = now_utc.astimezone(IST) # Convert to IST
     # Explicitly state that this time is IST
-    return f"{now.strftime('%A, %d %B %Y')} {now.strftime('%H:%M:%S')} IST"
+    return f"{now_ist.strftime('%A, %d %B %Y')} {now_ist.strftime('%H:%M:%S')} IST"
 
 # Updated SystemChatBot to include more explicit language instruction and emphasis on USER_INFO
 SystemChatBot = [{"role": "system", "content": f"""You are {ASSISTANT_NAME}, a powerful AI created by {USERNAME}. Your creator, {USERNAME}, has provided the following information about themselves: {USER_INFO}

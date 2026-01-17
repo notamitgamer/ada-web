@@ -1,6 +1,6 @@
-Flask
-Flask-Cors
-google-generativeai
-firebase-admin
-python-dotenv
-gunicorn
+Flask>=3.0.0
+Flask-Cors>=4.0.0
+google-generativeai>=0.3.0
+firebase-admin>=6.0.0
+python-dotenv>=1.0.0
+gunicorn>=21.0.0

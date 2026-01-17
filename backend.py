@@ -10,7 +10,12 @@ from firebase_admin import credentials, auth, firestore
 # --- INIT APP & CONFIG ---
 app = Flask(__name__)
 # Allow CORS for your domain and localhost for testing
-CORS(app, resources={r"/api/*": {"origins": ["https://amit.is-a.dev", "http://127.0.0.1:5500", "http://localhost:5000"]}})
+CORS(app, resources={r"/api/*": {"origins": [
+    "https://amit.is-a.dev", 
+    "http://127.0.0.1:5500", 
+    "http://localhost:5000",
+    "https://ada-web.onrender.com"
+]}})
 
 # 1. Firebase Admin Init (Server-Side Security)
 # Ensure you have your service account json or environment variables set up in Render

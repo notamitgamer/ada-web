@@ -10,7 +10,13 @@ from firebase_admin import credentials, auth, firestore
 # --- INIT APP & CONFIG ---
 app = Flask(__name__)
 # Allow CORS for your domain and localhost for testing
-CORS(app, resources={r"/api/*": {"origins": ["https://amit.is-a.dev", "http://127.0.0.1:5500", "http://localhost:5000"]}})
+CORS(app, resources={r"/api/*": {"origins": [
+    "https://ada.amit.is-a.dev", 
+    "https://amit.is-a.dev", 
+    "http://127.0.0.1:5500", 
+    "http://localhost:5000",
+    "http://localhost:5500"
+]}})
 
 # 1. Firebase Admin Init (Server-Side Security)
 # Ensure you have your service account json or environment variables set up in Render
@@ -18,17 +24,30 @@ CORS(app, resources={r"/api/*": {"origins": ["https://amit.is-a.dev", "http://12
 # Otherwise, use a service account JSON file.
 try:
     if not firebase_admin._apps:
-        # Check for service account file, otherwise assume env vars or default creds
-        if os.path.exists("firebase-adminsdk.json"):
+        # Check for FIREBASE_CREDENTIALS environment variable (JSON string)
+        firebase_creds_json = os.environ.get("FIREBASE_CREDENTIALS")
+        
+        if firebase_creds_json:
+            # Parse JSON string from environment variable
+            cred_dict = json.loads(firebase_creds_json)
+            cred = credentials.Certificate(cred_dict)
+            print("✅ Using Firebase credentials from FIREBASE_CREDENTIALS environment variable")
+        elif os.path.exists("firebase-adminsdk.json"):
             cred = credentials.Certificate("firebase-adminsdk.json")
+            print("✅ Using Firebase credentials from firebase-adminsdk.json file")
         else:
+            # Try application default credentials
             cred = credentials.ApplicationDefault()
+            print("✅ Using Firebase Application Default Credentials")
         
         firebase_admin.initialize_app(cred)
-        print("Firebase Admin Initialized")
+        print("✅ Firebase Admin SDK initialized successfully")
     db = firestore.client()
+    print("✅ Firestore client initialized successfully")
 except Exception as e:
-    print(f"Firebase Init Warning: {e}")
+    print(f"❌ Firebase initialization error: {type(e).__name__}: {e}")
+    print("⚠️  API will run but Firestore features will not work")
+    db = None
 
 # 2. Gemini Init
 GENAI_API_KEY = os.environ.get("GEMINI_API_KEY")
@@ -64,7 +83,7 @@ STRICT RULES:
 """
 
 model = genai.GenerativeModel(
-    model_name="gemini-1.5-flash",
+    model_name="models/gemini-2.5-flash-preview-09-2025",
     generation_config=generation_config,
     system_instruction=SYSTEM_PROMPT,
 )
@@ -74,22 +93,54 @@ def verify_token(auth_header):
     """
     Verifies the Firebase ID Token sent from the client.
     Returns user_uid if valid, None otherwise.
+    Enhanced with better error messages and logging.
     """
-    if not auth_header or not auth_header.startswith("Bearer "):
+    if not auth_header:
+        print("❌ No Authorization header provided")
         return None
+    
+    if not auth_header.startswith("Bearer "):
+        print("❌ Invalid Authorization header format (must start with 'Bearer ')")
+        return None
+    
     token = auth_header.split("Bearer ")[1]
+    
     try:
         decoded_token = auth.verify_id_token(token)
-        return decoded_token['uid']
+        user_id = decoded_token['uid']
+        print(f"✅ Token verified for user: {user_id}")
+        return user_id
+    except auth.InvalidIdTokenError:
+        print("❌ Invalid ID token - token is malformed or invalid")
+        return None
+    except auth.ExpiredIdTokenError:
+        print("❌ Token has expired - user needs to refresh their token")
+        return None
+    except auth.RevokedIdTokenError:
+        print("❌ Token has been revoked")
+        return None
     except Exception as e:
-        print(f"Token verification failed: {e}")
+        print(f"❌ Token verification error: {type(e).__name__}: {e}")
         return None
 
 # --- ROUTES ---
 
 @app.route('/')
 def home():
-    return "Ada AI Coding Backend is Online & Secured."
+    return jsonify({
+        "status": "online",
+        "service": "Ada AI Coding Backend",
+        "version": "1.0.0",
+        "model": "gemini-2.5-flash-preview-09-2025"
+    })
+
+@app.route('/health')
+def health():
+    """Health check endpoint for UptimeRobot and monitoring services"""
+    return jsonify({
+        "status": "healthy",
+        "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat()
+    })
 
 @app.route('/api/generate-title', methods=['POST'])
 def generate_title():
@@ -97,16 +148,20 @@ def generate_title():
     # Verify auth even for titles to prevent abuse
     user_uid = verify_token(request.headers.get('Authorization'))
     if not user_uid:
-        return jsonify({"error": "Unauthorized"}), 401
+        return jsonify({
+            "error": "Unauthorized",
+            "message": "Invalid or missing authentication token. Please sign in again."
+        }), 401
 
     data = request.json
     message = data.get('message', '')
     
     try:
-        title_model = genai.GenerativeModel("gemini-1.5-flash")
+        title_model = genai.GenerativeModel("models/gemini-2.5-flash-preview-09-2025")
         res = title_model.generate_content(f"Summarize this coding query into a 3-5 word title: '{message}'")
         return jsonify({"title": res.text.strip()})
-    except:
+    except Exception as e:
+        print(f"❌ Error generating title: {type(e).__name__}: {e}")
         return jsonify({"title": "New Chat"})
 
 @app.route('/api/chat', methods=['POST'])
@@ -119,7 +174,10 @@ def chat():
     # 1. Verify User
     user_uid = verify_token(request.headers.get('Authorization'))
     if not user_uid:
-        return jsonify({"error": "Unauthorized"}), 401
+        return jsonify({
+            "error": "Unauthorized",
+            "message": "Invalid or missing authentication token. Please sign in again."
+        }), 401
 
     data = request.json
     user_msg = data.get('message')
@@ -129,7 +187,10 @@ def chat():
     session_id = data.get('sessionId')
 
     if not user_msg:
-        return jsonify({"error": "Empty message"}), 400
+        return jsonify({
+            "error": "Bad Request",
+            "message": "Message cannot be empty"
+        }), 400
 
     # 2. Construct Prompt with Context
     context_str = ""
@@ -145,7 +206,14 @@ def chat():
         chat_history.append({"role": "user", "parts": [turn.get('user', '')]})
         chat_history.append({"role": "model", "parts": [turn.get('model', '')]})
     
-    chat_session = model.start_chat(history=chat_history)
+    try:
+        chat_session = model.start_chat(history=chat_history)
+    except Exception as e:
+        print(f"❌ Error starting chat session: {type(e).__name__}: {e}")
+        return jsonify({
+            "error": "Internal Server Error",
+            "message": "Failed to initialize chat session"
+        }), 500
 
     # 3. Stream Response
     def generate():
@@ -163,7 +231,7 @@ def chat():
             
             # 4. Save Interaction to Firestore
             # We save this asynchronously (conceptually) after streaming is done.
-            if session_id:
+            if session_id and db:
                 try:
                     doc_ref = db.collection('users').document(user_uid).collection('chats').document(session_id)
                     
@@ -192,14 +260,20 @@ def chat():
                             "messages": firestore.ArrayUnion([msg_data, ai_data]),
                             "updatedAt": datetime.datetime.now(datetime.timezone.utc)
                         })
+                    print(f"✅ Chat saved to Firestore for session: {session_id}")
                 except Exception as db_err:
-                    print(f"Database Save Error: {db_err}")
+                    print(f"❌ Database Save Error: {type(db_err).__name__}: {db_err}")
 
         except Exception as e:
-            yield f"Error: {str(e)}"
+            error_msg = f"❌ Gemini API Error: {type(e).__name__}: {str(e)}"
+            print(error_msg)
+            yield f"\n\nError: I encountered an issue while processing your request. Please try again."
 
     return Response(stream_with_context(generate()), mimetype='text/plain')
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=True)
+    # Use debug=False in production (Render)
+    # Gunicorn will be used for production: gunicorn backend:app
+    debug_mode = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
+    app.run(host='0.0.0.0', port=port, debug=debug_mode)

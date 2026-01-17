@@ -153,14 +153,49 @@ Content-Type: application/json
 
 ## Deployment
 
-### Render.com
+### Backend: Render.com
 
-1. Create a new Web Service
-2. Connect your GitHub repository
-3. Set environment variables:
-   - `GEMINI_API_KEY`
-   - `FIREBASE_CREDENTIALS` (full JSON string)
-4. Deploy!
+#### Quick Deploy
+
+1. **Create a new Web Service** on [Render.com](https://render.com)
+2. **Connect your GitHub repository**: `notamitgamer/ada-web`
+3. **Configure the service**:
+   - **Name**: `ada-web-backend` (or your preferred name)
+   - **Region**: Choose closest to your users
+   - **Branch**: `main`
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `gunicorn backend:app --workers 2 --threads 2 --timeout 120`
+   - **Plan**: Free (or paid for better performance)
+
+4. **Set Environment Variables**:
+   - `GEMINI_API_KEY`: Your Gemini API key (get from https://aistudio.google.com/app/apikey)
+   - `FIREBASE_CREDENTIALS`: Full JSON string from Firebase service account
+   - `FLASK_DEBUG`: `False` (for production)
+   - `PYTHON_VERSION`: `3.11.0` (optional, auto-detected)
+
+5. **Deploy!** Render will automatically deploy your backend.
+
+#### Alternative: Using render.yaml
+
+The repository includes a `render.yaml` file for automatic configuration. Simply connect your repo and Render will use this file for setup.
+
+#### Health Check Endpoint
+
+The backend provides a `/health` endpoint for monitoring:
+- **URL**: `https://your-app.onrender.com/health`
+- **Response**: `{"status": "healthy", "timestamp": "..."}`
+
+#### Keep Backend Alive with UptimeRobot
+
+Render's free tier spins down after 15 minutes of inactivity. Use [UptimeRobot](https://uptimerobot.com) to keep it alive:
+
+1. **Create a free UptimeRobot account**
+2. **Add New Monitor**:
+   - Monitor Type: `HTTP(s)`
+   - Friendly Name: `Ada Web Backend`
+   - URL: `https://ada-web.onrender.com/health`
+   - Monitoring Interval: `5 minutes` (free tier)
+3. **Save** - UptimeRobot will ping your backend every 5 minutes to keep it alive!
 
 ### Frontend (Static Hosting)
 

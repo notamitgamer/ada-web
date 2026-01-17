@@ -127,7 +127,20 @@ def verify_token(auth_header):
 
 @app.route('/')
 def home():
-    return "Ada AI Coding Backend is Online & Secured."
+    return jsonify({
+        "status": "online",
+        "service": "Ada AI Coding Backend",
+        "version": "1.0.0",
+        "model": "gemini-2.5-flash-preview-09-2025"
+    })
+
+@app.route('/health')
+def health():
+    """Health check endpoint for UptimeRobot and monitoring services"""
+    return jsonify({
+        "status": "healthy",
+        "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat()
+    })
 
 @app.route('/api/generate-title', methods=['POST'])
 def generate_title():
@@ -260,4 +273,7 @@ def chat():
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=True)
+    # Use debug=False in production (Render)
+    # Gunicorn will be used for production: gunicorn backend:app
+    debug_mode = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
+    app.run(host='0.0.0.0', port=port, debug=debug_mode)

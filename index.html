@@ -85,16 +85,39 @@
         /* Markdown Styling */
         .prose p { margin-bottom: 0.8rem; line-height: 1.6; }
         .prose h1, .prose h2, .prose h3 { color: var(--accent); font-weight: bold; margin-top: 1rem; margin-bottom: 0.5rem; }
+        .prose h1 { font-size: 1.5rem; }
+        .prose h2 { font-size: 1.25rem; }
+        .prose h3 { font-size: 1.1rem; }
         .prose code { color: var(--accent); background: rgba(190, 242, 100, 0.1); padding: 2px 4px; border-radius: 4px; font-family: 'JetBrains Mono'; font-size: 0.85em; }
         .prose pre { background: #111; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; border: 1px solid var(--border); margin-bottom: 1rem; }
         .prose pre code { background: transparent; padding: 0; color: #ccc; }
         .prose ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1rem; }
         .prose ol { list-style-type: decimal; padding-left: 1.5rem; margin-bottom: 1rem; }
+        .prose li { margin-bottom: 0.3rem; line-height: 1.5; }
+        .prose blockquote { border-left: 3px solid var(--accent); padding-left: 1rem; margin: 1rem 0; color: #999; }
+        .prose a { color: var(--accent); text-decoration: underline; }
+        .prose strong { color: var(--accent); font-weight: 600; }
+        .prose em { font-style: italic; color: #aaa; }
         
         /* Utilities */
         .glass-panel { background: var(--glass); backdrop-filter: blur(12px); border-right: 1px solid var(--border); }
         .loader { border: 2px solid #333; border-top: 2px solid var(--accent); border-radius: 50%; width: 16px; height: 16px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        /* Typing Indicator Animation */
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: inline-block;
+            animation: typing 1.4s infinite;
+            opacity: 0.6;
+        }
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.6; }
+            30% { transform: translateY(-10px); opacity: 1; }
+        }
         
         /* Mobile Tabs */
         .tab-btn.active { border-bottom: 2px solid var(--accent); color: var(--accent); }
@@ -271,6 +294,14 @@
         
         window.addEventListener('resize', () => editor.refresh());
 
+        // Configure marked.js for better markdown rendering
+        marked.setOptions({
+            breaks: true,
+            gfm: true,
+            headerIds: false,
+            mangle: false
+        });
+
         // --- AUTH LOGIC ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -379,8 +410,8 @@
             const loadingId = appendLoading();
 
             try {
-                // Get fresh token
-                const token = await currentUser.getIdToken();
+                // Get fresh token (force refresh to ensure it's valid)
+                const token = await currentUser.getIdToken(true);
 
                 // Render Backend URL
                 const API_URL = 'https://ada-web.onrender.com/api/chat';
@@ -402,44 +433,85 @@
 
                 if (!response.ok) {
                     if (response.status === 401) {
-                         throw new Error("401 Unauthorized: Backend rejected the token. Ensure Render Backend uses the correct Firebase Admin SDK credentials for 'ada-ai-aranag'.");
-                    }
-                    throw new Error(`API Error: ${response.status}`);
-                }
-
-                const reader = response.body.getReader();
-                const decoder = new TextDecoder();
-                let fullResponse = "";
-                let aiMsgDiv = document.getElementById(loadingId);
-                
-                aiMsgDiv.innerHTML = '<div class="prose text-sm text-neutral-300 max-w-none"></div>';
-                let contentDiv = aiMsgDiv.querySelector('.prose');
-
-                while (true) {
-                    const { done, value } = await reader.read();
-                    if (done) break;
-                    
-                    const chunk = decoder.decode(value);
-                    fullResponse += chunk;
-                    
-                    const parts = parseResponse(fullResponse);
-                    contentDiv.innerHTML = marked.parse(parts.text);
-                    
-                    if (parts.code) {
-                        if (editor.getValue().trim() !== parts.code.trim()) {
-                             editor.setValue(parts.code);
+                        // Try to refresh token and retry once
+                        const freshToken = await currentUser.getIdToken(true);
+                        const retryResponse = await fetch(API_URL, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${freshToken}`
+                            },
+                            body: JSON.stringify({
+                                message: text,
+                                history: chatHistory.slice(-10),
+                                codeContext: codeContext,
+                                fileContext: fileContextContent,
+                                sessionId: currentSessionId
+                            })
+                        });
+                        
+                        if (!retryResponse.ok) {
+                            throw new Error("Authentication failed. Please sign out and sign in again.");
                         }
+                        
+                        // Process retry response
+                        await processStreamingResponse(retryResponse, loadingId, text);
+                        return;
                     }
-                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                    
+                    let errorMessage = `API Error: ${response.status}`;
+                    try {
+                        const errorData = await response.json();
+                        if (errorData.message) {
+                            errorMessage = errorData.message;
+                        }
+                    } catch (e) {
+                        // Could not parse error as JSON
+                    }
+                    throw new Error(errorMessage);
                 }
-                
-                chatHistory.push({ user: text, model: fullResponse });
-                fileContextContent = "";
-                document.getElementById('file-preview').classList.add('hidden');
+
+                await processStreamingResponse(response, loadingId, text);
 
             } catch (e) {
-                document.getElementById(loadingId).innerText = "Error: " + e.message;
+                const loadingDiv = document.getElementById(loadingId);
+                loadingDiv.innerHTML = `<div class="text-sm text-red-400 bg-red-900/20 p-3 rounded-lg border border-red-500/30">
+                    <strong>Error:</strong> ${e.message}
+                </div>`;
+                console.error("Chat error:", e);
             }
+        }
+
+        async function processStreamingResponse(response, loadingId, userText) {
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let fullResponse = "";
+            let aiMsgDiv = document.getElementById(loadingId);
+            
+            aiMsgDiv.innerHTML = '<div class="prose text-sm text-neutral-300 max-w-none"></div>';
+            let contentDiv = aiMsgDiv.querySelector('.prose');
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                
+                const chunk = decoder.decode(value);
+                fullResponse += chunk;
+                
+                const parts = parseResponse(fullResponse);
+                contentDiv.innerHTML = marked.parse(parts.text);
+                
+                if (parts.code) {
+                    if (editor.getValue().trim() !== parts.code.trim()) {
+                         editor.setValue(parts.code);
+                    }
+                }
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+            
+            chatHistory.push({ user: userText, model: fullResponse });
+            fileContextContent = "";
+            document.getElementById('file-preview').classList.add('hidden');
         }
 
         function parseResponse(raw) {
@@ -447,15 +519,27 @@
             const endMarker = "<<<CODE_END>>>";
             let text = raw;
             let code = null;
+            
             if (raw.includes(startMarker)) {
                 const parts = raw.split(startMarker);
-                text = parts[0];
-                if (parts[1].includes(endMarker)) {
-                    code = parts[1].split(endMarker)[0].trim();
-                } else {
-                    code = parts[1].trim(); 
+                text = parts[0].trim();
+                
+                if (parts[1]) {
+                    if (parts[1].includes(endMarker)) {
+                        // Complete code block
+                        const codeParts = parts[1].split(endMarker);
+                        code = codeParts[0].trim();
+                        // Append any text after code block back to main text
+                        if (codeParts[1] && codeParts[1].trim()) {
+                            text += "\n\n" + codeParts[1].trim();
+                        }
+                    } else {
+                        // Incomplete code block (still streaming)
+                        code = parts[1].trim();
+                    }
                 }
             }
+            
             return { text, code };
         }
 

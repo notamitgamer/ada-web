@@ -1,11 +1,6 @@
 Flask
-groq
-requests
-wikipedia
-beautifulsoup4
-soupsieve
 Flask-Cors
-Pillow
+google-generativeai
+firebase-admin
 python-dotenv
-pytz
 gunicorn

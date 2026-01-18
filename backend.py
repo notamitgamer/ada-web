@@ -7,6 +7,7 @@ import google.generativeai as genai
 import firebase_admin
 from firebase_admin import credentials, auth, firestore
 
+
 # --- INIT APP & CONFIG ---
 app = Flask(__name__)
 # Allow CORS for your domain and localhost for testing

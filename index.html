@@ -222,20 +222,35 @@
     <div id="left-pane" class="w-full md:w-[40%] flex flex-col h-full border-r border-white/10 relative bg-neutral-900/50">
         
         <!-- HEADER -->
-        <div class="h-14 border-b border-white/10 flex items-center justify-between px-4 bg-neutral-900">
-            <div class="flex items-center gap-2">
-                <div class="w-2 h-2 bg-lime-300 rounded-full animate-pulse"></div>
-                <span class="font-mono font-bold text-lime-300 tracking-wider">ADA // AI</span>
-            </div>
+        <div class="h-14 border-b border-[var(--border)] flex items-center justify-between px-4 bg-[var(--bg-secondary)]">
             <div class="flex items-center gap-3">
-                <a href="docs.html" class="hidden md:block text-xs text-neutral-400 hover:text-lime-300 transition-colors font-mono" title="Documentation">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                </a>
-                <button onclick="toggleSidebar()" class="md:hidden text-neutral-400 hover:text-white">
+                <button onclick="toggleSidebar()" class="md:hidden text-[var(--text-secondary)] hover:text-[var(--text-primary)]">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                 </button>
-                <div id="user-profile" class="hidden md:flex items-center gap-2 cursor-pointer" onclick="signOutUser()">
-                    <img id="user-avatar" src="" class="w-6 h-6 rounded-full border border-lime-300/30">
+                <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 bg-[var(--accent-success)] rounded-full animate-pulse"></div>
+                    <span class="font-mono font-semibold text-[var(--accent-primary)] text-sm">ADA</span>
+                </div>
+                <span id="current-chat-title" class="text-sm text-[var(--text-secondary)] hidden md:block">New Chat</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="newChat()" class="hidden md:flex items-center gap-2 px-3 py-1.5 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] rounded-lg transition-smooth">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    New
+                </button>
+                <button onclick="openSettings()" class="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] rounded-lg transition-smooth">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                </button>
+                <div class="relative">
+                    <button onclick="toggleUserMenu()" id="user-menu-btn" class="flex items-center gap-2 p-1 hover:bg-[var(--bg-tertiary)] rounded-lg transition-smooth">
+                        <img id="user-avatar" src="" class="w-8 h-8 rounded-full border border-[var(--border)]">
+                    </button>
+                    <div id="user-menu" class="hidden absolute right-0 mt-2 w-48 bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg shadow-xl py-1 z-50">
+                        <button onclick="openProfile()" class="w-full text-left px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] transition-smooth">Profile</button>
+                        <button onclick="openSettings()" class="w-full text-left px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] transition-smooth">Settings</button>
+                        <div class="border-t border-[var(--border)] my-1"></div>
+                        <button onclick="confirmLogout()" class="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-[var(--bg-tertiary)] transition-smooth">Logout</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -315,6 +330,107 @@
     <div class="md:hidden fixed bottom-0 left-0 w-full bg-neutral-900 border-t border-white/10 flex z-30">
         <button onclick="switchTab('chat')" id="tab-chat" class="flex-1 py-3 text-center text-xs font-mono uppercase tab-btn active">Chat</button>
         <button onclick="switchTab('code')" id="tab-code" class="flex-1 py-3 text-center text-xs font-mono uppercase tab-btn text-neutral-500">Code Canvas</button>
+    </div>
+
+    <!-- PROFILE MODAL -->
+    <div id="profile-modal" class="fixed inset-0 z-50 backdrop-blur-sm bg-black/70 hidden items-center justify-center">
+        <div class="bg-[var(--bg-secondary)] border border-[var(--border)] rounded-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto animate-fade-in">
+            <div class="flex items-center justify-between p-6 border-b border-[var(--border)]">
+                <h2 class="text-xl font-semibold text-[var(--text-primary)]">Profile</h2>
+                <button onclick="closeProfile()" class="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-smooth">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            
+            <div class="p-6 space-y-6">
+                <div class="flex items-center gap-4">
+                    <img id="profile-photo" src="" class="w-20 h-20 rounded-full border-2 border-[var(--border)]">
+                    <div>
+                        <button onclick="uploadProfilePicture()" class="px-4 py-2 bg-[var(--accent-primary)] text-white rounded-lg text-sm hover:bg-[var(--accent-secondary)] transition-smooth">Change Photo</button>
+                        <p class="text-xs text-[var(--text-secondary)] mt-1">Upload a new profile picture</p>
+                        <input type="file" id="photo-upload" class="hidden" accept="image/*" onchange="handlePhotoUpload(this)">
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-[var(--text-secondary)] mb-2">Display Name</label>
+                        <input type="text" id="profile-displayName" class="w-full bg-[var(--bg-tertiary)] border border-[var(--border)] rounded-lg p-2 text-sm text-[var(--text-primary)] focus:border-[var(--accent-primary)] outline-none transition-smooth">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-[var(--text-secondary)] mb-2">Email (read-only)</label>
+                        <input type="email" id="profile-email" class="w-full bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg p-2 text-sm text-[var(--text-secondary)] cursor-not-allowed" readonly>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-[var(--text-secondary)] mb-2">Age</label>
+                        <input type="text" id="profile-age" class="w-full bg-[var(--bg-tertiary)] border border-[var(--border)] rounded-lg p-2 text-sm text-[var(--text-primary)] focus:border-[var(--accent-primary)] outline-none transition-smooth">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-[var(--text-secondary)] mb-2">Location</label>
+                        <input type="text" id="profile-location" class="w-full bg-[var(--bg-tertiary)] border border-[var(--border)] rounded-lg p-2 text-sm text-[var(--text-primary)] focus:border-[var(--accent-primary)] outline-none transition-smooth">
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-[var(--text-secondary)] mb-2">Bio</label>
+                    <textarea id="profile-bio" rows="3" class="w-full bg-[var(--bg-tertiary)] border border-[var(--border)] rounded-lg p-2 text-sm text-[var(--text-primary)] focus:border-[var(--accent-primary)] outline-none resize-none transition-smooth"></textarea>
+                </div>
+                
+                <div class="grid grid-cols-3 gap-4 p-4 bg-[var(--bg-tertiary)] rounded-lg">
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-[var(--accent-primary)]" id="stat-chats">0</div>
+                        <div class="text-xs text-[var(--text-secondary)]">Total Chats</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-[var(--accent-primary)]" id="stat-messages">0</div>
+                        <div class="text-xs text-[var(--text-secondary)]">Messages</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-[var(--accent-primary)]" id="stat-snippets">0</div>
+                        <div class="text-xs text-[var(--text-secondary)]">Code Snippets</div>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end gap-3">
+                    <button onclick="closeProfile()" class="px-4 py-2 bg-[var(--bg-tertiary)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-elevated)] transition-smooth">Cancel</button>
+                    <button onclick="saveProfile()" class="px-4 py-2 bg-[var(--accent-primary)] text-white rounded-lg hover:bg-[var(--accent-secondary)] transition-smooth">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SETTINGS MODAL -->
+    <div id="settings-modal" class="fixed inset-0 z-50 backdrop-blur-sm bg-black/70 hidden items-center justify-center">
+        <div class="bg-[var(--bg-secondary)] border border-[var(--border)] rounded-xl max-w-md w-full mx-4 animate-fade-in">
+            <div class="flex items-center justify-between p-6 border-b border-[var(--border)]">
+                <h2 class="text-xl font-semibold text-[var(--text-primary)]">Settings</h2>
+                <button onclick="closeSettings()" class="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-smooth">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-[var(--text-secondary)] mb-2">Editor Theme</label>
+                    <select id="settings-theme" class="w-full bg-[var(--bg-tertiary)] border border-[var(--border)] rounded-lg p-2 text-sm text-[var(--text-primary)] outline-none">
+                        <option value="dracula">Dracula</option>
+                        <option value="monokai">Monokai</option>
+                        <option value="default">Default</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-[var(--text-secondary)] mb-2">Font Size</label>
+                    <input type="range" id="settings-fontSize" min="10" max="20" value="13" class="w-full" oninput="document.getElementById('fontSize-value').innerText = this.value">
+                    <div class="text-xs text-[var(--text-secondary)] text-right"><span id="fontSize-value">13</span>px</div>
+                </div>
+                
+                <div class="flex justify-end gap-3 pt-4">
+                    <button onclick="closeSettings()" class="px-4 py-2 bg-[var(--bg-tertiary)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-elevated)] transition-smooth">Cancel</button>
+                    <button onclick="saveSettings()" class="px-4 py-2 bg-[var(--accent-primary)] text-white rounded-lg hover:bg-[var(--accent-secondary)] transition-smooth">Save</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- JS LOGIC: Converted to Modules to prevent 'firebase is not defined' -->
@@ -415,27 +531,42 @@
         }
 
         // --- FILE UPLOAD ---
-        let fileContextContent = "";
+        let fileContextData = null;
         
         window.handleFileUpload = function(input) {
             const file = input.files[0];
             if (!file) return;
             
+            // Validate file size (max 1MB)
+            if (file.size > 1024 * 1024) {
+                alert('File size must be less than 1MB');
+                input.value = '';
+                return;
+            }
+            
             const reader = new FileReader();
             reader.onload = (e) => {
-                fileContextContent = e.target.result;
+                fileContextData = {
+                    name: file.name,
+                    content: e.target.result,
+                    size: file.size,
+                    type: file.type
+                };
+                
                 document.getElementById('file-preview').classList.remove('hidden');
                 document.getElementById('file-name').innerText = file.name;
+                document.getElementById('file-size').innerText = `(${(file.size / 1024).toFixed(1)} KB)`;
                 
+                // Auto-detect language
                 if(file.name.endsWith('.py')) changeLanguage('python');
-                if(file.name.endsWith('.js')) changeLanguage('javascript');
-                if(file.name.endsWith('.c') || file.name.endsWith('.cpp')) changeLanguage('clike');
+                else if(file.name.endsWith('.js')) changeLanguage('javascript');
+                else if(file.name.endsWith('.c') || file.name.endsWith('.cpp') || file.name.endsWith('.java')) changeLanguage('clike');
             };
             reader.readAsText(file);
         }
 
         window.clearFile = function() {
-            fileContextContent = "";
+            fileContextData = null;
             document.getElementById('file-upload').value = "";
             document.getElementById('file-preview').classList.add('hidden');
         }
@@ -454,7 +585,7 @@
 
         window.sendMessage = async function() {
             const text = chatInput.value.trim();
-            if (!text && !fileContextContent) return;
+            if (!text && !fileContextData) return;
             if (!currentUser) {
                 alert("Please login first.");
                 return;
@@ -485,7 +616,7 @@
                         message: text,
                         history: chatHistory.slice(-10),
                         codeContext: codeContext,
-                        fileContext: fileContextContent,
+                        fileContext: fileContextData, // Send as object now
                         sessionId: currentSessionId
                     })
                 });
@@ -504,7 +635,7 @@
                                 message: text,
                                 history: chatHistory.slice(-10),
                                 codeContext: codeContext,
-                                fileContext: fileContextContent,
+                                fileContext: fileContextData,
                                 sessionId: currentSessionId
                             })
                         });
@@ -569,7 +700,7 @@
             }
             
             chatHistory.push({ user: userText, model: fullResponse });
-            fileContextContent = "";
+            fileContextData = null;
             document.getElementById('file-preview').classList.add('hidden');
         }
 
@@ -686,8 +817,236 @@
         }
         
         async function loadHistory() {
-            // Placeholder
+            if (!currentUser || !db) return;
+            
+            try {
+                const API_URL = 'https://ada-web.onrender.com/api/chats';
+                const token = await currentUser.getIdToken();
+                
+                const response = await fetch(API_URL, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    displayChatHistory(data.chats || []);
+                }
+            } catch (e) {
+                console.error("Error loading chat history:", e);
+            }
         }
+        
+        function displayChatHistory(chats) {
+            const container = document.getElementById('chat-history');
+            if (!container) return;
+            
+            if (chats.length === 0) {
+                container.innerHTML = '<div class="p-4 text-sm text-[var(--text-secondary)] text-center">No chats yet</div>';
+                return;
+            }
+            
+            container.innerHTML = chats.map(chat => `
+                <div class="p-2 hover:bg-[var(--bg-tertiary)] rounded-lg cursor-pointer transition-smooth mb-1" onclick="loadChat('${chat.id}')">
+                    <div class="text-sm text-[var(--text-primary)] truncate">${chat.title || 'New Chat'}</div>
+                    <div class="text-xs text-[var(--text-secondary)]">${chat.messageCount || 0} messages</div>
+                </div>
+            `).join('');
+        }
+        
+        window.loadChat = async function(chatId) {
+            if (!currentUser) return;
+            
+            try {
+                const token = await currentUser.getIdToken();
+                const response = await fetch(`https://ada-web.onrender.com/api/chats/${chatId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (response.ok) {
+                    const chat = await response.json();
+                    currentSessionId = chatId;
+                    document.getElementById('current-chat-title').innerText = chat.title || 'Chat';
+                    
+                    // Clear and load messages
+                    const container = document.getElementById('chat-container');
+                    container.innerHTML = '';
+                    
+                    chat.messages.forEach(msg => {
+                        if (msg.role === 'user') {
+                            appendMessage('user', msg.content);
+                        } else {
+                            const div = document.createElement('div');
+                            div.className = "flex gap-4 animate-fade-in";
+                            div.innerHTML = `
+                                <div class="w-8 h-8 rounded-lg bg-[var(--accent-primary)]/10 flex items-center justify-center border border-[var(--accent-primary)]/20 text-[var(--accent-primary)] text-xs font-mono">AI</div>
+                                <div class="flex-1">
+                                    <div class="text-sm text-[var(--accent-primary)] font-medium mb-1">Ada</div>
+                                    <div class="prose text-sm text-[var(--text-primary)] max-w-none">${marked.parse(msg.content)}</div>
+                                </div>
+                            `;
+                            container.appendChild(div);
+                        }
+                    });
+                }
+            } catch (e) {
+                console.error("Error loading chat:", e);
+            }
+        }
+        
+        window.newChat = function() {
+            currentSessionId = crypto.randomUUID();
+            chatHistory = [];
+            document.getElementById('chat-container').innerHTML = `
+                <div class="flex gap-4 mb-6">
+                    <div class="w-8 h-8 rounded-lg bg-[var(--accent-primary)]/10 flex items-center justify-center border border-[var(--accent-primary)]/20 text-[var(--accent-primary)] text-xs font-mono">AI</div>
+                    <div class="flex-1">
+                        <div class="text-sm text-[var(--accent-primary)] font-medium mb-1">Ada</div>
+                        <div class="prose">
+                            <p>Hello! I'm Ada, your AI coding assistant.</p>
+                            <p>Upload a file, paste code, or ask me a question to get started.</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('current-chat-title').innerText = 'New Chat';
+            editor.setValue('');
+        }
+        
+        window.toggleUserMenu = function() {
+            const menu = document.getElementById('user-menu');
+            menu.classList.toggle('hidden');
+        }
+        
+        window.confirmLogout = function() {
+            if (confirm("Are you sure you want to logout?")) {
+                signOut(auth);
+            }
+        }
+        
+        window.openProfile = async function() {
+            const modal = document.getElementById('profile-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            if (!currentUser) return;
+            
+            try {
+                const token = await currentUser.getIdToken();
+                const response = await fetch('https://ada-web.onrender.com/api/profile', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (response.ok) {
+                    const profile = await response.json();
+                    document.getElementById('profile-displayName').value = profile.displayName || '';
+                    document.getElementById('profile-email').value = currentUser.email || '';
+                    document.getElementById('profile-age').value = profile.age || '';
+                    document.getElementById('profile-location').value = profile.location || '';
+                    document.getElementById('profile-bio').value = profile.bio || '';
+                    document.getElementById('profile-photo').src = currentUser.photoURL || 'https://ui-avatars.com/api/?name=User';
+                    document.getElementById('stat-chats').innerText = profile.totalChats || 0;
+                    document.getElementById('stat-messages').innerText = profile.totalMessages || 0;
+                    document.getElementById('stat-snippets').innerText = profile.totalCodeSnippets || 0;
+                }
+            } catch (e) {
+                console.error("Error loading profile:", e);
+            }
+        }
+        
+        window.closeProfile = function() {
+            const modal = document.getElementById('profile-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+        
+        window.saveProfile = async function() {
+            if (!currentUser) return;
+            
+            const data = {
+                displayName: document.getElementById('profile-displayName').value,
+                age: document.getElementById('profile-age').value,
+                location: document.getElementById('profile-location').value,
+                bio: document.getElementById('profile-bio').value
+            };
+            
+            try {
+                const token = await currentUser.getIdToken();
+                const response = await fetch('https://ada-web.onrender.com/api/profile', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    alert('Profile updated successfully!');
+                    closeProfile();
+                }
+            } catch (e) {
+                console.error("Error saving profile:", e);
+                alert('Failed to update profile');
+            }
+        }
+        
+        window.uploadProfilePicture = function() {
+            document.getElementById('photo-upload').click();
+        }
+        
+        window.handlePhotoUpload = async function(input) {
+            // Firebase Storage upload would go here
+            alert('Profile picture upload not yet implemented');
+        }
+        
+        window.openSettings = function() {
+            const modal = document.getElementById('settings-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+        
+        window.closeSettings = function() {
+            const modal = document.getElementById('settings-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+        
+        window.saveSettings = function() {
+            const theme = document.getElementById('settings-theme').value;
+            const fontSize = document.getElementById('settings-fontSize').value;
+            
+            editor.setOption('theme', theme);
+            editor.setOption('fontSize', fontSize + 'px');
+            
+            localStorage.setItem('editorTheme', theme);
+            localStorage.setItem('editorFontSize', fontSize);
+            
+            closeSettings();
+        }
+        
+        // Close user menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const menu = document.getElementById('user-menu');
+            const btn = document.getElementById('user-menu-btn');
+            if (menu && !menu.contains(event.target) && !btn.contains(event.target)) {
+                menu.classList.add('hidden');
+            }
+        });
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Cmd/Ctrl + K = New Chat
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault();
+                newChat();
+            }
+            // Escape = Close modals
+            if (e.key === 'Escape') {
+                closeProfile();
+                closeSettings();
+                document.getElementById('user-menu').classList.add('hidden');
+            }
+        });
 
     </script>
 </body>

@@ -6,6 +6,7 @@ from flask_cors import CORS
 import google.generativeai as genai
 import firebase_admin
 from firebase_admin import credentials, auth, firestore
+from google.cloud.firestore_v1 import FieldFilter, Query
 
 # --- INIT APP & CONFIG ---
 app = Flask(__name__)
@@ -240,7 +241,7 @@ def get_chats():
     
     try:
         chats_ref = db.collection('users').document(user_uid).collection('chats')
-        docs = chats_ref.order_by('updatedAt', direction=firestore.Query.DESCENDING).stream()
+        docs = chats_ref.order_by('updatedAt', direction=Query.DESCENDING).stream()
         
         chats = []
         for doc in docs:

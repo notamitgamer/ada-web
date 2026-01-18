@@ -63,108 +63,52 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
 
     <style>
-        /* GitHub Copilot Inspired Theme */
         :root { 
-            --bg-main: #0d1117;
-            --bg-secondary: #161b22;
-            --bg-tertiary: #21262d;
-            --bg-elevated: #30363d;
-            --accent-primary: #58a6ff;
-            --accent-secondary: #1f6feb;
-            --accent-success: #3fb950;
-            --text-primary: #c9d1d9;
-            --text-secondary: #8b949e;
-            --border: rgba(240, 246, 252, 0.1);
+            --bg-main: #050505; 
+            --accent: #bef264; /* Lime 300 */
+            --border: rgba(255,255,255,0.1); 
+            --glass: rgba(20, 20, 20, 0.8);
         }
-        body { background: var(--bg-main); color: var(--text-primary); font-family: 'Inter', sans-serif; overflow: hidden; }
+        body { background: var(--bg-main); color: #e5e5e5; font-family: 'Inter', sans-serif; overflow: hidden; }
         .font-mono { font-family: 'JetBrains Mono', monospace; }
         
         /* Scrollbar */
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: var(--bg-main); }
-        ::-webkit-scrollbar-thumb { background: var(--bg-elevated); border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--accent-primary); }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
         /* CodeMirror Overrides */
-        .CodeMirror { height: 100% !important; font-family: 'JetBrains Mono', monospace; font-size: 13px; background: var(--bg-main) !important; }
-        .cm-s-dracula.CodeMirror { background: var(--bg-main) !important; }
+        .CodeMirror { height: 100% !important; font-family: 'JetBrains Mono', monospace; font-size: 13px; background: #0f0f10 !important; }
+        .cm-s-dracula.CodeMirror { background: #0f0f10 !important; }
         
         /* Markdown Styling */
         .prose p { margin-bottom: 0.8rem; line-height: 1.6; }
-        .prose h1, .prose h2, .prose h3 { color: var(--accent-primary); font-weight: bold; margin-top: 1rem; margin-bottom: 0.5rem; }
+        .prose h1, .prose h2, .prose h3 { color: var(--accent); font-weight: bold; margin-top: 1rem; margin-bottom: 0.5rem; }
         .prose h1 { font-size: 1.5rem; }
         .prose h2 { font-size: 1.25rem; }
         .prose h3 { font-size: 1.1rem; }
-        .prose code { color: var(--accent-success); background: rgba(63, 185, 80, 0.1); padding: 2px 4px; border-radius: 4px; font-family: 'JetBrains Mono'; font-size: 0.85em; }
-        .prose pre { background: var(--bg-secondary); padding: 1rem; border-radius: 0.5rem; overflow-x: auto; border: 1px solid var(--border); margin-bottom: 1rem; }
-        .prose pre code { background: transparent; padding: 0; color: var(--text-primary); }
+        .prose code { color: var(--accent); background: rgba(190, 242, 100, 0.1); padding: 2px 4px; border-radius: 4px; font-family: 'JetBrains Mono'; font-size: 0.85em; }
+        .prose pre { background: #111; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; border: 1px solid var(--border); margin-bottom: 1rem; }
+        .prose pre code { background: transparent; padding: 0; color: #ccc; }
         .prose ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1rem; }
         .prose ol { list-style-type: decimal; padding-left: 1.5rem; margin-bottom: 1rem; }
         .prose li { margin-bottom: 0.3rem; line-height: 1.5; }
-        .prose blockquote { border-left: 3px solid var(--accent-primary); padding-left: 1rem; margin: 1rem 0; color: var(--text-secondary); }
-        .prose a { color: var(--accent-primary); text-decoration: underline; }
-        .prose strong { color: var(--text-primary); font-weight: 600; }
-        .prose em { font-style: italic; color: var(--text-secondary); }
-        
-        /* Code Block Enhancements */
-        .code-block-wrapper {
-            position: relative;
-            margin: 1rem 0;
-            border-radius: 6px;
-            overflow: hidden;
-            border: 1px solid var(--border);
-            background: var(--bg-secondary);
-        }
-        .code-block-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.5rem 1rem;
-            background: var(--bg-tertiary);
-            border-bottom: 1px solid var(--border);
-        }
-        .code-block-lang {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            font-family: 'JetBrains Mono', monospace;
-            text-transform: uppercase;
-        }
-        .code-block-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-        .code-block-btn {
-            padding: 0.25rem 0.5rem;
-            font-size: 0.75rem;
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text-secondary);
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-family: 'Inter', sans-serif;
-        }
-        .code-block-btn:hover {
-            background: var(--bg-elevated);
-            color: var(--text-primary);
-            border-color: var(--accent-primary);
-        }
-        .code-block-btn.success {
-            background: var(--accent-success);
-            color: white;
-            border-color: var(--accent-success);
-        }
+        .prose blockquote { border-left: 3px solid var(--accent); padding-left: 1rem; margin: 1rem 0; color: #999; }
+        .prose a { color: var(--accent); text-decoration: underline; }
+        .prose strong { color: var(--accent); font-weight: 600; }
+        .prose em { font-style: italic; color: #aaa; }
         
         /* Utilities */
-        .glass-panel { background: rgba(22, 27, 34, 0.8); backdrop-filter: blur(12px); border-right: 1px solid var(--border); }
-        .loader { border: 2px solid var(--bg-elevated); border-top: 2px solid var(--accent-primary); border-radius: 50%; width: 16px; height: 16px; animation: spin 1s linear infinite; }
+        .glass-panel { background: var(--glass); backdrop-filter: blur(12px); border-right: 1px solid var(--border); }
+        .loader { border: 2px solid #333; border-top: 2px solid var(--accent); border-radius: 50%; width: 16px; height: 16px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
         /* Typing Indicator Animation */
         .typing-dot {
             width: 8px;
             height: 8px;
-            background: var(--accent-primary);
+            background: var(--accent);
             border-radius: 50%;
             display: inline-block;
             animation: typing 1.4s infinite;
@@ -176,7 +120,7 @@
         }
         
         /* Mobile Tabs */
-        .tab-btn.active { border-bottom: 2px solid var(--accent-primary); color: var(--accent-primary); }
+        .tab-btn.active { border-bottom: 2px solid var(--accent); color: var(--accent); }
     </style>
 </head>
 <body class="h-screen w-screen flex flex-col md:flex-row relative">
@@ -222,58 +166,27 @@
     <div id="left-pane" class="w-full md:w-[40%] flex flex-col h-full border-r border-white/10 relative bg-neutral-900/50">
         
         <!-- HEADER -->
-        <div class="h-14 border-b border-[var(--border)] flex items-center justify-between px-4 bg-[var(--bg-secondary)]">
+        <div class="h-14 border-b border-white/10 flex items-center justify-between px-4 bg-neutral-900">
+            <div class="flex items-center gap-2">
+                <div class="w-2 h-2 bg-lime-300 rounded-full animate-pulse"></div>
+                <span class="font-mono font-bold text-lime-300 tracking-wider">ADA // AI</span>
+            </div>
             <div class="flex items-center gap-3">
-                <button onclick="toggleSidebar()" class="md:hidden text-[var(--text-secondary)] hover:text-[var(--text-primary)]">
+                <a href="docs.html" class="hidden md:block text-xs text-neutral-400 hover:text-lime-300 transition-colors font-mono" title="Documentation">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                </a>
+                <button onclick="toggleSidebar()" class="md:hidden text-neutral-400 hover:text-white">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                 </button>
-                <div class="flex items-center gap-2">
-                    <div class="w-2 h-2 bg-[var(--accent-success)] rounded-full animate-pulse"></div>
-                    <span class="font-mono font-semibold text-[var(--accent-primary)] text-sm">ADA</span>
-                </div>
-                <span id="current-chat-title" class="text-sm text-[var(--text-secondary)] hidden md:block">New Chat</span>
-            </div>
-            <div class="flex items-center gap-2">
-                <button onclick="newChat()" class="hidden md:flex items-center gap-2 px-3 py-1.5 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] rounded-lg transition-smooth">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                    New
-                </button>
-                <button onclick="openSettings()" class="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] rounded-lg transition-smooth">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                </button>
-                <div class="relative">
-                    <button onclick="toggleUserMenu()" id="user-menu-btn" class="flex items-center gap-2 p-1 hover:bg-[var(--bg-tertiary)] rounded-lg transition-smooth">
-                        <img id="user-avatar" src="" class="w-8 h-8 rounded-full border border-[var(--border)]">
-                    </button>
-                    <div id="user-menu" class="hidden absolute right-0 mt-2 w-48 bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg shadow-xl py-1 z-50">
-                        <button onclick="openProfile()" class="w-full text-left px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] transition-smooth">Profile</button>
-                        <button onclick="openSettings()" class="w-full text-left px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] transition-smooth">Settings</button>
-                        <div class="border-t border-[var(--border)] my-1"></div>
-                        <button onclick="confirmLogout()" class="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-[var(--bg-tertiary)] transition-smooth">Logout</button>
-                    </div>
+                <div id="user-profile" class="hidden md:flex items-center gap-2 cursor-pointer" onclick="signOutUser()">
+                    <img id="user-avatar" src="" class="w-6 h-6 rounded-full border border-lime-300/30">
                 </div>
             </div>
         </div>
 
-        <!-- SIDEBAR (Desktop: always visible, Mobile: off-canvas) -->
-        <div id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-[var(--bg-secondary)] border-r border-[var(--border)] transform -translate-x-full transition-transform duration-300 z-40 md:relative md:translate-x-0 md:flex md:flex-col">
-            <!-- Sidebar Header -->
-            <div class="p-4 border-b border-[var(--border)] md:flex hidden">
-                <button onclick="newChat()" class="w-full flex items-center justify-center gap-2 bg-[var(--accent-primary)] text-white py-2 px-4 rounded-lg hover:bg-[var(--accent-secondary)] transition-smooth font-medium text-sm">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                    New Chat
-                </button>
-            </div>
-            
-            <!-- Search -->
-            <div class="p-4 border-b border-[var(--border)] hidden md:block">
-                <input type="text" id="search-chats" placeholder="Search chats..." class="w-full bg-[var(--bg-tertiary)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:border-[var(--accent-primary)] outline-none transition-smooth">
-            </div>
-            
-            <!-- Chat History List -->
-            <div id="chat-history" class="flex-1 overflow-y-auto p-2">
-                <!-- Populated via JS -->
-            </div>
+        <!-- HISTORY SIDEBAR (Off-canvas on mobile) -->
+        <div id="sidebar" class="absolute inset-y-0 left-0 w-64 bg-black border-r border-white/10 transform -translate-x-full transition-transform duration-300 z-40 md:relative md:translate-x-0 md:w-0 md:border-none md:hidden overflow-hidden">
+             <!-- Populated via JS -->
         </div>
 
         <!-- CHAT AREA -->
@@ -292,15 +205,12 @@
         </div>
 
         <!-- FILE UPLOAD PREVIEW -->
-        <div id="file-preview" class="hidden px-4 py-2 bg-[var(--bg-tertiary)] border-t border-[var(--border)] flex items-center justify-between">
-            <div class="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
+        <div id="file-preview" class="hidden px-4 py-2 bg-neutral-800 border-t border-white/5 flex items-center justify-between">
+            <div class="flex items-center gap-2 text-xs font-mono text-lime-300">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                <span id="file-name" class="font-mono">file.py</span>
-                <span id="file-size">(0 KB)</span>
+                <span id="file-name">code.py</span>
             </div>
-            <button onclick="clearFile()" class="text-[var(--text-secondary)] hover:text-[var(--text-primary)]">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
+            <button onclick="clearFile()" class="text-neutral-500 hover:text-white">×</button>
         </div>
 
         <!-- INPUT AREA -->
@@ -351,107 +261,6 @@
         <button onclick="switchTab('code')" id="tab-code" class="flex-1 py-3 text-center text-xs font-mono uppercase tab-btn text-neutral-500">Code Canvas</button>
     </div>
 
-    <!-- PROFILE MODAL -->
-    <div id="profile-modal" class="fixed inset-0 z-50 backdrop-blur-sm bg-black/70 hidden items-center justify-center">
-        <div class="bg-[var(--bg-secondary)] border border-[var(--border)] rounded-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto animate-fade-in">
-            <div class="flex items-center justify-between p-6 border-b border-[var(--border)]">
-                <h2 class="text-xl font-semibold text-[var(--text-primary)]">Profile</h2>
-                <button onclick="closeProfile()" class="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-smooth">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </div>
-            
-            <div class="p-6 space-y-6">
-                <div class="flex items-center gap-4">
-                    <img id="profile-photo" src="" class="w-20 h-20 rounded-full border-2 border-[var(--border)]">
-                    <div>
-                        <button onclick="uploadProfilePicture()" class="px-4 py-2 bg-[var(--accent-primary)] text-white rounded-lg text-sm hover:bg-[var(--accent-secondary)] transition-smooth">Change Photo</button>
-                        <p class="text-xs text-[var(--text-secondary)] mt-1">Upload a new profile picture</p>
-                        <input type="file" id="photo-upload" class="hidden" accept="image/*" onchange="handlePhotoUpload(this)">
-                    </div>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-[var(--text-secondary)] mb-2">Display Name</label>
-                        <input type="text" id="profile-displayName" class="w-full bg-[var(--bg-tertiary)] border border-[var(--border)] rounded-lg p-2 text-sm text-[var(--text-primary)] focus:border-[var(--accent-primary)] outline-none transition-smooth">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-[var(--text-secondary)] mb-2">Email (read-only)</label>
-                        <input type="email" id="profile-email" class="w-full bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg p-2 text-sm text-[var(--text-secondary)] cursor-not-allowed" readonly>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-[var(--text-secondary)] mb-2">Age</label>
-                        <input type="text" id="profile-age" class="w-full bg-[var(--bg-tertiary)] border border-[var(--border)] rounded-lg p-2 text-sm text-[var(--text-primary)] focus:border-[var(--accent-primary)] outline-none transition-smooth">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-[var(--text-secondary)] mb-2">Location</label>
-                        <input type="text" id="profile-location" class="w-full bg-[var(--bg-tertiary)] border border-[var(--border)] rounded-lg p-2 text-sm text-[var(--text-primary)] focus:border-[var(--accent-primary)] outline-none transition-smooth">
-                    </div>
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-medium text-[var(--text-secondary)] mb-2">Bio</label>
-                    <textarea id="profile-bio" rows="3" class="w-full bg-[var(--bg-tertiary)] border border-[var(--border)] rounded-lg p-2 text-sm text-[var(--text-primary)] focus:border-[var(--accent-primary)] outline-none resize-none transition-smooth"></textarea>
-                </div>
-                
-                <div class="grid grid-cols-3 gap-4 p-4 bg-[var(--bg-tertiary)] rounded-lg">
-                    <div class="text-center">
-                        <div class="text-2xl font-bold text-[var(--accent-primary)]" id="stat-chats">0</div>
-                        <div class="text-xs text-[var(--text-secondary)]">Total Chats</div>
-                    </div>
-                    <div class="text-center">
-                        <div class="text-2xl font-bold text-[var(--accent-primary)]" id="stat-messages">0</div>
-                        <div class="text-xs text-[var(--text-secondary)]">Messages</div>
-                    </div>
-                    <div class="text-center">
-                        <div class="text-2xl font-bold text-[var(--accent-primary)]" id="stat-snippets">0</div>
-                        <div class="text-xs text-[var(--text-secondary)]">Code Snippets</div>
-                    </div>
-                </div>
-                
-                <div class="flex justify-end gap-3">
-                    <button onclick="closeProfile()" class="px-4 py-2 bg-[var(--bg-tertiary)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-elevated)] transition-smooth">Cancel</button>
-                    <button onclick="saveProfile()" class="px-4 py-2 bg-[var(--accent-primary)] text-white rounded-lg hover:bg-[var(--accent-secondary)] transition-smooth">Save Changes</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- SETTINGS MODAL -->
-    <div id="settings-modal" class="fixed inset-0 z-50 backdrop-blur-sm bg-black/70 hidden items-center justify-center">
-        <div class="bg-[var(--bg-secondary)] border border-[var(--border)] rounded-xl max-w-md w-full mx-4 animate-fade-in">
-            <div class="flex items-center justify-between p-6 border-b border-[var(--border)]">
-                <h2 class="text-xl font-semibold text-[var(--text-primary)]">Settings</h2>
-                <button onclick="closeSettings()" class="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-smooth">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </div>
-            
-            <div class="p-6 space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-[var(--text-secondary)] mb-2">Editor Theme</label>
-                    <select id="settings-theme" class="w-full bg-[var(--bg-tertiary)] border border-[var(--border)] rounded-lg p-2 text-sm text-[var(--text-primary)] outline-none">
-                        <option value="dracula">Dracula</option>
-                        <option value="monokai">Monokai</option>
-                        <option value="default">Default</option>
-                    </select>
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-medium text-[var(--text-secondary)] mb-2">Font Size</label>
-                    <input type="range" id="settings-fontSize" min="10" max="20" value="13" class="w-full" oninput="document.getElementById('fontSize-value').innerText = this.value">
-                    <div class="text-xs text-[var(--text-secondary)] text-right"><span id="fontSize-value">13</span>px</div>
-                </div>
-                
-                <div class="flex justify-end gap-3 pt-4">
-                    <button onclick="closeSettings()" class="px-4 py-2 bg-[var(--bg-tertiary)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-elevated)] transition-smooth">Cancel</button>
-                    <button onclick="saveSettings()" class="px-4 py-2 bg-[var(--accent-primary)] text-white rounded-lg hover:bg-[var(--accent-secondary)] transition-smooth">Save</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- JS LOGIC: Converted to Modules to prevent 'firebase is not defined' -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -495,114 +304,6 @@
             headerIds: false,
             mangle: false
         });
-        
-        // Custom renderer for code blocks with copy/compiler/download buttons
-        const renderer = new marked.Renderer();
-        renderer.code = function(code, lang) {
-            const language = lang || 'text';
-            const escapedCode = code.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-            const codeId = 'code-' + Math.random().toString(36).substr(2, 9);
-            
-            return `
-                <div class="code-block-wrapper">
-                    <div class="code-block-header">
-                        <span class="code-block-lang">${language}</span>
-                        <div class="code-block-actions">
-                            <button class="code-block-btn" onclick="copyCodeBlock('${codeId}', event)">
-                                <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-                                Copy
-                            </button>
-                            <button class="code-block-btn" onclick="openInCompiler('${codeId}', '${language}')">
-                                <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
-                                Run
-                            </button>
-                            <button class="code-block-btn" onclick="downloadCodeBlock('${codeId}', '${language}')">
-                                <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                                Download
-                            </button>
-                        </div>
-                    </div>
-                    <pre><code id="${codeId}" class="language-${language}">${escapedCode}</code></pre>
-                </div>
-            `;
-        };
-        marked.setOptions({ renderer: renderer });
-        
-        // Code block utility functions
-        window.copyCodeBlock = async function(codeId, event) {
-            const codeElement = document.getElementById(codeId);
-            if (!codeElement) return;
-            
-            const code = codeElement.textContent;
-            try {
-                await navigator.clipboard.writeText(code);
-                // Show success feedback
-                const btn = event ? event.target.closest('button') : null;
-                if (btn) {
-                    const originalText = btn.innerHTML;
-                    btn.innerHTML = '<svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Copied!';
-                    btn.classList.add('success');
-                    setTimeout(() => {
-                        btn.innerHTML = originalText;
-                        btn.classList.remove('success');
-                    }, 2000);
-                }
-            } catch (err) {
-                console.error('Failed to copy:', err);
-            }
-        }
-        
-        window.openInCompiler = function(codeId, language) {
-            const codeElement = document.getElementById(codeId);
-            if (!codeElement) return;
-            
-            const code = codeElement.textContent;
-            const compressed = LZString.compressToEncodedURIComponent(code);
-            
-            let urlLang = 'python';
-            if (language === 'javascript' || language === 'js') urlLang = 'nodejs';
-            else if (language === 'c' || language === 'cpp' || language === 'c++') urlLang = 'cpp';
-            else if (language === 'java') urlLang = 'java';
-            
-            window.open(`https://compiler.amit.is-a.dev/${urlLang}?code=${compressed}`, '_blank');
-        }
-        
-        window.downloadCodeBlock = function(codeId, language) {
-            const codeElement = document.getElementById(codeId);
-            if (!codeElement) return;
-            
-            const code = codeElement.textContent;
-            const ext = getFileExtension(language);
-            const filename = `code.${ext}`;
-            
-            const blob = new Blob([code], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
-        
-        function getFileExtension(language) {
-            const ext = {
-                'python': 'py',
-                'javascript': 'js',
-                'java': 'java',
-                'c': 'c',
-                'cpp': 'cpp',
-                'c++': 'cpp',
-                'csharp': 'cs',
-                'go': 'go',
-                'rust': 'rs',
-                'typescript': 'ts',
-                'html': 'html',
-                'css': 'css'
-            };
-            return ext[language.toLowerCase()] || 'txt';
-        }
 
         // --- AUTH LOGIC ---
         onAuthStateChanged(auth, (user) => {
@@ -638,7 +339,9 @@
         }
 
         window.signOutUser = function() {
-            if(confirm("Sign out?")) signOut(auth);
+            if(confirm("Are you sure you want to logout? Your chat history will be saved.")) {
+                signOut(auth);
+            }
         }
 
         // --- SESSION & LZSTRING ---
@@ -658,7 +361,7 @@
         }
 
         // --- FILE UPLOAD ---
-        let fileContextData = null;
+        let fileContextContent = {name: '', content: '', size: 0, type: ''};
         
         window.handleFileUpload = function(input) {
             const file = input.files[0];
@@ -666,36 +369,38 @@
             
             // Validate file size (max 1MB)
             if (file.size > 1024 * 1024) {
-                alert('File size must be less than 1MB');
-                input.value = '';
+                alert('File too large. Maximum size: 1MB');
                 return;
             }
             
             const reader = new FileReader();
             reader.onload = (e) => {
-                fileContextData = {
+                fileContextContent = {
                     name: file.name,
                     content: e.target.result,
                     size: file.size,
                     type: file.type
                 };
-                
                 document.getElementById('file-preview').classList.remove('hidden');
-                document.getElementById('file-name').innerText = file.name;
-                document.getElementById('file-size').innerText = `(${(file.size / 1024).toFixed(1)} KB)`;
+                document.getElementById('file-name').innerText = file.name + ' (' + formatFileSize(file.size) + ')';
                 
-                // Auto-detect language
                 if(file.name.endsWith('.py')) changeLanguage('python');
-                else if(file.name.endsWith('.js')) changeLanguage('javascript');
-                else if(file.name.endsWith('.c') || file.name.endsWith('.cpp') || file.name.endsWith('.java')) changeLanguage('clike');
+                if(file.name.endsWith('.js')) changeLanguage('javascript');
+                if(file.name.endsWith('.c') || file.name.endsWith('.cpp')) changeLanguage('clike');
             };
             reader.readAsText(file);
         }
 
         window.clearFile = function() {
-            fileContextData = null;
+            fileContextContent = {name: '', content: '', size: 0, type: ''};
             document.getElementById('file-upload').value = "";
             document.getElementById('file-preview').classList.add('hidden');
+        }
+        
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
         }
 
         // --- CHAT LOGIC ---
@@ -712,7 +417,7 @@
 
         window.sendMessage = async function() {
             const text = chatInput.value.trim();
-            if (!text && !fileContextData) return;
+            if (!text && !fileContextContent.content) return;
             if (!currentUser) {
                 alert("Please login first.");
                 return;
@@ -743,7 +448,7 @@
                         message: text,
                         history: chatHistory.slice(-10),
                         codeContext: codeContext,
-                        fileContext: fileContextData, // Send as object now
+                        fileContext: fileContextContent,
                         sessionId: currentSessionId
                     })
                 });
@@ -762,7 +467,7 @@
                                 message: text,
                                 history: chatHistory.slice(-10),
                                 codeContext: codeContext,
-                                fileContext: fileContextData,
+                                fileContext: fileContextContent,
                                 sessionId: currentSessionId
                             })
                         });
@@ -827,7 +532,7 @@
             }
             
             chatHistory.push({ user: userText, model: fullResponse });
-            fileContextData = null;
+            fileContextContent = {name: '', content: '', size: 0, type: ''};
             document.getElementById('file-preview').classList.add('hidden');
         }
 
@@ -944,240 +649,8 @@
         }
         
         async function loadHistory() {
-            if (!currentUser || !db) return;
-            
-            try {
-                const API_URL = 'https://ada-web.onrender.com/api/chats';
-                const token = await currentUser.getIdToken();
-                
-                const response = await fetch(API_URL, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    displayChatHistory(data.chats || []);
-                }
-            } catch (e) {
-                console.error("Error loading chat history:", e);
-            }
+            // Placeholder
         }
-        
-        function displayChatHistory(chats) {
-            const container = document.getElementById('chat-history');
-            if (!container) return;
-            
-            if (chats.length === 0) {
-                container.innerHTML = '<div class="p-4 text-sm text-[var(--text-secondary)] text-center">No chats yet</div>';
-                return;
-            }
-            
-            container.innerHTML = chats.map(chat => `
-                <div class="p-2 hover:bg-[var(--bg-tertiary)] rounded-lg cursor-pointer transition-smooth mb-1" onclick="loadChat('${chat.id}')">
-                    <div class="text-sm text-[var(--text-primary)] truncate">${chat.title || 'New Chat'}</div>
-                    <div class="text-xs text-[var(--text-secondary)]">${chat.messageCount || 0} messages</div>
-                </div>
-            `).join('');
-        }
-        
-        window.loadChat = async function(chatId) {
-            if (!currentUser) return;
-            
-            try {
-                const token = await currentUser.getIdToken();
-                const response = await fetch(`https://ada-web.onrender.com/api/chats/${chatId}`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                
-                if (response.ok) {
-                    const chat = await response.json();
-                    currentSessionId = chatId;
-                    document.getElementById('current-chat-title').innerText = chat.title || 'Chat';
-                    
-                    // Clear and load messages
-                    const container = document.getElementById('chat-container');
-                    container.innerHTML = '';
-                    
-                    chat.messages.forEach(msg => {
-                        if (msg.role === 'user') {
-                            appendMessage('user', msg.content);
-                        } else {
-                            const div = document.createElement('div');
-                            div.className = "flex gap-4 animate-fade-in";
-                            div.innerHTML = `
-                                <div class="w-8 h-8 rounded-lg bg-[var(--accent-primary)]/10 flex items-center justify-center border border-[var(--accent-primary)]/20 text-[var(--accent-primary)] text-xs font-mono">AI</div>
-                                <div class="flex-1">
-                                    <div class="text-sm text-[var(--accent-primary)] font-medium mb-1">Ada</div>
-                                    <div class="prose text-sm text-[var(--text-primary)] max-w-none">${marked.parse(msg.content)}</div>
-                                </div>
-                            `;
-                            container.appendChild(div);
-                        }
-                    });
-                }
-            } catch (e) {
-                console.error("Error loading chat:", e);
-            }
-        }
-        
-        window.newChat = function() {
-            currentSessionId = crypto.randomUUID();
-            chatHistory = [];
-            document.getElementById('chat-container').innerHTML = `
-                <div class="flex gap-4 mb-6">
-                    <div class="w-8 h-8 rounded-lg bg-[var(--accent-primary)]/10 flex items-center justify-center border border-[var(--accent-primary)]/20 text-[var(--accent-primary)] text-xs font-mono">AI</div>
-                    <div class="flex-1">
-                        <div class="text-sm text-[var(--accent-primary)] font-medium mb-1">Ada</div>
-                        <div class="prose">
-                            <p>Hello! I'm Ada, your AI coding assistant.</p>
-                            <p>Upload a file, paste code, or ask me a question to get started.</p>
-                        </div>
-                    </div>
-                </div>
-            `;
-            document.getElementById('current-chat-title').innerText = 'New Chat';
-            editor.setValue('');
-        }
-        
-        window.toggleUserMenu = function() {
-            const menu = document.getElementById('user-menu');
-            menu.classList.toggle('hidden');
-        }
-        
-        window.confirmLogout = function() {
-            if (confirm("Are you sure you want to logout?")) {
-                signOut(auth);
-            }
-        }
-        
-        window.openProfile = async function() {
-            const modal = document.getElementById('profile-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            
-            if (!currentUser) return;
-            
-            try {
-                const token = await currentUser.getIdToken();
-                const response = await fetch('https://ada-web.onrender.com/api/profile', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                
-                if (response.ok) {
-                    const profile = await response.json();
-                    document.getElementById('profile-displayName').value = profile.displayName || '';
-                    document.getElementById('profile-email').value = currentUser.email || '';
-                    document.getElementById('profile-age').value = profile.age || '';
-                    document.getElementById('profile-location').value = profile.location || '';
-                    document.getElementById('profile-bio').value = profile.bio || '';
-                    document.getElementById('profile-photo').src = currentUser.photoURL || 'https://ui-avatars.com/api/?name=User';
-                    document.getElementById('stat-chats').innerText = profile.totalChats || 0;
-                    document.getElementById('stat-messages').innerText = profile.totalMessages || 0;
-                    document.getElementById('stat-snippets').innerText = profile.totalCodeSnippets || 0;
-                }
-            } catch (e) {
-                console.error("Error loading profile:", e);
-            }
-        }
-        
-        window.closeProfile = function() {
-            const modal = document.getElementById('profile-modal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }
-        
-        window.saveProfile = async function() {
-            if (!currentUser) return;
-            
-            const data = {
-                displayName: document.getElementById('profile-displayName').value,
-                age: document.getElementById('profile-age').value,
-                location: document.getElementById('profile-location').value,
-                bio: document.getElementById('profile-bio').value
-            };
-            
-            try {
-                const token = await currentUser.getIdToken();
-                const response = await fetch('https://ada-web.onrender.com/api/profile', {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify(data)
-                });
-                
-                if (response.ok) {
-                    alert('Profile updated successfully!');
-                    closeProfile();
-                }
-            } catch (e) {
-                console.error("Error saving profile:", e);
-                alert('Failed to update profile');
-            }
-        }
-        
-        window.uploadProfilePicture = function() {
-            document.getElementById('photo-upload').click();
-        }
-        
-        window.handlePhotoUpload = async function(input) {
-            // Firebase Storage upload would go here
-            alert('Profile picture upload not yet implemented');
-        }
-        
-        window.openSettings = function() {
-            const modal = document.getElementById('settings-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-        
-        window.closeSettings = function() {
-            const modal = document.getElementById('settings-modal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }
-        
-        window.saveSettings = function() {
-            const theme = document.getElementById('settings-theme').value;
-            const fontSize = document.getElementById('settings-fontSize').value;
-            
-            editor.setOption('theme', theme);
-            // Set font size via CSS
-            const cmElement = document.querySelector('.CodeMirror');
-            if (cmElement) {
-                cmElement.style.fontSize = fontSize + 'px';
-            }
-            
-            localStorage.setItem('editorTheme', theme);
-            localStorage.setItem('editorFontSize', fontSize);
-            
-            closeSettings();
-        }
-        
-        // Close user menu when clicking outside
-        document.addEventListener('click', function(event) {
-            const menu = document.getElementById('user-menu');
-            const btn = document.getElementById('user-menu-btn');
-            if (menu && !menu.contains(event.target) && !btn.contains(event.target)) {
-                menu.classList.add('hidden');
-            }
-        });
-        
-        // Keyboard shortcuts
-        document.addEventListener('keydown', function(e) {
-            // Cmd/Ctrl + K = New Chat
-            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-                e.preventDefault();
-                newChat();
-            }
-            // Escape = Close modals
-            if (e.key === 'Escape') {
-                closeProfile();
-                closeSettings();
-                document.getElementById('user-menu').classList.add('hidden');
-            }
-        });
 
     </script>
 </body>

@@ -63,100 +63,44 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
 
     <style>
-        /* GitHub Copilot Inspired Theme */
         :root { 
-            --bg-main: #0d1117;
-            --bg-secondary: #161b22;
-            --bg-tertiary: #21262d;
-            --bg-elevated: #30363d;
-            --accent-primary: #58a6ff;
-            --accent-secondary: #1f6feb;
-            --accent-success: #3fb950;
-            --text-primary: #c9d1d9;
-            --text-secondary: #8b949e;
-            --border: rgba(240, 246, 252, 0.1);
+            --bg-main: #050505; 
+            --accent: #bef264; /* Lime 300 */
+            --border: rgba(255,255,255,0.1); 
+            --glass: rgba(20, 20, 20, 0.8);
         }
-        body { background: var(--bg-main); color: var(--text-primary); font-family: 'Inter', sans-serif; overflow: hidden; }
+        body { background: var(--bg-main); color: #e5e5e5; font-family: 'Inter', sans-serif; overflow: hidden; }
         .font-mono { font-family: 'JetBrains Mono', monospace; }
         
         /* Scrollbar */
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: var(--bg-main); }
-        ::-webkit-scrollbar-thumb { background: var(--bg-elevated); border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--accent-primary); }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
         /* CodeMirror Overrides */
-        .CodeMirror { height: 100% !important; font-family: 'JetBrains Mono', monospace; font-size: 13px; background: var(--bg-main) !important; }
-        .cm-s-dracula.CodeMirror { background: var(--bg-main) !important; }
+        .CodeMirror { height: 100% !important; font-family: 'JetBrains Mono', monospace; font-size: 13px; background: #0f0f10 !important; }
+        .cm-s-dracula.CodeMirror { background: #0f0f10 !important; }
         
         /* Markdown Styling */
         .prose p { margin-bottom: 0.8rem; line-height: 1.6; }
-        .prose h1, .prose h2, .prose h3 { color: var(--accent-primary); font-weight: bold; margin-top: 1rem; margin-bottom: 0.5rem; }
+        .prose h1, .prose h2, .prose h3 { color: var(--accent); font-weight: bold; margin-top: 1rem; margin-bottom: 0.5rem; }
         .prose h1 { font-size: 1.5rem; }
         .prose h2 { font-size: 1.25rem; }
         .prose h3 { font-size: 1.1rem; }
-        .prose code { color: var(--accent-success); background: rgba(63, 185, 80, 0.1); padding: 2px 4px; border-radius: 4px; font-family: 'JetBrains Mono'; font-size: 0.85em; }
-        .prose pre { background: var(--bg-secondary); padding: 1rem; border-radius: 0.5rem; overflow-x: auto; border: 1px solid var(--border); margin-bottom: 1rem; }
-        .prose pre code { background: transparent; padding: 0; color: var(--text-primary); }
+        .prose code { color: var(--accent); background: rgba(190, 242, 100, 0.1); padding: 2px 4px; border-radius: 4px; font-family: 'JetBrains Mono'; font-size: 0.85em; }
+        .prose pre { background: #111; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; border: 1px solid var(--border); margin-bottom: 1rem; }
+        .prose pre code { background: transparent; padding: 0; color: #ccc; }
         .prose ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1rem; }
         .prose ol { list-style-type: decimal; padding-left: 1.5rem; margin-bottom: 1rem; }
         .prose li { margin-bottom: 0.3rem; line-height: 1.5; }
-        .prose blockquote { border-left: 3px solid var(--accent-primary); padding-left: 1rem; margin: 1rem 0; color: var(--text-secondary); }
-        .prose a { color: var(--accent-primary); text-decoration: underline; }
-        .prose strong { color: var(--text-primary); font-weight: 600; }
-        .prose em { font-style: italic; color: var(--text-secondary); }
-        
-        /* Code Block Enhancements */
-        .code-block-wrapper {
-            position: relative;
-            margin: 1rem 0;
-            border-radius: 6px;
-            overflow: hidden;
-            border: 1px solid var(--border);
-            background: var(--bg-secondary);
-        }
-        .code-block-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.5rem 1rem;
-            background: var(--bg-tertiary);
-            border-bottom: 1px solid var(--border);
-        }
-        .code-block-lang {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            font-family: 'JetBrains Mono', monospace;
-            text-transform: uppercase;
-        }
-        .code-block-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-        .code-block-btn {
-            padding: 0.25rem 0.5rem;
-            font-size: 0.75rem;
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text-secondary);
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-family: 'Inter', sans-serif;
-        }
-        .code-block-btn:hover {
-            background: var(--bg-elevated);
-            color: var(--text-primary);
-            border-color: var(--accent-primary);
-        }
-        .code-block-btn.success {
-            background: var(--accent-success);
-            color: white;
-            border-color: var(--accent-success);
-        }
+        .prose blockquote { border-left: 3px solid var(--accent); padding-left: 1rem; margin: 1rem 0; color: #999; }
+        .prose a { color: var(--accent); text-decoration: underline; }
+        .prose strong { color: var(--accent); font-weight: 600; }
+        .prose em { font-style: italic; color: #aaa; }
         
         /* Utilities */
-        .glass-panel { background: rgba(22, 27, 34, 0.8); backdrop-filter: blur(12px); border-right: 1px solid var(--border); }
+        .glass-panel { background: var(--glass); backdrop-filter: blur(12px); border-right: 1px solid var(--border); }
         .loader { border: 2px solid #333; border-top: 2px solid var(--accent); border-radius: 50%; width: 16px; height: 16px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
@@ -164,7 +108,7 @@
         .typing-dot {
             width: 8px;
             height: 8px;
-            background: var(--accent-primary);
+            background: var(--accent);
             border-radius: 50%;
             display: inline-block;
             animation: typing 1.4s infinite;
@@ -176,7 +120,7 @@
         }
         
         /* Mobile Tabs */
-        .tab-btn.active { border-bottom: 2px solid var(--accent-primary); color: var(--accent-primary); }
+        .tab-btn.active { border-bottom: 2px solid var(--accent); color: var(--accent); }
     </style>
 </head>
 <body class="h-screen w-screen flex flex-col md:flex-row relative">

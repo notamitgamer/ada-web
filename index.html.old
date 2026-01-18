@@ -339,9 +339,7 @@
         }
 
         window.signOutUser = function() {
-            if(confirm("Are you sure you want to logout? Your chat history will be saved.")) {
-                signOut(auth);
-            }
+            if(confirm("Sign out?")) signOut(auth);
         }
 
         // --- SESSION & LZSTRING ---
@@ -361,28 +359,17 @@
         }
 
         // --- FILE UPLOAD ---
-        let fileContextContent = {name: '', content: '', size: 0, type: ''};
+        let fileContextContent = "";
         
         window.handleFileUpload = function(input) {
             const file = input.files[0];
             if (!file) return;
             
-            // Validate file size (max 1MB)
-            if (file.size > 1024 * 1024) {
-                alert('File too large. Maximum size: 1MB');
-                return;
-            }
-            
             const reader = new FileReader();
             reader.onload = (e) => {
-                fileContextContent = {
-                    name: file.name,
-                    content: e.target.result,
-                    size: file.size,
-                    type: file.type
-                };
+                fileContextContent = e.target.result;
                 document.getElementById('file-preview').classList.remove('hidden');
-                document.getElementById('file-name').innerText = file.name + ' (' + formatFileSize(file.size) + ')';
+                document.getElementById('file-name').innerText = file.name;
                 
                 if(file.name.endsWith('.py')) changeLanguage('python');
                 if(file.name.endsWith('.js')) changeLanguage('javascript');
@@ -392,15 +379,9 @@
         }
 
         window.clearFile = function() {
-            fileContextContent = {name: '', content: '', size: 0, type: ''};
+            fileContextContent = "";
             document.getElementById('file-upload').value = "";
             document.getElementById('file-preview').classList.add('hidden');
-        }
-        
-        function formatFileSize(bytes) {
-            if (bytes < 1024) return bytes + ' B';
-            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
         }
 
         // --- CHAT LOGIC ---
@@ -417,7 +398,7 @@
 
         window.sendMessage = async function() {
             const text = chatInput.value.trim();
-            if (!text && !fileContextContent.content) return;
+            if (!text && !fileContextContent) return;
             if (!currentUser) {
                 alert("Please login first.");
                 return;
@@ -532,7 +513,7 @@
             }
             
             chatHistory.push({ user: userText, model: fullResponse });
-            fileContextContent = {name: '', content: '', size: 0, type: ''};
+            fileContextContent = "";
             document.getElementById('file-preview').classList.add('hidden');
         }
 

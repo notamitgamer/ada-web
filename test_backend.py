@@ -28,7 +28,18 @@ try:
     
     # Check if routes are defined
     routes = [rule.rule for rule in backend.app.url_map.iter_rules()]
-    expected_routes = ['/', '/api/chat', '/api/generate-title']
+    expected_routes = [
+        '/', 
+        '/health',
+        '/api/chat', 
+        '/api/generate-title',
+        '/api/profile',
+        '/api/chats',
+        '/api/chats/<chat_id>',
+        '/api/chats/<chat_id>/rename',
+        '/api/chats/<chat_id>/export',
+        '/api/chats/<chat_id>/pin'
+    ]
     
     for route in expected_routes:
         assert route in routes, f"Route {route} not found"

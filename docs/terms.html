@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ada AI - Terms & Conditions</title>
+<link rel="icon" type="image/png" href="logo.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        gemini: {
+                            bg: '#131314',
+                            surface: '#1E1F20',
+                            text: '#E3E3E3',
+                            blue: '#A8C7FA'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gemini-bg text-gemini-text font-sans p-6 md:p-12 selection:bg-red-500/30 selection:text-white">
+    <div class="max-w-3xl mx-auto">
+        <a href="/" class="inline-flex items-center text-gemini-blue hover:text-white transition-colors mb-10 text-sm font-medium">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            Back to App
+        </a>
+        
+        <h1 class="text-4xl font-bold mb-2 text-white">Terms and Conditions</h1>
+        <p class="text-gray-500 text-sm mb-10">Last Updated: January 2026</p>
+        
+        <div class="space-y-10 text-gray-300 leading-relaxed">
+            
+            <!-- CRITICAL DISCLAIMER -->
+            <div class="bg-red-500/10 border-l-4 border-red-500 p-6 rounded-r-lg">
+                <h3 class="text-red-400 font-bold text-lg mb-2 flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    CRITICAL DISCLAIMER OF LIABILITY & SERVICE
+                </h3>
+                <p class="text-sm text-gray-300">
+                    By using this service ("Ada AI"), you strictly acknowledge and agree that:
+                </p>
+                <ul class="list-disc pl-5 mt-2 text-sm text-gray-300 space-y-1">
+                    <li>The developer (Amit Dutta) assumes <strong>ABSOLUTELY NO RESPONSIBILITY</strong> for any data loss, code errors, system failures, or any direct/indirect consequences resulting from the use of this software.</li>
+                    <li>This project is provided "AS IS" without warranty of any kind.</li>
+                    <li>The developer reserves the <strong>absolute right to disown, suspend, modify, or permanently delete</strong> this project and its associated services (database, API, hosting) at any time, for any reason, <strong>WITHOUT PRIOR NOTICE</strong>.</li>
+                    <li>You are using this service entirely at your own risk.</li>
+                </ul>
+            </div>
+
+            <!-- License Section -->
+            <section>
+                <h2 class="text-xl font-semibold text-white mb-4">1. MIT License</h2>
+                <div class="bg-black/50 p-6 rounded-lg border border-gray-800 font-mono text-xs text-gray-400 overflow-x-auto">
+                    <p class="mb-4">Copyright (c) 2026 Amit Dutta</p>
+                    <p class="mb-4">Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
+                    <p class="mb-4">The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
+                    <p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+                </div>
+            </section>
+
+            <!-- Usage Section -->
+            <section>
+                <h2 class="text-xl font-semibold text-white mb-4">2. Acceptable Use</h2>
+                <p>
+                    Ada AI is an educational and productivity tool for programming. You agree to use this service only for lawful purposes. You are strictly prohibited from using the AI to generate malicious code, malware, or any content that violates applicable laws or regulations. Any such activity will result in the immediate termination of your access and deletion of your data.
+                </p>
+            </section>
+
+            <!-- AI Content Section -->
+            <section>
+                <h2 class="text-xl font-semibold text-white mb-4">3. AI-Generated Content</h2>
+                <p>
+                    The code and explanations provided by Ada AI are generated by artificial intelligence (Google Gemini). While we strive for accuracy, AI models can hallucinate or produce incorrect, insecure, or inefficient code. You are solely responsible for reviewing, testing, and verifying any code generated by this service before using it in any environment.
+                </p>
+            </section>
+
+            <!-- Data Section -->
+            <section>
+                <h2 class="text-xl font-semibold text-white mb-4">4. Data Storage</h2>
+                <p>
+                    Your chat history is stored in Google Firebase. While we implement standard security measures (authentication, database rules), we cannot guarantee 100% security against unauthorized third-party access. Do not share sensitive information (passwords, API keys, personal data) in your chats.
+                </p>
+            </section>
+
+            <!-- Contact -->
+            <div class="mt-12 pt-8 border-t border-gray-800 text-sm text-gray-500">
+                <p>Questions? Contact us at <a href="mailto:mail@amit.is-a.dev" class="text-gemini-blue hover:underline">mail@amit.is-a.dev</a>.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ada AI - Documentation</title>
+<link rel="icon" type="image/png" href="logo.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        gemini: {
+                            bg: '#131314',
+                            surface: '#1E1F20',
+                            text: '#E3E3E3',
+                            blue: '#A8C7FA'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gemini-bg text-gemini-text font-sans p-6 md:p-12 leading-relaxed selection:bg-gemini-blue selection:text-black">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <header class="mb-12 border-b border-gray-800 pb-8">
+            <a href="/" class="inline-flex items-center text-gemini-blue hover:text-white transition-colors mb-6 font-medium text-sm">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                Back to App
+            </a>
+            <h1 class="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">Ada AI Documentation</h1>
+            <p class="text-xl text-gray-400 font-light">Comprehensive guide to the architecture, usage, and contribution workflow for the Ada AI Coding Assistant.</p>
+        </header>
+        
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <!-- Sidebar Nav -->
+            <nav class="hidden md:block col-span-1 space-y-1 sticky top-8 h-fit">
+                <a href="#introduction" class="block py-2 px-3 rounded-lg hover:bg-gemini-surface text-gray-400 hover:text-white transition-colors text-sm">1. Introduction</a>
+                <a href="#how-it-works" class="block py-2 px-3 rounded-lg hover:bg-gemini-surface text-gray-400 hover:text-white transition-colors text-sm">2. System Architecture</a>
+                <a href="#data-privacy" class="block py-2 px-3 rounded-lg hover:bg-gemini-surface text-gray-400 hover:text-white transition-colors text-sm">3. Data & Privacy</a>
+                <a href="#features" class="block py-2 px-3 rounded-lg hover:bg-gemini-surface text-gray-400 hover:text-white transition-colors text-sm">4. Features Guide</a>
+                <a href="#contributing" class="block py-2 px-3 rounded-lg hover:bg-gemini-surface text-gray-400 hover:text-white transition-colors text-sm">5. Contributing</a>
+                <a href="#support" class="block py-2 px-3 rounded-lg hover:bg-gemini-surface text-gray-400 hover:text-white transition-colors text-sm">6. Support</a>
+            </nav>
+
+            <!-- Content -->
+            <div class="col-span-1 md:col-span-3 space-y-16">
+                
+                <!-- Section 1: Introduction -->
+                <section id="introduction">
+                    <h2 class="text-2xl font-semibold text-white mb-6 flex items-center">
+                        <span class="bg-gemini-surface w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3 border border-gray-700">1</span>
+                        Introduction
+                    </h2>
+                    <p class="text-gray-300 mb-4">
+                        Ada AI is a specialized coding assistant built to provide students and developers with accurate, context-aware debugging and refactoring help. Unlike generic AI chatbots, Ada is engineered specifically for software development workflows, integrating a real-time code editor directly into the conversation loop.
+                    </p>
+                    <div class="bg-gemini-surface border-l-4 border-gemini-blue p-4 rounded-r-lg">
+                        <p class="text-sm text-gray-300"><strong>Core Philosophy:</strong> Simplicity, Speed, and Strict Data Segregation. Ada connects you to Google's Gemini 2.5 Flash model while keeping your data isolated within your own Firebase document scope.</p>
+                    </div>
+                </section>
+
+                <!-- Section 2: How It Works -->
+                <section id="how-it-works">
+                    <h2 class="text-2xl font-semibold text-white mb-6 flex items-center">
+                        <span class="bg-gemini-surface w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3 border border-gray-700">2</span>
+                        System Architecture
+                    </h2>
+                    
+                    <div class="space-y-8">
+                        <div>
+                            <h3 class="text-lg font-medium text-white mb-3">Authentication Layer</h3>
+                            <p class="text-gray-400 text-sm mb-3">
+                                Security is handled via <span class="text-white">Google Firebase Authentication</span>. We support:
+                            </p>
+                            <ul class="list-disc pl-5 space-y-2 text-sm text-gray-400">
+                                <li><strong>Google OAuth:</strong> One-click secure sign-in.</li>
+                                <li><strong>Email/Password:</strong> Traditional credential access.</li>
+                            </ul>
+                            <p class="text-gray-400 text-sm mt-3">
+                                Upon login, a unique User ID (UID) is generated. This UID acts as the primary key for all database operations, ensuring you never access data belonging to another user.
+                            </p>
+                        </div>
+
+                        <div>
+                            <h3 class="text-lg font-medium text-white mb-3">Request Lifecycle</h3>
+                            <ol class="list-decimal pl-5 space-y-4 text-sm text-gray-400">
+                                <li>
+                                    <strong class="text-white">Input Capture:</strong> The frontend captures your message, active code editor content, and any uploaded file context.
+                                </li>
+                                <li>
+                                    <strong class="text-white">Secure Transmission:</strong> Data is sent to our Python Flask backend (hosted on Render) over HTTPS, accompanied by your Firebase ID Token.
+                                </li>
+                                <li>
+                                    <strong class="text-white">Server-Side Verification:</strong> The backend validates your ID Token using the Firebase Admin SDK before processing any request.
+                                </li>
+                                <li>
+                                    <strong class="text-white">AI Processing:</strong> Validated requests are forwarded to the Gemini 2.5 API. The system prompt enforces a "Coding Assistant Only" persona.
+                                </li>
+                                <li>
+                                    <strong class="text-white">Response Streaming:</strong> The AI response is streamed back to your browser in real-time chunks, reducing perceived latency.
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 3: Data & Privacy -->
+                <section id="data-privacy">
+                    <h2 class="text-2xl font-semibold text-white mb-6 flex items-center">
+                        <span class="bg-gemini-surface w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3 border border-gray-700">3</span>
+                        Data Storage & Privacy
+                    </h2>
+                    <p class="text-gray-300 mb-6">
+                        We use <span class="text-white">Google Cloud Firestore</span> (NoSQL) for persistence. Your data is structured to maximize privacy and ease of deletion.
+                    </p>
+
+                    <div class="grid md:grid-cols-2 gap-6 mb-6">
+                        <div class="bg-gemini-surface p-5 rounded-xl border border-gray-800">
+                            <h4 class="text-white font-medium mb-2">Data Structure</h4>
+                            <code class="text-xs font-mono text-blue-300 block mb-2">/users/{userId}/chats/{chatId}</code>
+                            <p class="text-xs text-gray-400">All your chats live exclusively under your user document. No data is stored in global collections.</p>
+                        </div>
+                        <div class="bg-gemini-surface p-5 rounded-xl border border-gray-800">
+                            <h4 class="text-white font-medium mb-2">Deletion Policy</h4>
+                            <p class="text-xs text-gray-400 mb-2">You have full control over your data:</p>
+                            <ul class="text-xs text-gray-400 list-disc pl-4 space-y-1">
+                                <li><strong>Single Chat:</strong> Instantly removed via the context menu.</li>
+                                <li><strong>Clear History:</strong> A batch operation wipes your entire `/chats` subcollection.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 4: Features Guide -->
+                <section id="features">
+                    <h2 class="text-2xl font-semibold text-white mb-6 flex items-center">
+                        <span class="bg-gemini-surface w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3 border border-gray-700">4</span>
+                        Key Features
+                    </h2>
+                    
+                    <div class="space-y-6">
+                        <div class="group">
+                            <h3 class="text-lg font-medium text-white mb-2 group-hover:text-gemini-blue transition-colors">Smart Code Artifacts</h3>
+                            <p class="text-sm text-gray-400">
+                                When Ada writes code, it automatically detects the language and extracts it into the dedicated <strong>Artifact Panel</strong> on the right. This keeps your chat clean and gives you a dedicated workspace to view, copy, or format the code.
+                            </p>
+                        </div>
+
+                        <div class="group">
+                            <h3 class="text-lg font-medium text-white mb-2 group-hover:text-gemini-blue transition-colors">Chat Sharing</h3>
+                            <p class="text-sm text-gray-400">
+                                Need to share a solution? You can generate a unique link for any chat conversation.
+                            </p>
+                            <ul class="list-disc pl-5 mt-2 space-y-1 text-sm text-gray-500">
+                                <li><strong>Public Access:</strong> Anyone with the link can view the conversation (Read-Only).</li>
+                                <li><strong>Forking:</strong> If the viewer logs in, they can save a copy of the chat to their own history and continue the conversation.</li>
+                            </ul>
+                        </div>
+
+                        <div class="group">
+                            <h3 class="text-lg font-medium text-white mb-2 group-hover:text-gemini-blue transition-colors">Export Data</h3>
+                            <p class="text-sm text-gray-400">
+                                You are not locked in. Export any chat session as a JSON file or Markdown document for your own records or documentation.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 5: Contributing -->
+                <section id="contributing">
+                    <h2 class="text-2xl font-semibold text-white mb-6 flex items-center">
+                        <span class="bg-gemini-surface w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3 border border-gray-700">5</span>
+                        Contributing
+                    </h2>
+                    <p class="text-gray-300 mb-6">
+                        Ada AI is an open-source project licensed under MIT. We welcome pull requests, bug reports, and feature suggestions from the developer community.
+                    </p>
+
+                    <div class="bg-gemini-surface p-6 rounded-xl border border-gray-700">
+                        <h3 class="text-white font-medium mb-4">How to Contribute</h3>
+                        <ol class="list-decimal pl-5 space-y-3 text-sm text-gray-300 mb-6">
+                            <li><strong>Fork the Repository:</strong> Go to our GitHub and click "Fork".</li>
+                            <li><strong>Clone Locally:</strong> <code class="bg-black px-2 py-1 rounded text-gray-400 ml-2">git clone https://github.com/notamitgamer/ada-web.git</code></li>
+                            <li><strong>Create Branch:</strong> <code class="bg-black px-2 py-1 rounded text-gray-400 ml-2">git checkout -b feature/amazing-feature</code></li>
+                            <li><strong>Commit & Push:</strong> Make your changes and push to your fork.</li>
+                            <li><strong>Pull Request:</strong> Open a PR describing your changes.</li>
+                        </ol>
+                        
+                        <a href="https://github.com/notamitgamer/ada-web" target="_blank" class="inline-flex items-center justify-center w-full md:w-auto bg-white text-black px-6 py-3 rounded-lg font-bold hover:bg-gray-200 transition-colors">
+                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                            View on GitHub
+                        </a>
+                    </div>
+                </section>
+
+                <!-- Section 6: Support -->
+                <section id="support">
+                    <h2 class="text-2xl font-semibold text-white mb-6 flex items-center">
+                        <span class="bg-gemini-surface w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3 border border-gray-700">6</span>
+                        Support & Contact
+                    </h2>
+                    <p class="text-gray-300 mb-6">Found a bug? Need a feature? Or just want to say hi? Here is how you can reach the developer.</p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <a href="mailto:amitdutta4255@gmail.com" class="group p-6 bg-gemini-surface border border-gray-800 rounded-xl hover:border-red-500/50 transition-all">
+                            <div class="flex items-center mb-2">
+                                <span class="w-2 h-2 rounded-full bg-red-500 mr-2"></span>
+                                <h4 class="text-white font-medium group-hover:text-red-400">Critical Support</h4>
+                            </div>
+                            <p class="text-sm text-gray-400 mb-4">For urgent issues, security vulnerabilities, or major bugs.</p>
+                            <span class="text-xs font-mono text-gray-500">amitdutta4255@gmail.com</span>
+                        </a>
+
+                        <a href="mailto:mail@amit.is-a.dev" class="group p-6 bg-gemini-surface border border-gray-800 rounded-xl hover:border-gemini-blue transition-all">
+                            <div class="flex items-center mb-2">
+                                <span class="w-2 h-2 rounded-full bg-blue-500 mr-2"></span>
+                                <h4 class="text-white font-medium group-hover:text-gemini-blue">General Inquiries</h4>
+                            </div>
+                            <p class="text-sm text-gray-400 mb-4">For feedback, feature requests, or general questions.</p>
+                            <span class="text-xs font-mono text-gray-500">mail@amit.is-a.dev</span>
+                        </a>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+
+        <footer class="mt-20 pt-8 border-t border-gray-800 text-center">
+            <p class="text-sm text-gray-500">&copy; 2026 Ada AI. All rights reserved.</p>
+            <div class="mt-2 space-x-4">
+                <a href="/terms.html" class="text-xs text-gray-600 hover:text-gray-300 transition-colors">Terms & Conditions</a>
+                <a href="https://github.com/notamitgamer/ada-web" class="text-xs text-gray-600 hover:text-gray-300 transition-colors">GitHub</a>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

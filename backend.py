@@ -20,8 +20,6 @@ CORS(app, resources={r"/api/*": {"origins": [
 
 # 1. Firebase Admin Init (Server-Side Security)
 # Ensure you have your service account json or environment variables set up in Render
-# For Render/Cloud, credentials.ApplicationDefault() often works if env vars are correct.
-# Otherwise, use a service account JSON file.
 try:
     if not firebase_admin._apps:
         # Check for FIREBASE_CREDENTIALS environment variable (JSON string)
@@ -31,22 +29,22 @@ try:
             # Parse JSON string from environment variable
             cred_dict = json.loads(firebase_creds_json)
             cred = credentials.Certificate(cred_dict)
-            print("✅ Using Firebase credentials from FIREBASE_CREDENTIALS environment variable")
+            print("Using Firebase credentials from FIREBASE_CREDENTIALS environment variable")
         elif os.path.exists("firebase-adminsdk.json"):
             cred = credentials.Certificate("firebase-adminsdk.json")
-            print("✅ Using Firebase credentials from firebase-adminsdk.json file")
+            print("Using Firebase credentials from firebase-adminsdk.json file")
         else:
             # Try application default credentials
             cred = credentials.ApplicationDefault()
-            print("✅ Using Firebase Application Default Credentials")
+            print("Using Firebase Application Default Credentials")
         
         firebase_admin.initialize_app(cred)
-        print("✅ Firebase Admin SDK initialized successfully")
+        print("Firebase Admin SDK initialized successfully")
     db = firestore.client()
-    print("✅ Firestore client initialized successfully")
+    print("Firestore client initialized successfully")
 except Exception as e:
-    print(f"❌ Firebase initialization error: {type(e).__name__}: {e}")
-    print("⚠️  API will run but Firestore features will not work")
+    print(f"Firebase initialization error: {type(e).__name__}: {e}")
+    print("API will run but Firestore features will not work")
     db = None
 
 # 2. Gemini Init
@@ -88,19 +86,19 @@ model = genai.GenerativeModel(
     system_instruction=SYSTEM_PROMPT,
 )
 
-# --- HELPER: Verify Firebase Token ---
+# --- HELPER: Verify Firebase Token & Check Guest Status ---
 def verify_token(auth_header):
     """
     Verifies the Firebase ID Token sent from the client.
-    Returns user_uid if valid, None otherwise.
-    Enhanced with better error messages and logging.
+    Returns a dictionary {'uid': str, 'is_guest': bool} if valid, None otherwise.
+    Enhanced to detect Anonymous (Guest) users.
     """
     if not auth_header:
-        print("❌ No Authorization header provided")
+        print("No Authorization header provided")
         return None
     
     if not auth_header.startswith("Bearer "):
-        print("❌ Invalid Authorization header format (must start with 'Bearer ')")
+        print("Invalid Authorization header format (must start with 'Bearer ')")
         return None
     
     token = auth_header.split("Bearer ")[1]
@@ -108,20 +106,38 @@ def verify_token(auth_header):
     try:
         decoded_token = auth.verify_id_token(token)
         user_id = decoded_token['uid']
-        # print(f"✅ Token verified for user: {user_id}") # verbose
-        return user_id
+        
+        # Check the sign-in provider to see if it's an anonymous user
+        firebase_claim = decoded_token.get('firebase', {})
+        provider = firebase_claim.get('sign_in_provider')
+        is_guest = (provider == 'anonymous')
+        
+        return {'uid': user_id, 'is_guest': is_guest}
+
     except auth.InvalidIdTokenError:
-        print("❌ Invalid ID token - token is malformed or invalid")
+        print("Invalid ID token - token is malformed or invalid")
         return None
     except auth.ExpiredIdTokenError:
-        print("❌ Token has expired - user needs to refresh their token")
+        print("Token has expired - user needs to refresh their token")
         return None
     except auth.RevokedIdTokenError:
-        print("❌ Token has been revoked")
+        print("Token has been revoked")
         return None
     except Exception as e:
-        print(f"❌ Token verification error: {type(e).__name__}: {e}")
+        print(f"Token verification error: {type(e).__name__}: {e}")
         return None
+
+def get_user_ref(user_data):
+    """
+    Returns the Firestore Document Reference for the user.
+    Routes guests to 'temp-users' and registered users to 'users'.
+    """
+    if not db:
+        raise Exception("Database unavailable")
+    
+    # TRAFFIC ROUTING LOGIC
+    collection_name = 'temp-users' if user_data['is_guest'] else 'users'
+    return db.collection(collection_name).document(user_data['uid'])
 
 # --- ROUTES ---
 
@@ -130,7 +146,7 @@ def home():
     return jsonify({
         "status": "online",
         "service": "Ada AI Coding Backend",
-        "version": "1.0.0",
+        "version": "1.1.0",
         "model": "gemini-2.5-flash-preview-09-2025"
     })
 
@@ -146,8 +162,8 @@ def health():
 def generate_title():
     """Generates a short 3-5 word title for the chat history."""
     # Verify auth even for titles to prevent abuse
-    user_uid = verify_token(request.headers.get('Authorization'))
-    if not user_uid:
+    user_data = verify_token(request.headers.get('Authorization'))
+    if not user_data:
         return jsonify({
             "error": "Unauthorized",
             "message": "Invalid or missing authentication token. Please sign in again."
@@ -161,21 +177,22 @@ def generate_title():
         res = title_model.generate_content(f"Summarize this coding query into a 3-5 word title: '{message}'")
         return jsonify({"title": res.text.strip()})
     except Exception as e:
-        print(f"❌ Error generating title: {type(e).__name__}: {e}")
+        print(f"Error generating title: {type(e).__name__}: {e}")
         return jsonify({"title": "New Chat"})
 
 @app.route('/api/profile', methods=['GET'])
 def get_profile():
     """Get user profile from Firestore."""
-    user_uid = verify_token(request.headers.get('Authorization'))
-    if not user_uid:
+    user_data = verify_token(request.headers.get('Authorization'))
+    if not user_data:
         return jsonify({"error": "Unauthorized"}), 401
     
     if not db:
         return jsonify({"error": "Database unavailable"}), 503
     
     try:
-        user_ref = db.collection('users').document(user_uid)
+        # Use helper to get correct collection path
+        user_ref = get_user_ref(user_data)
         doc = user_ref.get()
         
         if doc.exists:
@@ -183,8 +200,9 @@ def get_profile():
         else:
             # Create default profile
             default_profile = {
-                "uid": user_uid,
-                "displayName": "",
+                "uid": user_data['uid'],
+                "isGuest": user_data['is_guest'],
+                "displayName": "Guest User" if user_data['is_guest'] else "",
                 "email": "",
                 "photoURL": "",
                 "age": "",
@@ -201,14 +219,14 @@ def get_profile():
             user_ref.set(default_profile)
             return jsonify(default_profile)
     except Exception as e:
-        print(f"❌ Error getting profile: {type(e).__name__}: {e}")
+        print(f"Error getting profile: {type(e).__name__}: {e}")
         return jsonify({"error": "Failed to get profile"}), 500
 
 @app.route('/api/profile', methods=['PUT'])
 def update_profile():
     """Update user profile in Firestore."""
-    user_uid = verify_token(request.headers.get('Authorization'))
-    if not user_uid:
+    user_data = verify_token(request.headers.get('Authorization'))
+    if not user_data:
         return jsonify({"error": "Unauthorized"}), 401
     
     if not db:
@@ -220,26 +238,28 @@ def update_profile():
         update_data = {k: v for k, v in data.items() if k in allowed_fields}
         update_data['updatedAt'] = datetime.datetime.now(datetime.timezone.utc)
         
-        user_ref = db.collection('users').document(user_uid)
+        user_ref = get_user_ref(user_data)
         user_ref.update(update_data)
         
         return jsonify({"success": True, "message": "Profile updated"})
     except Exception as e:
-        print(f"❌ Error updating profile: {type(e).__name__}: {e}")
+        print(f"Error updating profile: {type(e).__name__}: {e}")
         return jsonify({"error": "Failed to update profile"}), 500
 
 @app.route('/api/chats', methods=['GET'])
 def get_chats():
     """Get all user's chat sessions from Firestore."""
-    user_uid = verify_token(request.headers.get('Authorization'))
-    if not user_uid:
+    user_data = verify_token(request.headers.get('Authorization'))
+    if not user_data:
         return jsonify({"error": "Unauthorized"}), 401
     
     if not db:
         return jsonify({"error": "Database unavailable"}), 503
     
     try:
-        chats_ref = db.collection('users').document(user_uid).collection('chats')
+        user_ref = get_user_ref(user_data)
+        chats_ref = user_ref.collection('chats')
+        
         # Order by updatedAt descending (most recent first)
         docs = chats_ref.order_by('updatedAt', direction='DESCENDING').stream()
         
@@ -259,21 +279,22 @@ def get_chats():
         
         return jsonify({"chats": chats})
     except Exception as e:
-        print(f"❌ Error getting chats: {type(e).__name__}: {e}")
+        print(f"Error getting chats: {type(e).__name__}: {e}")
         return jsonify({"error": "Failed to get chats"}), 500
 
 @app.route('/api/chats/<chat_id>', methods=['GET'])
 def get_chat(chat_id):
     """Get specific chat session."""
-    user_uid = verify_token(request.headers.get('Authorization'))
-    if not user_uid:
+    user_data = verify_token(request.headers.get('Authorization'))
+    if not user_data:
         return jsonify({"error": "Unauthorized"}), 401
     
     if not db:
         return jsonify({"error": "Database unavailable"}), 503
     
     try:
-        chat_ref = db.collection('users').document(user_uid).collection('chats').document(chat_id)
+        user_ref = get_user_ref(user_data)
+        chat_ref = user_ref.collection('chats').document(chat_id)
         doc = chat_ref.get()
         
         if not doc.exists:
@@ -283,32 +304,33 @@ def get_chat(chat_id):
         chat_data['id'] = doc.id
         return jsonify(chat_data)
     except Exception as e:
-        print(f"❌ Error getting chat: {type(e).__name__}: {e}")
+        print(f"Error getting chat: {type(e).__name__}: {e}")
         return jsonify({"error": "Failed to get chat"}), 500
 
 @app.route('/api/chats/<chat_id>', methods=['DELETE'])
 def delete_chat(chat_id):
     """Delete a chat session."""
-    user_uid = verify_token(request.headers.get('Authorization'))
-    if not user_uid:
+    user_data = verify_token(request.headers.get('Authorization'))
+    if not user_data:
         return jsonify({"error": "Unauthorized"}), 401
     
     if not db:
         return jsonify({"error": "Database unavailable"}), 503
     
     try:
-        chat_ref = db.collection('users').document(user_uid).collection('chats').document(chat_id)
+        user_ref = get_user_ref(user_data)
+        chat_ref = user_ref.collection('chats').document(chat_id)
         chat_ref.delete()
         return jsonify({"success": True, "message": "Chat deleted"})
     except Exception as e:
-        print(f"❌ Error deleting chat: {type(e).__name__}: {e}")
+        print(f"Error deleting chat: {type(e).__name__}: {e}")
         return jsonify({"error": "Failed to delete chat"}), 500
 
 @app.route('/api/chats/<chat_id>/rename', methods=['PUT'])
 def rename_chat(chat_id):
     """Rename a chat session."""
-    user_uid = verify_token(request.headers.get('Authorization'))
-    if not user_uid:
+    user_data = verify_token(request.headers.get('Authorization'))
+    if not user_data:
         return jsonify({"error": "Unauthorized"}), 401
     
     if not db:
@@ -318,7 +340,8 @@ def rename_chat(chat_id):
         data = request.json
         new_title = data.get('title', 'New Chat')
         
-        chat_ref = db.collection('users').document(user_uid).collection('chats').document(chat_id)
+        user_ref = get_user_ref(user_data)
+        chat_ref = user_ref.collection('chats').document(chat_id)
         chat_ref.update({
             'title': new_title,
             'updatedAt': datetime.datetime.now(datetime.timezone.utc)
@@ -326,21 +349,22 @@ def rename_chat(chat_id):
         
         return jsonify({"success": True, "message": "Chat renamed"})
     except Exception as e:
-        print(f"❌ Error renaming chat: {type(e).__name__}: {e}")
+        print(f"Error renaming chat: {type(e).__name__}: {e}")
         return jsonify({"error": "Failed to rename chat"}), 500
 
 @app.route('/api/chats/<chat_id>/export', methods=['GET'])
 def export_chat(chat_id):
     """Export chat as JSON."""
-    user_uid = verify_token(request.headers.get('Authorization'))
-    if not user_uid:
+    user_data = verify_token(request.headers.get('Authorization'))
+    if not user_data:
         return jsonify({"error": "Unauthorized"}), 401
     
     if not db:
         return jsonify({"error": "Database unavailable"}), 503
     
     try:
-        chat_ref = db.collection('users').document(user_uid).collection('chats').document(chat_id)
+        user_ref = get_user_ref(user_data)
+        chat_ref = user_ref.collection('chats').document(chat_id)
         doc = chat_ref.get()
         
         if not doc.exists:
@@ -361,14 +385,14 @@ def export_chat(chat_id):
         
         return jsonify(chat_data)
     except Exception as e:
-        print(f"❌ Error exporting chat: {type(e).__name__}: {e}")
+        print(f"Error exporting chat: {type(e).__name__}: {e}")
         return jsonify({"error": "Failed to export chat"}), 500
 
 @app.route('/api/chats/<chat_id>/pin', methods=['PUT'])
 def pin_chat(chat_id):
     """Toggle pin status of a chat."""
-    user_uid = verify_token(request.headers.get('Authorization'))
-    if not user_uid:
+    user_data = verify_token(request.headers.get('Authorization'))
+    if not user_data:
         return jsonify({"error": "Unauthorized"}), 401
     
     if not db:
@@ -378,7 +402,8 @@ def pin_chat(chat_id):
         data = request.json
         is_pinned = data.get('isPinned', False)
         
-        chat_ref = db.collection('users').document(user_uid).collection('chats').document(chat_id)
+        user_ref = get_user_ref(user_data)
+        chat_ref = user_ref.collection('chats').document(chat_id)
         chat_ref.update({
             'isPinned': is_pinned,
             'updatedAt': datetime.datetime.now(datetime.timezone.utc)
@@ -386,7 +411,7 @@ def pin_chat(chat_id):
         
         return jsonify({"success": True, "isPinned": is_pinned})
     except Exception as e:
-        print(f"❌ Error pinning chat: {type(e).__name__}: {e}")
+        print(f"Error pinning chat: {type(e).__name__}: {e}")
         return jsonify({"error": "Failed to pin chat"}), 500
 
 @app.route('/api/chat', methods=['POST'])
@@ -396,9 +421,9 @@ def chat():
     Headers: Authorization: Bearer <firebase_id_token>
     Body: { "message": str, "history": list, "codeContext": str, "fileContext": str, "sessionId": str }
     """
-    # 1. Verify User
-    user_uid = verify_token(request.headers.get('Authorization'))
-    if not user_uid:
+    # 1. Verify User & Get Identity Info
+    user_data = verify_token(request.headers.get('Authorization'))
+    if not user_data:
         return jsonify({
             "error": "Unauthorized",
             "message": "Invalid or missing authentication token. Please sign in again."
@@ -440,7 +465,7 @@ def chat():
     try:
         chat_session = model.start_chat(history=chat_history)
     except Exception as e:
-        print(f"❌ Error starting chat session: {type(e).__name__}: {e}")
+        print(f"Error starting chat session: {type(e).__name__}: {e}")
         return jsonify({
             "error": "Internal Server Error",
             "message": "Failed to initialize chat session"
@@ -460,11 +485,13 @@ def chat():
                     yield chunk.text
                     final_text_acc += chunk.text
             
-            # 4. Save Interaction to Firestore
+            # 4. Save Interaction to Firestore (Specific Path)
             # We save this asynchronously (conceptually) after streaming is done.
             if session_id and db:
                 try:
-                    doc_ref = db.collection('users').document(user_uid).collection('chats').document(session_id)
+                    # Get correct reference (users vs temp-users)
+                    user_ref = get_user_ref(user_data)
+                    doc_ref = user_ref.collection('chats').document(session_id)
                     
                     msg_data = {
                         "role": "user",
@@ -494,7 +521,8 @@ def chat():
                             "title": chat_title,
                             "createdAt": datetime.datetime.now(datetime.timezone.utc),
                             "updatedAt": datetime.datetime.now(datetime.timezone.utc),
-                            "userId": user_uid,
+                            "userId": user_data['uid'],
+                            "isGuest": user_data['is_guest'], # Mark for easy identification
                             "isPinned": False,
                             "messages": [msg_data, ai_data]
                         })
@@ -503,12 +531,12 @@ def chat():
                             "messages": firestore.ArrayUnion([msg_data, ai_data]),
                             "updatedAt": datetime.datetime.now(datetime.timezone.utc)
                         })
-                    print(f"✅ Chat saved to Firestore for session: {session_id}")
+                    print(f"Chat saved to Firestore for session: {session_id} (Guest: {user_data['is_guest']})")
                 except Exception as db_err:
-                    print(f"❌ Database Save Error: {type(db_err).__name__}: {db_err}")
+                    print(f"Database Save Error: {type(db_err).__name__}: {db_err}")
 
         except Exception as e:
-            error_msg = f"❌ Gemini API Error: {type(e).__name__}: {str(e)}"
+            error_msg = f"Gemini API Error: {type(e).__name__}: {str(e)}"
             print(error_msg)
             yield f"\n\nError: I encountered an issue while processing your request. Please try again."
 

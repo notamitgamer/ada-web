@@ -108,7 +108,7 @@ def verify_token(auth_header):
     try:
         decoded_token = auth.verify_id_token(token)
         user_id = decoded_token['uid']
-        print(f"✅ Token verified for user: {user_id}")
+        # print(f"✅ Token verified for user: {user_id}") # verbose
         return user_id
     except auth.InvalidIdTokenError:
         print("❌ Invalid ID token - token is malformed or invalid")

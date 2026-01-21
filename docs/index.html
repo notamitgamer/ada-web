@@ -1,1643 +1,373 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ada AI</title>
-<link rel="icon" type="image/png" href="logo.png">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="google-site-verification" content="pwteHw44Ax3N2B1zkFzVJB7NIK0-xgQGRihK_vtZTF4" />
+    <title>Cloud Code Compiler // Amit Dutta</title>
+	<link rel="canonical" href="https://compiler.amit.is-a.dev/" />
+    <link rel="icon" type="image/x-icon" href="https://compiler.amit.is-a.dev/logo.png">
     
-    <!-- Tailwind CSS -->
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+    
+    <!-- Libraries -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        gemini: {
-                            bg: '#131314',        // Deepest charcoal
-                            surface: '#1E1F20',   // Sidebar/Panels
-                            surfaceHover: '#28292A',
-                            accent: '#444746',    // Borders/Icons
-                            text: '#E3E3E3',      // Primary text
-                            textSecondary: '#C4C7C5',
-                            blue: '#A8C7FA',      // Google Blue
-                            purple: '#D0BCFF'     // Google Purple
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace'],
-                    },
-                    animation: {
-                        'fade-in': 'fadeIn 0.4s ease-out forwards',
-                        'slide-up': 'slideUp 0.5s cubic-bezier(0.2, 0.0, 0, 1.0) forwards',
-                        'spin-slow-entry': 'spinSlowEntry 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
-                    },
-                    keyframes: {
-                        fadeIn: {
-                            '0%': { opacity: '0' },
-                            '100%': { opacity: '1' },
-                        },
-                        slideUp: {
-                            '0%': { opacity: '0', transform: 'translateY(20px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' },
-                        },
-                        spinSlowEntry: {
-                            '0%': { opacity: '0', transform: 'rotate(-180deg) scale(0.5)' },
-                            '100%': { opacity: '1', transform: 'rotate(0deg) scale(1)' }
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     
-    <!-- Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-
-    <!-- CodeMirror (Editor) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js"></script>
-
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-
     <style>
+        :root {
+            --bg-main: #050505;
+            --accent: #bef264; /* Lime 300 */
+            --text-muted: #737373;
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+
         body {
-            background-color: #131314;
-            color: #E3E3E3;
             font-family: 'Inter', sans-serif;
-            overflow: hidden;
-            -webkit-font-smoothing: antialiased;
+            background-color: var(--bg-main);
+            color: #f5f5f5;
+            overflow-x: hidden;
         }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #444746; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #5E5E5E; }
-
-        /* Prose / Markdown Styles */
-        .prose p { margin-bottom: 0.8rem; line-height: 1.6; color: #E3E3E3; font-weight: 300; }
-        .prose strong { color: #fff; font-weight: 600; }
-        .prose ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1rem; }
-        .prose ol { list-style-type: decimal; padding-left: 1.5rem; margin-bottom: 1rem; }
-        .prose code {
-            font-family: 'JetBrains Mono', monospace;
-            background: #28292A;
-            padding: 2px 6px;
-            border-radius: 4px;
-            color: #A8C7FA;
-            font-size: 0.85em;
-        }
-        .prose pre { display: none; } /* Hidden in chat, shown in Artifact Panel */
-        .prose h1, .prose h2, .prose h3 { margin-top: 1.5rem; margin-bottom: 0.5rem; font-weight: 500; color: white; }
-        .prose a { color: #A8C7FA; text-decoration: none; }
-        .prose a:hover { text-decoration: underline; }
-
-        /* Message Bubbles */
-        .msg-user {
-            background-color: #28292A;
-            color: #E3E3E3;
-            border-radius: 20px;
-            padding: 12px 20px;
-            max-width: 80%;
-            font-weight: 400;
-        }
-        .msg-ai {
-            background: transparent;
-            color: #E3E3E3;
-            padding: 0;
-            max-width: 100%;
-        }
-
-        /* Code Block Card in Chat */
-        .code-card {
-            background: #1E1F20;
-            border: 1px solid #444746;
-            border-radius: 12px;
-            overflow: hidden;
-            margin: 1rem 0;
-            transition: all 0.2s;
-            cursor: pointer;
-            position: relative;
-        }
-        .code-card:hover { 
-            border-color: #A8C7FA; 
-            transform: translateY(-1px);
-        }
-
-        /* CodeMirror Customization */
-        .CodeMirror {
-            height: 100% !important;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 14px;
-            background-color: #1e1e1e !important;
-        }
-        .cm-s-dracula.CodeMirror {
-            background-color: #1e1e1e !important;
-        }
-
-        /* Typing Indicator */
-        .typing-dot {
-            width: 6px; height: 6px;
-            background: #E3E3E3;
-            border-radius: 50%;
-            animation: bounce 1.4s infinite ease-in-out both;
-        }
-        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
-        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
-        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
-
-        /* Mobile Height Fix */
-        .mobile-height { height: 100vh; height: calc(var(--vh, 1vh) * 100); }
-
-        /* Hide Scrollbar for Inputs */
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-        /* Drawer Transitions */
-        .drawer { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        /* Portfolio Aesthetic */
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .font-heading { font-family: 'Space Grotesk', sans-serif; }
         
-        /* Custom Ada Icon Animation */
-        .ada-icon path { transform-origin: center; }
+        /* Noise Overlay */
+        .bg-noise {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0; opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
 
-        /* Context Menu */
-        .context-menu {
-            position: fixed; /* Changed from absolute to fixed for better mobile handling */
-            background: #28292A;
-            border: 1px solid #444746;
-            border-radius: 12px; /* Slightly more rounded */
-            padding: 4px;
-            z-index: 9999;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-            min-width: 180px;
-            animation: menuFadeIn 0.15s ease-out;
+        /* CRT Scanline */
+        .crt-scanline {
+            position: fixed; top: 0; left: 0; width: 100%; height: 2px;
+            background: rgba(190, 242, 100, 0.1); opacity: 0.5;
+            pointer-events: none; z-index: 50;
+            animation: scanline 8s linear infinite;
         }
-        @keyframes menuFadeIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
-        .context-menu-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px; /* Larger tap targets for mobile */
-            cursor: pointer;
-            border-radius: 8px;
-            color: #E3E3E3;
-            font-size: 14px;
-            transition: background 0.2s;
-        }
-        .context-menu-item:hover {
-            background: #3C4043;
-        }
-        .context-menu-item.danger { color: #ff8b8b; }
-        .context-menu-item.danger:hover { background: rgba(255, 139, 139, 0.1); }
+        @keyframes scanline { 0% { top: -10vh; } 100% { top: 110vh; } }
 
-        /* Custom Switch (From Uiverse.io by Galahhad) */
-        .switch {
-            /* switch */
-            --switch-width: 46px;
-            --switch-height: 24px;
-            --switch-bg: rgb(68, 71, 70);
-            --switch-checked-bg: #A8C7FA;
-            --switch-offset: calc((var(--switch-height) - var(--circle-diameter)) / 2);
-            --switch-transition: all .2s cubic-bezier(0.27, 0.2, 0.25, 1.51);
-            /* circle */
-            --circle-diameter: 18px;
-            --circle-bg: #fff;
-            --circle-shadow: 1px 1px 2px rgba(146, 146, 146, 0.45);
-            --circle-checked-shadow: -1px 1px 2px rgba(163, 163, 163, 0.45);
-            --circle-transition: var(--switch-transition);
-            /* icon */
-            --icon-transition: all .2s cubic-bezier(0.27, 0.2, 0.25, 1.51);
-            --icon-cross-color: var(--switch-bg);
-            --icon-cross-size: 6px;
-            --icon-checkmark-color: var(--switch-checked-bg);
-            --icon-checkmark-size: 10px;
-            /* effect line */
-            --effect-width: calc(var(--circle-diameter) / 2);
-            --effect-height: calc(var(--effect-width) / 2 - 1px);
-            --effect-bg: var(--circle-bg);
-            --effect-border-radius: 1px;
-            --effect-transition: all .2s ease-in-out;
-            
-            display: inline-block;
+        /* Compiler Card Styling */
+        .compiler-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 1.5rem;
             position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10;
         }
 
-        .switch input { display: none; }
+        .compiler-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+            box-shadow: 0 0 20px rgba(190, 242, 100, 0.1);
+        }
 
-        .switch svg {
-            -webkit-transition: var(--icon-transition);
-            -o-transition: var(--icon-transition);
-            transition: var(--icon-transition);
+        .compiler-card::before {
+            content: '';
             position: absolute;
-            height: auto;
+            inset: 0;
+            background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(255, 255, 255, 0.06), transparent 40%);
+            opacity: 0;
+            transition: opacity 0.5s;
+            pointer-events: none;
         }
 
-        .switch .checkmark {
-            width: var(--icon-checkmark-size);
-            color: var(--icon-checkmark-color);
-            -webkit-transform: scale(0);
-            -ms-transform: scale(0);
-            transform: scale(0);
+        .compiler-card:hover::before {
+            opacity: 1;
         }
 
-        .switch .cross {
-            width: var(--icon-cross-size);
-            color: var(--icon-cross-color);
+        .icon-container {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
         }
 
-        .slider {
-            -webkit-box-sizing: border-box;
-            box-sizing: border-box;
-            width: var(--switch-width);
-            height: var(--switch-height);
-            background: var(--switch-bg);
-            border-radius: 999px;
-            display: -webkit-box;
-            display: -ms-flexbox;
-            display: flex;
-            -webkit-box-align: center;
-            -ms-flex-align: center;
-            align-items: center;
-            position: relative;
-            -webkit-transition: var(--switch-transition);
-            -o-transition: var(--switch-transition);
-            transition: var(--switch-transition);
-            cursor: pointer;
+        .compiler-card:hover .icon-container {
+            border-color: var(--accent);
+            background: rgba(190, 242, 100, 0.1);
         }
 
-        .circle {
-            width: var(--circle-diameter);
-            height: var(--circle-diameter);
-            background: var(--circle-bg);
-            border-radius: inherit;
-            -webkit-box-shadow: var(--circle-shadow);
-            box-shadow: var(--circle-shadow);
-            display: -webkit-box;
-            display: -ms-flexbox;
-            display: flex;
-            -webkit-box-align: center;
-            -ms-flex-align: center;
-            align-items: center;
-            -webkit-box-pack: center;
-            -ms-flex-pack: center;
-            justify-content: center;
-            -webkit-transition: var(--circle-transition);
-            -o-transition: var(--circle-transition);
-            transition: var(--circle-transition);
-            z-index: 1;
+        /* Feature Card (Smaller) */
+        .feature-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+        .feature-card:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(190, 242, 100, 0.3);
+        }
+
+        /* Animations */
+        .floating-code {
             position: absolute;
-            left: var(--switch-offset);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            opacity: 0.2;
+            pointer-events: none;
+            animation: float 10s infinite ease-in-out;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
         }
 
-        .slider::before {
-            content: "";
-            position: absolute;
-            width: var(--effect-width);
-            height: var(--effect-height);
-            left: calc(var(--switch-offset) + (var(--effect-width) / 2));
-            background: var(--effect-bg);
-            border-radius: var(--effect-border-radius);
-            -webkit-transition: var(--effect-transition);
-            -o-transition: var(--effect-transition);
-            transition: var(--effect-transition);
+        /* Social Links */
+        .social-link {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            color: #a3a3a3;
+            transition: all 0.3s ease;
+        }
+        .social-link:hover {
+            color: var(--accent);
+            border-color: var(--accent);
+            transform: translateY(-3px);
         }
 
-        .switch input:checked+.slider {
-            background: var(--switch-checked-bg);
+        ::selection { background: var(--accent); color: black; }
+        
+        .typewriter h1 { border-right: none; }
+        
+        .fade-in-create {
+            animation: fadeIn 1s ease-in forwards;
+            opacity: 0;
         }
-
-        .switch input:checked+.slider .checkmark {
-            -webkit-transform: scale(1);
-            -ms-transform: scale(1);
-            transform: scale(1);
-        }
-
-        .switch input:checked+.slider .cross {
-            -webkit-transform: scale(0);
-            -ms-transform: scale(0);
-            transform: scale(0);
-        }
-
-        .switch input:checked+.slider::before {
-            left: calc(100% - var(--effect-width) - (var(--effect-width) / 2) - var(--switch-offset));
-        }
-
-        .switch input:checked+.slider .circle {
-            left: calc(100% - var(--circle-diameter) - var(--switch-offset));
-            -webkit-box-shadow: var(--circle-checked-shadow);
-            box-shadow: var(--circle-checked-shadow);
-        }
+        @keyframes fadeIn { to { opacity: 1; } }
     </style>
 </head>
-<body class="mobile-height flex text-sm selection:bg-gemini-blue selection:text-black bg-gemini-bg">
+<body class="antialiased selection:bg-lime-300 selection:text-black">
 
-    <!-- SVG Definitions -->
-    <svg style="display: none;">
-        <symbol id="icon-ada" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-                <linearGradient id="ada-gradient" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse">
-                    <stop offset="0%" stop-color="#4facfe" />
-                    <stop offset="50%" stop-color="#00f2fe" />
-                    <stop offset="100%" stop-color="#a8c7fa" />
-                </linearGradient>
-            </defs>
-            <path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z" fill="url(#ada-gradient)" />
-            <path d="M12 6L13.2 10.8L18 12L13.2 13.2L12 18L10.8 13.2L6 12L10.8 10.8L12 6Z" fill="white" fill-opacity="0.3" />
-        </symbol>
-    </svg>
+    <div class="bg-noise"></div>
+    <div class="crt-scanline"></div>
 
-    <!-- Full Screen Loading/Verifying Overlay -->
-    <div id="loading-overlay" class="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-[#131314] transition-opacity duration-500">
-        <div class="w-16 h-16 mb-4 relative">
-            <div class="absolute inset-0 bg-blue-500/20 blur-xl rounded-full"></div>
-            <svg class="w-full h-full animate-spin-slow-entry"><use href="#icon-ada"></use></svg>
-        </div>
-        <p class="text-gemini-textSecondary text-sm font-medium animate-pulse">Verifying Identity...</p>
+    <!-- Background Elements -->
+    <div class="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+        <div class="floating-code" style="top: 15%; left: 10%; animation-delay: 0s;">print("Hello World")</div>
+        <div class="floating-code" style="top: 25%; right: 15%; animation-delay: 2s;">#include &lt;stdio.h&gt;</div>
+        <div class="floating-code" style="bottom: 20%; left: 20%; animation-delay: 4s;">std::cout << "Code";</div>
+        <div class="floating-code" style="bottom: 30%; right: 10%; animation-delay: 1s;">const int MAX = 100;</div>
     </div>
 
-    <!-- Confirm Dialog -->
-    <div id="confirm-modal" class="fixed inset-0 z-[210] flex items-center justify-center bg-black/70 backdrop-blur-sm hidden opacity-0 transition-opacity">
-        <div class="bg-gemini-surface p-6 rounded-2xl w-full max-w-sm border border-gemini-surfaceHover transform scale-95 transition-transform" id="confirm-modal-content">
-            <h3 class="text-lg font-semibold text-white mb-2" id="confirm-title">Confirm</h3>
-            <p class="text-gemini-textSecondary text-sm mb-4" id="confirm-message">Are you sure?</p>
-            
-            <div id="confirm-input-container" class="hidden mb-4">
-                <label class="block text-xs text-gemini-textSecondary mb-1">Type <span class="font-mono text-white select-all" id="confirm-match-text"></span> to confirm:</label>
-                <input type="text" id="confirm-input" class="w-full bg-[#131314] border border-gemini-surfaceHover rounded-lg p-2 text-white text-sm focus:outline-none focus:border-gemini-blue" placeholder="">
-            </div>
-
-            <div class="flex justify-end gap-3">
-                <button onclick="closeConfirmModal()" class="px-4 py-2 rounded-lg text-gemini-textSecondary hover:text-white hover:bg-gemini-surfaceHover transition-colors">Cancel</button>
-                <button id="confirm-action-btn" class="px-4 py-2 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors font-medium">Confirm</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Toast Notification (Custom Popups) -->
-    <div id="toast" class="fixed bottom-24 md:bottom-10 left-1/2 -translate-x-1/2 bg-gemini-surface border border-gemini-surfaceHover text-white px-6 py-3 rounded-full shadow-2xl z-[220] transition-all duration-300 transform translate-y-20 opacity-0 pointer-events-none flex items-center gap-2">
-        <i data-lucide="info" class="w-4 h-4 text-gemini-blue"></i>
-        <span id="toast-message" class="text-sm font-medium">Notification</span>
-    </div>
-
-    <!-- Auth Modal -->
-    <div id="auth-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-[#131314] transition-opacity duration-300 hidden opacity-0 pointer-events-none">
-        <div class="w-full max-w-md p-8 text-center">
-            <div class="mx-auto w-20 h-20 mb-6 rounded-full bg-gemini-surface flex items-center justify-center relative overflow-hidden group">
-                <div class="absolute inset-0 bg-gradient-to-tr from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                <svg class="w-10 h-10 animate-spin-slow-entry drop-shadow-lg"><use href="#icon-ada"></use></svg>
-            </div>
-            <h1 class="text-3xl font-medium text-white mb-3">Welcome to Ada</h1>
-            <p class="text-gemini-textSecondary mb-10">Sign in to access your coding workspace.</p>
-            
-            <button onclick="signInWithGoogle()" class="w-full bg-white text-[#131314] hover:bg-gray-100 font-medium py-3 px-6 rounded-full flex items-center justify-center gap-3 transition-colors">
-                <img src="https://www.google.com/favicon.ico" class="w-5 h-5" alt="G">
-                <span>Continue with Google</span>
-            </button>
-        </div>
-    </div>
-
-    <!-- Profile Modal -->
-    <div id="profile-modal" onclick="toggleProfileModal()" class="fixed inset-0 z-[110] flex items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity duration-300 hidden opacity-0 pointer-events-none">
-        <div onclick="event.stopPropagation()" class="w-full max-w-sm bg-gemini-surface p-6 rounded-2xl shadow-2xl border border-gemini-surfaceHover transform scale-95 transition-transform duration-300" id="profile-modal-content">
-            <div class="flex flex-col items-center">
-                <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center text-2xl font-bold text-white mb-4 overflow-hidden border-4 border-gemini-surfaceHover relative shadow-lg">
-                    <img id="profile-avatar" class="w-full h-full object-cover hidden" src="" alt="User">
-                    <span id="profile-initial">U</span>
-                </div>
-                <h2 id="profile-name" class="text-xl font-semibold text-white">User Name</h2>
-                <p id="profile-email" class="text-sm text-gemini-textSecondary mb-6 break-all text-center">user@example.com</p>
-                
-                <div class="w-full grid grid-cols-2 gap-3 mb-6">
-                    <div class="bg-gemini-bg p-3 rounded-xl border border-gemini-surfaceHover text-center">
-                        <span class="block text-xs text-gemini-textSecondary uppercase tracking-wider mb-1">Status</span>
-                        <span class="text-sm text-white font-medium">Free</span>
-                    </div>
-                    <div class="bg-gemini-bg p-3 rounded-xl border border-gemini-surfaceHover text-center">
-                        <span class="block text-xs text-gemini-textSecondary uppercase tracking-wider mb-1">Joined</span>
-                        <span class="text-sm text-white font-medium">Jan '26</span>
-                    </div>
-                </div>
-
-                <button onclick="confirmSignOut()" class="w-full bg-[#3C4043] hover:bg-[#494c50] text-white py-2.5 rounded-full flex items-center justify-center gap-2 transition-colors font-medium">
-                    <i data-lucide="log-out" class="w-4 h-4"></i>
-                    Sign Out
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Settings Modal -->
-    <div id="settings-modal" onclick="toggleSettingsModal()" class="fixed inset-0 z-[110] flex items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity duration-300 hidden opacity-0 pointer-events-none">
-        <div onclick="event.stopPropagation()" class="w-full max-w-md bg-gemini-surface p-6 rounded-2xl shadow-2xl border border-gemini-surfaceHover transform scale-95 transition-transform duration-300 max-h-[85vh] overflow-y-auto" id="settings-modal-content">
-            <div class="flex items-center justify-between mb-6 border-b border-gemini-surfaceHover pb-4">
-                <h2 class="text-xl font-semibold text-white">Settings</h2>
-                <button onclick="toggleSettingsModal()" class="text-gemini-textSecondary hover:text-white p-1 rounded-full hover:bg-gemini-surfaceHover transition-colors">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-            </div>
-            
-            <div class="space-y-2">
-                <!-- Chat Sharing -->
-                <div class="p-3 hover:bg-gemini-surfaceHover rounded-xl transition-colors cursor-pointer flex items-center justify-between group">
-                    <div class="flex items-center gap-3">
-                        <div class="p-2 bg-purple-500/10 rounded-lg text-purple-400 group-hover:bg-purple-500/20"><i data-lucide="share-2" class="w-4 h-4"></i></div>
-                        <div>
-                            <h3 class="text-white text-sm font-medium">Chat Sharing</h3>
-                            <p class="text-xs text-gemini-textSecondary">Allow public links</p>
-                        </div>
-                    </div>
-                    <!-- Custom Toggle UI -->
-                    <label class="switch">
-                        <input type="checkbox" id="share-toggle-checkbox" onchange="toggleShareSetting(this)">
-                        <div class="slider">
-                            <div class="circle">
-                                <svg class="cross" xml:space="preserve" style="enable-background:new 0 0 512 512" viewBox="0 0 365.696 365.696" y="0" x="0" height="6" width="6" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" xmlns="http://www.w3.org/2000/svg">
-                                    <g>
-                                        <path data-original="#000000" fill="currentColor" d="M243.188 182.86 356.32 69.726c12.5-12.5 12.5-32.766 0-45.247L341.238 9.398c-12.504-12.503-32.77-12.503-45.25 0L182.86 122.528 69.727 9.374c-12.5-12.5-32.766-12.5-45.247 0L9.375 24.457c-12.5 12.504-12.5 32.77 0 45.25l113.152 113.152L9.398 295.99c-12.503 12.503-12.503 32.769 0 45.25L24.48 356.32c12.5 12.5 32.766 12.5 45.247 0l113.132-113.132L295.99 356.32c12.503 12.5 32.769 12.5 45.25 0l15.081-15.082c12.5-12.504 12.5-32.77 0-45.25zm0 0"></path>
-                                    </g>
-                                </svg>
-                                <svg class="checkmark" xml:space="preserve" style="enable-background:new 0 0 512 512" viewBox="0 0 24 24" y="0" x="0" height="10" width="10" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" xmlns="http://www.w3.org/2000/svg">
-                                    <g>
-                                        <path class="" data-original="#000000" fill="currentColor" d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z"></path>
-                                    </g>
-                                </svg>
-                            </div>
-                        </div>
-                    </label>
-                </div>
-
-                <!-- Font Size -->
-                <div class="p-3 hover:bg-gemini-surfaceHover rounded-xl transition-colors flex items-center justify-between group">
-                    <div class="flex items-center gap-3">
-                        <div class="p-2 bg-gray-500/10 rounded-lg text-gray-400 group-hover:bg-gray-500/20"><i data-lucide="type" class="w-4 h-4"></i></div>
-                        <div>
-                            <h3 class="text-white text-sm font-medium">Font Size</h3>
-                            <p class="text-xs text-gemini-textSecondary">Adjust readability</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-2 bg-gemini-bg p-1 rounded-lg border border-gemini-surfaceHover">
-                        <button onclick="changeFontSize(-1)" class="p-1 hover:bg-gemini-surfaceHover rounded text-gemini-textSecondary hover:text-white"><i data-lucide="minus" class="w-3 h-3"></i></button>
-                        <span id="font-size-display" class="text-xs font-mono w-4 text-center">14</span>
-                        <button onclick="changeFontSize(1)" class="p-1 hover:bg-gemini-surfaceHover rounded text-gemini-textSecondary hover:text-white"><i data-lucide="plus" class="w-3 h-3"></i></button>
-                    </div>
-                </div>
-
-                <div class="h-px bg-gemini-surfaceHover my-2"></div>
-
-                <!-- Help & Support -->
-                <a href="https://github.com/notamitgamer/ada-web/issues" target="_blank" class="p-3 hover:bg-gemini-surfaceHover rounded-xl transition-colors cursor-pointer flex items-center gap-3 group">
-                    <div class="p-2 bg-green-500/10 rounded-lg text-green-400 group-hover:bg-green-500/20"><i data-lucide="help-circle" class="w-4 h-4"></i></div>
-                    <div>
-                        <h3 class="text-white text-sm font-medium">Help & Support</h3>
-                        <p class="text-xs text-gemini-textSecondary">Report bugs or request features</p>
-                    </div>
-                    <i data-lucide="external-link" class="w-4 h-4 text-gemini-textSecondary ml-auto"></i>
-                </a>
-
-                <!-- Contribute -->
-                <a href="https://github.com/notamitgamer/ada-web" target="_blank" class="p-3 hover:bg-gemini-surfaceHover rounded-xl transition-colors cursor-pointer flex items-center gap-3 group">
-                    <div class="p-2 bg-orange-500/10 rounded-lg text-orange-400 group-hover:bg-orange-500/20"><i data-lucide="git-branch" class="w-4 h-4"></i></div>
-                    <div>
-                        <h3 class="text-white text-sm font-medium">Contribute</h3>
-                        <p class="text-xs text-gemini-textSecondary">Fork repo & submit PRs</p>
-                    </div>
-                    <i data-lucide="external-link" class="w-4 h-4 text-gemini-textSecondary ml-auto"></i>
-                </a>
-
-                <!-- Developer Contact -->
-                <a href="mailto:amitdutta4255@gmail.com?subject=Ada%20AI%20Critical%20Support" class="p-3 hover:bg-gemini-surfaceHover rounded-xl transition-colors cursor-pointer flex items-center gap-3 group">
-                    <div class="p-2 bg-red-500/10 rounded-lg text-red-400 group-hover:bg-red-500/20"><i data-lucide="alert-circle" class="w-4 h-4"></i></div>
-                    <div>
-                        <h3 class="text-white text-sm font-medium">Critical Support</h3>
-                        <p class="text-xs text-gemini-textSecondary">Contact developer directly</p>
-                    </div>
-                </a>
-
-                <!-- General Feedback -->
-                <a href="mailto:mail@amit.is-a.dev?subject=Ada%20AI%20Feedback" class="p-3 hover:bg-gemini-surfaceHover rounded-xl transition-colors cursor-pointer flex items-center gap-3 group">
-                    <div class="p-2 bg-yellow-500/10 rounded-lg text-yellow-400 group-hover:bg-yellow-500/20"><i data-lucide="message-square" class="w-4 h-4"></i></div>
-                    <div>
-                        <h3 class="text-white text-sm font-medium">Send Feedback</h3>
-                        <p class="text-xs text-gemini-textSecondary">Suggestions & improvements</p>
-                    </div>
-                </a>
-
-                <div class="h-px bg-gemini-surfaceHover my-2"></div>
-
-                <!-- Terms -->
-                <a href="/terms.html" class="p-3 hover:bg-gemini-surfaceHover rounded-xl transition-colors cursor-pointer flex items-center gap-3 group">
-                    <div class="p-2 bg-gray-500/10 rounded-lg text-gray-400 group-hover:bg-gray-500/20"><i data-lucide="file-text" class="w-4 h-4"></i></div>
-                    <div>
-                        <h3 class="text-white text-sm font-medium">Terms & Conditions</h3>
-                        <p class="text-xs text-gemini-textSecondary">Usage policies</p>
-                    </div>
-                </a>
-		<!-- Docs -->
-                <a href="/docs.html" class="p-3 hover:bg-gemini-surfaceHover rounded-xl transition-colors cursor-pointer flex items-center gap-3 group">
-                    <div class="p-2 bg-gray-500/10 rounded-lg text-gray-400 group-hover:bg-gray-500/20"><i data-lucide="file-text" class="w-4 h-4"></i></div>
-                    <div>
-                        <h3 class="text-white text-sm font-medium">Docs</h3>
-                        <p class="text-xs text-gemini-textSecondary">Service Documentation</p>
-                    </div>
-                </a>
-
-                <!-- Delete History -->
-                <button onclick="confirmClearHistory()" class="w-full p-3 hover:bg-red-500/10 rounded-xl transition-colors cursor-pointer flex items-center gap-3 group text-left">
-                    <div class="p-2 bg-red-500/10 rounded-lg text-red-400 group-hover:bg-red-500/20"><i data-lucide="trash-2" class="w-4 h-4"></i></div>
-                    <div>
-                        <h3 class="text-red-400 text-sm font-medium">Clear Activity</h3>
-                        <p class="text-xs text-gemini-textSecondary">Remove local session data</p>
-                    </div>
-                </button>
-
-                <p class="text-center text-xs text-gemini-textSecondary pt-4 font-mono">Ada AI v1.4.0 • <a href="https://github.com/notamitgamer" class="hover:text-white underline">@notamitgamer</a></p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Sidebar (Collapsible Drawer on ALL screens) -->
-    <aside id="sidebar" class="bg-gemini-surface w-[280px] flex-shrink-0 flex flex-col border-r border-gemini-surfaceHover fixed inset-y-0 left-0 transform -translate-x-full z-[60] drawer shadow-2xl">
-        <!-- Sidebar Header -->
-        <div class="h-16 flex items-center justify-between px-4">
-            <button onclick="toggleSidebar()" class="p-2 text-gemini-textSecondary hover:text-white hover:bg-gemini-surfaceHover rounded-full transition-colors">
-                <i data-lucide="menu" class="w-5 h-5"></i>
-            </button>
-            <span class="text-gemini-textSecondary text-xs font-medium uppercase tracking-wider">History</span>
-            
-            <div class="relative w-full max-w-[140px] ml-4">
-               <input type="text" id="history-search" placeholder="Search..." oninput="filterHistory(this.value)" class="w-full bg-[#131314] text-xs text-white border border-gemini-surfaceHover rounded-md px-2 py-1 focus:outline-none focus:border-gemini-blue">
-               <i data-lucide="search" class="absolute right-2 top-1.5 w-3 h-3 text-gemini-textSecondary"></i>
-            </div>
-        </div>
-
-        <!-- New Chat Button -->
-        <div class="px-3 mb-2">
-            <button onclick="startNewChat()" class="w-full bg-gemini-surfaceHover hover:bg-[#333537] text-gemini-textSecondary hover:text-white py-3 px-4 rounded-full flex items-center gap-3 transition-colors text-sm font-medium">
-                <i data-lucide="plus" class="w-5 h-5"></i>
-                <span>New chat</span>
-            </button>
-        </div>
-
-        <!-- Chat History List -->
-        <div id="chat-history-list" class="flex-1 overflow-y-auto px-2 py-2 space-y-1">
-            <div class="flex items-center justify-center h-20 opacity-50">
-                <div class="w-5 h-5 border-2 border-gemini-textSecondary border-t-transparent rounded-full animate-spin"></div>
-            </div>
-        </div>
-
-        <!-- User Profile (Bottom) -->
-        <div class="p-4 border-t border-gemini-surfaceHover space-y-1">
-            <button onclick="toggleSettingsModal()" class="w-full flex items-center gap-3 p-2 hover:bg-gemini-surfaceHover rounded-lg transition-colors text-left text-gemini-textSecondary hover:text-white">
-                <i data-lucide="settings" class="w-4 h-4"></i>
-                <span class="text-sm font-medium">Settings</span>
-            </button>
-            
-            <button onclick="toggleProfileModal()" class="w-full flex items-center gap-3 p-2 hover:bg-gemini-surfaceHover rounded-lg transition-colors text-left group mt-1">
-                <div class="w-7 h-7 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center text-[10px] font-bold text-white overflow-hidden">
-                    <img id="user-avatar" class="w-full h-full object-cover hidden" src="" alt="User">
-                    <span id="user-initial">U</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <p id="user-email" class="text-xs text-gemini-textSecondary truncate">Not signed in</p>
-                </div>
-            </button>
-        </div>
-    </aside>
-
-    <!-- Overlay for Sidebar -->
-    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-[55] hidden backdrop-blur-sm transition-opacity"></div>
-
-    <!-- Main Content Area -->
-    <main class="flex-1 flex flex-col relative w-full h-full min-w-0 bg-gemini-bg">
+    <!-- Hero Section -->
+    <div class="relative min-h-screen flex flex-col items-center justify-center p-6 z-10">
         
-        <!-- Top Bar (Fixed) -->
-        <header class="h-16 flex items-center justify-between px-4 md:px-6 sticky top-0 z-30 bg-gemini-bg/80 backdrop-blur-md border-b border-transparent transition-colors">
-            <div class="flex items-center gap-2">
-                <button onclick="toggleSidebar()" class="p-2 -ml-2 text-gemini-textSecondary hover:text-white hover:bg-gemini-surfaceHover rounded-full transition-colors" title="Toggle History">
-                    <i data-lucide="menu" class="w-6 h-6"></i>
-                </button>
-                <span class="text-lg font-medium text-white tracking-tight flex items-center gap-2">
-                    <span class="flex items-center gap-2">
-                        Ada <span class="text-gemini-blue text-xs font-normal border border-gemini-surfaceHover px-2 py-0.5 rounded-full bg-gemini-surface">Beta</span>
-                    </span>
-                </span>
+        <header class="text-center mb-16" data-aos="fade-up">
+            <div class="inline-block mb-4 px-4 py-1 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm">
+                <span class="text-xs font-mono text-lime-300 tracking-wider">/// V2.0 SYSTEM ONLINE</span>
             </div>
-            
-            <!-- Code Viewer Toggle & Login Trigger for Shared View -->
-            <div class="flex items-center gap-2">
-                <button id="shared-login-btn" onclick="signInWithGoogle()" class="hidden px-4 py-2 bg-white text-black rounded-full text-sm font-medium hover:bg-gray-200 transition-colors">
-                    Sign In to Save
-                </button>
-                
-                <button onclick="toggleArtifactPanel()" class="p-2 text-gemini-textSecondary hover:text-gemini-blue relative rounded-full hover:bg-gemini-surfaceHover transition-colors" title="Toggle Code Viewer">
-                    <i data-lucide="panel-right" class="w-6 h-6"></i>
-                    <span id="artifact-indicator" class="absolute top-2 right-2 w-2.5 h-2.5 bg-gemini-blue border-2 border-gemini-bg rounded-full hidden shadow-glow"></span>
-                </button>
+            <div class="typewriter max-w-4xl mx-auto">
+                <h1 class="text-4xl sm:text-6xl md:text-7xl font-heading font-bold text-white mb-6 tracking-tight leading-tight">
+                    <span id="type-text"></span><br />
+                    <span id="create-text" class="text-lime-300 fade-in-create hidden">Execute.</span>
+                </h1>
             </div>
+            <p class="sub-text-fade opacity-0 text-base sm:text-lg md:text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed mt-4 font-light">
+                Professional-grade remote execution. Now with AI debugging, local auto-save, and CodeMirror editor integration.
+            </p>
         </header>
 
-        <!-- Chat Container -->
-        <div id="chat-container" class="flex-1 overflow-y-auto px-4 md:px-0 pb-32 pt-4 scroll-smooth">
-            <div class="max-w-3xl mx-auto flex flex-col gap-6">
-                <!-- Welcome Message -->
-                <div id="welcome-message" class="flex flex-col items-start justify-center min-h-[50vh] space-y-8 animate-slide-up px-2">
-                    <div class="space-y-2 w-full">
-                        <div class="w-12 h-12 mb-4 animate-spin-slow-entry">
-                            <svg class="w-full h-full drop-shadow-[0_0_15px_rgba(168,199,250,0.5)]"><use href="#icon-ada"></use></svg>
-                        </div>
-                        <h1 class="text-4xl md:text-5xl font-medium text-transparent bg-clip-text bg-gradient-to-r from-[#4285F4] via-[#9B72CB] to-[#D96570] pb-2">
-                            Hello, <span id="welcome-name" class="text-white truncate block md:inline max-w-[200px] md:max-w-none">Student</span>
-                        </h1>
-                        <h2 class="text-3xl md:text-5xl font-medium text-gemini-surfaceHover/50">How can I help you code today?</h2>
+        <!-- Compiler Cards -->
+        <main class="w-full max-w-6xl mx-auto px-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="compiler-grid">
+                
+                <!-- C Compiler -->
+                <a href="./c.html" class="compiler-card p-8 group block">
+                    <div class="icon-container w-14 h-14 rounded-xl flex items-center justify-center mb-6">
+                        <span class="font-heading font-bold text-2xl text-white">C</span>
                     </div>
+                    <h2 class="text-2xl font-heading font-bold text-white mb-2 group-hover:text-lime-300 transition-colors">Standard C</h2>
+                    <p class="text-sm text-neutral-500 mb-6 leading-relaxed">
+                        Compile standard C programs via GCC. Now supports <strong>math libraries</strong> and <strong>multi-threading</strong> out of the box.
+                    </p>
+                    <div class="flex items-center text-xs font-mono text-lime-300 uppercase tracking-widest">
+                        Launch <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                    </div>
+                </a>
 
-                    <!-- Suggestion Chips (Hidden on Mobile) -->
-                    <div class="hidden md:flex flex-wrap gap-3 w-full" id="suggestion-chips">
-                        <button onclick="setPrompt('Debug this Python script')" class="group bg-gemini-surface hover:bg-gemini-surfaceHover text-gemini-text px-5 py-4 rounded-2xl text-sm font-medium transition-all text-left flex-1 min-w-[200px] border border-transparent hover:border-gemini-surfaceHover">
-                            <span class="block mb-1 text-gemini-blue group-hover:translate-x-1 transition-transform"><i data-lucide="bug" class="w-4 h-4 inline mr-1"></i> Debug</span>
-                            Find errors in code
-                        </button>
-                        <button onclick="setPrompt('Explain this concept')" class="group bg-gemini-surface hover:bg-gemini-surfaceHover text-gemini-text px-5 py-4 rounded-2xl text-sm font-medium transition-all text-left flex-1 min-w-[200px] border border-transparent hover:border-gemini-surfaceHover">
-                            <span class="block mb-1 text-gemini-purple group-hover:translate-x-1 transition-transform"><i data-lucide="book-open" class="w-4 h-4 inline mr-1"></i> Explain</span>
-                            Understand algorithms
-                        </button>
-                        <button onclick="setPrompt('Refactor this function')" class="group bg-gemini-surface hover:bg-gemini-surfaceHover text-gemini-text px-5 py-4 rounded-2xl text-sm font-medium transition-all text-left flex-1 min-w-[200px] border border-transparent hover:border-gemini-surfaceHover">
-                            <span class="block mb-1 text-green-400 group-hover:translate-x-1 transition-transform"><i data-lucide="wand-2" class="w-4 h-4 inline mr-1"></i> Refactor</span>
-                            Optimize performance
-                        </button>
+                <!-- C++ Compiler -->
+                <a href="./cpp.html" class="compiler-card p-8 group block">
+                    <div class="icon-container w-14 h-14 rounded-xl flex items-center justify-center mb-6">
+                        <span class="font-heading font-bold text-2xl text-white">C++</span>
                     </div>
+                    <h2 class="text-2xl font-heading font-bold text-white mb-2 group-hover:text-lime-300 transition-colors">Modern C++</h2>
+                    <p class="text-sm text-neutral-500 mb-6 leading-relaxed">
+                        Execute C++ code via G++. Features standard STL support, <strong>math</strong>, and <strong>threading</strong> capabilities.
+                    </p>
+                    <div class="flex items-center text-xs font-mono text-lime-300 uppercase tracking-widest">
+                        Launch <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                    </div>
+                </a>
+
+                <!-- Python Compiler -->
+                <a href="./python.html" class="compiler-card p-8 group block">
+                    <div class="icon-container w-14 h-14 rounded-xl flex items-center justify-center mb-6">
+                        <i class="fab fa-python text-2xl text-white"></i>
+                    </div>
+                    <h2 class="text-2xl font-heading font-bold text-white mb-2 group-hover:text-lime-300 transition-colors">Python 3</h2>
+                    <p class="text-sm text-neutral-500 mb-6 leading-relaxed">
+                        Full Python 3 environment with pip support. Includes enhanced indentation and real-time execution.
+                    </p>
+                    <div class="flex items-center text-xs font-mono text-lime-300 uppercase tracking-widest">
+                        Launch <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                    </div>
+                </a>
+
+            </div>
+        </main>
+
+        <a href="#features" class="absolute bottom-10 animate-bounce text-neutral-600 hover:text-white transition-colors">
+            <i class="fas fa-chevron-down text-xl"></i>
+        </a>
+    </div>
+
+    <!-- Features Section -->
+    <section id="features" class="py-32 px-6 border-t border-white/5 bg-black/20 z-10">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-20" data-aos="fade-up">
+                <h2 class="text-3xl sm:text-4xl font-heading font-bold text-white mb-4">Features & <span class="text-lime-300">Capabilities</span></h2>
+                <p class="text-neutral-400 max-w-xl mx-auto">Upgraded with developer-focused tools for a complete coding experience.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Feature: Pro Editor -->
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+                    <i class="fas fa-code text-lime-300 mb-4 text-xl"></i>
+                    <h3 class="text-lg font-bold text-white mb-2">Pro Code Editor</h3>
+                    <p class="text-sm text-neutral-500 leading-relaxed">Powered by CodeMirror with Dracula theme, syntax highlighting, bracket matching, and line numbers.</p>
+                </div>
+
+                <!-- Feature: AI Debug -->
+                <div class="feature-card border-lime-300/30" data-aos="fade-up" data-aos-delay="200">
+                    <div class="flex justify-between items-start">
+                        <i class="fas fa-robot text-lime-300 mb-4 text-xl"></i>
+                        <span class="text-[10px] bg-lime-300 text-black px-2 py-0.5 rounded font-bold uppercase">New</span>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2">AI Auto-Debug</h3>
+                    <p class="text-sm text-neutral-500 leading-relaxed">Detects runtime errors and offers one-click code fixes powered by Gemini 2.5 Flash.</p>
+                </div>
+
+                <!-- Feature: Persistence -->
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
+                    <i class="fas fa-save text-lime-300 mb-4 text-xl"></i>
+                    <h3 class="text-lg font-bold text-white mb-2">Auto-Save & Share</h3>
+                    <p class="text-sm text-neutral-500 leading-relaxed">Never lose work. Code is saved locally automatically and can be stored in the cloud via share links.</p>
+                </div>
+
+                <!-- Feature: Mobile -->
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="400">
+                    <i class="fas fa-mobile-alt text-lime-300 mb-4 text-xl"></i>
+                    <h3 class="text-lg font-bold text-white mb-2">Mobile Optimized</h3>
+                    <p class="text-sm text-neutral-500 leading-relaxed">Includes a custom helper bar for quick access to symbols like <code>{ } [ ] ;</code> on touch devices.</p>
+                </div>
+
+                <!-- Feature: Backend -->
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="500">
+                    <i class="fas fa-server text-lime-300 mb-4 text-xl"></i>
+                    <h3 class="text-lg font-bold text-white mb-2">Real Backend</h3>
+                    <p class="text-sm text-neutral-500 leading-relaxed">Code runs on a live Linux instance via WebSockets for authentic I/O streaming performance.</p>
+                </div>
+
+                <!-- Feature: Export -->
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="600">
+                    <i class="fas fa-download text-lime-300 mb-4 text-xl"></i>
+                    <h3 class="text-lg font-bold text-white mb-2">One-Click Export</h3>
+                    <p class="text-sm text-neutral-500 leading-relaxed">Download your source code directly as a <code>.py</code>, <code>.c</code>, or <code>.cpp</code> file.</p>
                 </div>
             </div>
         </div>
+    </section>
 
-        <!-- Input Area (Fixed Bottom) -->
-        <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-gemini-bg via-gemini-bg to-transparent z-20" id="input-area">
-            <div class="max-w-3xl mx-auto">
-                <form id="chat-form" onsubmit="handleFormSubmit(event)" class="bg-gemini-surface rounded-[28px] flex items-end p-2 border border-gemini-surfaceHover focus-within:bg-gemini-surfaceHover focus-within:border-gemini-textSecondary/20 transition-all shadow-xl">
-                    <textarea 
-                        id="user-input"
-                        class="w-full bg-transparent text-white placeholder-gemini-textSecondary py-3.5 px-4 max-h-48 min-h-[52px] resize-none focus:outline-none text-base no-scrollbar"
-                        placeholder="Enter a prompt here"
-                        rows="1"
-                        oninput="autoResize(this)"
-                        onkeydown="handleEnter(event)"
-                        enterkeyhint="send"
-                    ></textarea>
-                    
-                    <button type="submit" id="send-btn" class="p-3 text-gemini-textSecondary hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-full">
-                        <i data-lucide="send-horizontal" class="w-6 h-6"></i>
-                    </button>
-                </form>
-                <div class="text-center mt-3 text-xs text-gemini-textSecondary/60">
-                    Ada may display inaccurate info, including about people, so double-check its responses.
-                </div>
+    <!-- Footer -->
+    <footer class="py-12 border-t border-white/5 z-10 bg-black/40">
+        <div class="max-w-6xl mx-auto px-6 text-center">
+            
+            <div class="mb-8">
+                <a href="./docs.html" class="inline-flex items-center gap-2 text-sm font-mono text-neutral-500 hover:text-lime-300 transition-colors uppercase tracking-widest border border-white/10 px-4 py-2 rounded-full bg-white/5 hover:bg-white/10">
+                    <i class="fas fa-book"></i> Read Documentation
+                </a>
+            </div>
+
+            <h3 class="text-xl font-heading font-bold text-white mb-8">Connect with Me</h3>
+            
+            <div class="flex flex-wrap justify-center gap-4 mb-12">
+                <a href="https://github.com/notamitgamer" target="_blank" class="social-link w-12 h-12 rounded-full flex items-center justify-center text-lg">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="https://linkedin.com/in/notamitgamer" target="_blank" class="social-link w-12 h-12 rounded-full flex items-center justify-center text-lg">
+                    <i class="fab fa-linkedin-in"></i>
+                </a>
+                <a href="https://twitter.com/notamitgamer" target="_blank" class="social-link w-12 h-12 rounded-full flex items-center justify-center text-lg">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="https://instagram.com/notamitgamer" target="_blank" class="social-link w-12 h-12 rounded-full flex items-center justify-center text-lg">
+                    <i class="fab fa-instagram"></i>
+                </a>
+            </div>
+
+            <div class="text-neutral-600 text-sm font-mono space-y-2">
+                <p>&copy; 2025 Amit Dutta. All rights reserved.</p>
+                <p><a href="https://amit.is-a.dev" class="hover:text-lime-300 transition-colors">amit.is-a.dev</a></p>
             </div>
         </div>
-    </main>
+    </footer>
 
-    <!-- Right Artifact Panel (Drawer on ALL screens) -->
-    <aside id="artifact-panel" class="fixed inset-y-0 right-0 z-[70] w-full md:w-[600px] bg-[#1e1e1e] border-l border-[#333] transform translate-x-full drawer shadow-2xl flex flex-col">
-        <!-- Panel Header -->
-        <div class="h-14 flex-shrink-0 flex items-center justify-between px-4 bg-[#252526] border-b border-[#333]">
-            <div class="flex items-center gap-3">
-                <span class="text-xs uppercase tracking-wide text-[#969696] font-medium">Workspace</span>
-                <span id="lang-display" class="text-xs text-[#cccccc] bg-[#3c3c3c] px-2 py-0.5 rounded">PLAINTEXT</span>
-            </div>
-            <div class="flex gap-2">
-                <button onclick="copyArtifact()" class="p-2 text-[#cccccc] hover:text-white hover:bg-[#3c3c3c] rounded transition-colors" title="Copy Code">
-                    <i data-lucide="copy" class="w-4 h-4"></i>
-                </button>
-                <button onclick="toggleArtifactPanel()" class="p-2 text-[#cccccc] hover:text-white hover:bg-[#3c3c3c] rounded transition-colors" title="Close">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-            </div>
-        </div>
-
-        <!-- Editor Content -->
-        <div class="flex-1 overflow-hidden relative bg-[#1e1e1e]">
-            <textarea id="artifact-editor" class="w-full h-full"></textarea>
-        </div>
-    </aside>
-
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        // --- CONFIGURATION ---
-        const API_BASE_URL = "https://ada-web.onrender.com/api"; 
-        
-        const firebaseConfig = {
-            apiKey: "AIzaSyAhyoNYUSXWIxdBiTxwSDcU7HkhhLEVlOc",
-            authDomain: "ada-ai-aranag.firebaseapp.com",
-            projectId: "ada-ai-aranag",
-            storageBucket: "ada-ai-aranag.firebasestorage.app",
-            messagingSenderId: "865895114061",
-            appId: "1:865895114061:web:5fd4493b0e388727e6c304"
-        };
-        
-        // --- STATE & INIT ---
-        let auth, db;
-        let state = {
-            messages: [],
-            isTyping: false,
-            currentChatId: null,
-            user: null,
-            isSharedView: false
-        };
-        let editor = null;
-        let settings = {
-            allowSharing: localStorage.getItem('ada_allow_sharing') === 'true',
-            fontSize: parseInt(localStorage.getItem('ada_font_size')) || 14
-        };
-
-        function initApp() {
-            lucide.createIcons();
-            
-            // Set initial settings
-            applyFontSize(settings.fontSize);
-            
-            const shareToggle = document.getElementById('share-toggle-checkbox');
-            if(shareToggle) shareToggle.checked = settings.allowSharing;
-
-            // Check for Shared URL param
-            const urlParams = new URLSearchParams(window.location.search);
-            const sharedChatId = urlParams.get('chat');
-            if (sharedChatId) {
-                state.isSharedView = true;
-                state.currentChatId = sharedChatId;
-                enterSharedMode(sharedChatId);
-            }
-            
-            // Initialize CodeMirror (Standard setup)
-            editor = CodeMirror.fromTextArea(document.getElementById("artifact-editor"), {
-                lineNumbers: true,
-                mode: "javascript",
-                theme: "dracula",
-                readOnly: true, // Read-only as it's an output viewer primarily
-                lineWrapping: true
+        document.addEventListener('DOMContentLoaded', () => {
+            AOS.init({
+                duration: 800,
+                once: true,
+                offset: 50
             });
 
-            // Initialize Firebase
-            try {
-                firebase.initializeApp(firebaseConfig);
-                auth = firebase.auth();
-                db = firebase.firestore();
-                if (!state.isSharedView) checkAuth();
-                else checkAuthShared();
-            } catch (e) {
-                console.error("Init Failed:", e);
-                document.getElementById('loading-overlay').classList.add('opacity-0', 'pointer-events-none');
-            }
-
-            // Mobile Height Fix
-            const setVh = () => {
-                let vh = window.innerHeight * 0.01;
-                document.documentElement.style.setProperty('--vh', `${vh}px`);
+            // Card Hover Effect (Mouse tracking)
+            const cards = document.querySelectorAll('.compiler-card');
+            document.getElementById('compiler-grid').onmousemove = e => {
+                for(const card of cards) {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    card.style.setProperty('--mouse-x', `${x}px`);
+                    card.style.setProperty('--mouse-y', `${y}px`);
+                }
             };
-            window.addEventListener('resize', setVh);
-            setVh();
 
-            // Context Menu Listener
-            document.addEventListener('click', (e) => {
-                const menu = document.querySelector('.context-menu');
-                if (menu) menu.remove();
-            });
-        }
+            // Typewriter logic
+            const typeTextElement = document.getElementById('type-text');
+            const createTextElement = document.getElementById('create-text');
+            const textToType = "Code. Compile.";
+            let i = 0;
+            const speed = 75; // ms per char
 
-        function autoResize(textarea) {
-            textarea.style.height = 'auto';
-            textarea.style.height = Math.min(textarea.scrollHeight, 200) + 'px';
-        }
-
-        // --- SETTINGS ---
-        function changeFontSize(delta) {
-            settings.fontSize = Math.max(10, Math.min(24, settings.fontSize + delta));
-            localStorage.setItem('ada_font_size', settings.fontSize);
-            applyFontSize(settings.fontSize);
-        }
-
-        function applyFontSize(size) {
-            document.getElementById('font-size-display').innerText = size;
-            if(editor) {
-                editor.getWrapperElement().style.fontSize = `${size}px`;
-                editor.refresh();
-            }
-        }
-
-        // --- SHARED MODE LOGIC ---
-        async function enterSharedMode(chatId) {
-            document.getElementById('sidebar').classList.add('hidden');
-            const inputArea = document.getElementById('input-area');
-            const sidebarToggle = document.querySelector('header button[title="Toggle History"]');
-            
-            inputArea.classList.add('hidden');
-            if(sidebarToggle) sidebarToggle.style.display = 'none';
-        }
-
-        function checkAuthShared() {
-             auth.onAuthStateChanged(user => {
-                const loadingOverlay = document.getElementById('loading-overlay');
-                loadingOverlay.classList.add('opacity-0', 'pointer-events-none');
-
-                if (user) {
-                    state.user = user;
-                    document.getElementById('sidebar').classList.remove('hidden');
-                    document.getElementById('input-area').classList.remove('hidden');
-                    const sidebarToggle = document.querySelector('header button[title="Toggle History"]');
-                    if(sidebarToggle) sidebarToggle.style.display = 'block';
-                    document.getElementById('shared-login-btn').classList.add('hidden');
-
-                    fetchChats();
-                    loadChat(state.currentChatId);
+            function typeWriter() {
+                if (i < textToType.length) {
+                    typeTextElement.textContent += textToType.charAt(i);
+                    i++;
+                    setTimeout(typeWriter, speed);
                 } else {
-                    state.user = null;
-                    document.getElementById('shared-login-btn').classList.remove('hidden');
-                    loadChatReadOnly(state.currentChatId);
-                }
-            });
-        }
-        
-        async function loadChatReadOnly(chatId) {
-             const container = document.querySelector('#chat-container > div');
-             container.innerHTML = `
-                <div class="flex flex-col items-center justify-center min-h-[50vh] text-center p-6">
-                    <div class="p-4 bg-gemini-surface rounded-2xl border border-gemini-surfaceHover mb-4">
-                        <i data-lucide="lock" class="w-8 h-8 text-gemini-textSecondary mx-auto mb-2"></i>
-                        <p class="text-white font-medium">Shared Chat</p>
-                    </div>
-                    <p class="text-gemini-textSecondary max-w-md">To view and continue this conversation, please sign in. The chat will be saved to your history.</p>
-                </div>
-             `;
-             lucide.createIcons();
-        }
-
-        // --- UI TOGGLES & HELPERS ---
-        function showToast(message, type = 'info') {
-            const toast = document.getElementById('toast');
-            const icon = toast.querySelector('i');
-            document.getElementById('toast-message').innerText = message;
-            
-            if (type === 'error') {
-                icon.setAttribute('data-lucide', 'alert-circle');
-                icon.className = 'w-4 h-4 text-red-400';
-            } else if (type === 'success') {
-                icon.setAttribute('data-lucide', 'check-circle');
-                icon.className = 'w-4 h-4 text-green-400';
-            } else {
-                icon.setAttribute('data-lucide', 'info');
-                icon.className = 'w-4 h-4 text-gemini-blue';
-            }
-            lucide.createIcons();
-
-            toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-20');
-            setTimeout(() => {
-                toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-20');
-            }, 3000);
-        }
-
-        function toggleShareSetting(checkbox) {
-            settings.allowSharing = checkbox.checked;
-            localStorage.setItem('ada_allow_sharing', settings.allowSharing);
-        }
-
-        function toggleSidebar() {
-            const sb = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebar-overlay');
-            const isClosed = sb.classList.contains('-translate-x-full');
-            
-            if (isClosed) {
-                sb.classList.remove('-translate-x-full');
-                overlay.classList.remove('hidden');
-            } else {
-                sb.classList.add('-translate-x-full');
-                overlay.classList.add('hidden');
-            }
-        }
-
-        function toggleArtifactPanel() {
-            const panel = document.getElementById('artifact-panel');
-            const isClosed = panel.classList.contains('translate-x-full');
-            
-            if (isClosed) {
-                panel.classList.remove('translate-x-full');
-                document.getElementById('artifact-indicator').classList.add('hidden');
-                setTimeout(() => editor.refresh(), 300); 
-            } else {
-                panel.classList.add('translate-x-full');
-            }
-        }
-        
-        function toggleProfileModal() {
-            const modal = document.getElementById('profile-modal');
-            const content = document.getElementById('profile-modal-content');
-            
-            if (modal.classList.contains('hidden')) {
-                modal.classList.remove('hidden', 'pointer-events-none');
-                requestAnimationFrame(() => {
-                    modal.classList.remove('opacity-0');
-                    content.classList.remove('scale-95');
-                    content.classList.add('scale-100');
-                });
-                
-                if (state.user) {
-                     document.getElementById('profile-name').innerText = state.user.displayName || 'User';
-                     document.getElementById('profile-email').innerText = state.user.email || '';
-                     const initial = document.getElementById('profile-initial');
-                     const avatar = document.getElementById('profile-avatar');
-                     
-                     if (state.user.photoURL) {
-                         avatar.src = state.user.photoURL;
-                         avatar.classList.remove('hidden');
-                         initial.classList.add('hidden');
-                     } else {
-                         initial.innerText = (state.user.displayName || 'U')[0];
-                         avatar.classList.add('hidden');
-                         initial.classList.remove('hidden');
-                     }
-                }
-            } else {
-                modal.classList.add('opacity-0');
-                content.classList.remove('scale-100');
-                content.classList.add('scale-95');
-                setTimeout(() => modal.classList.add('hidden', 'pointer-events-none'), 300);
-            }
-        }
-
-        function toggleSettingsModal() {
-            const modal = document.getElementById('settings-modal');
-            const content = document.getElementById('settings-modal-content');
-            
-            if (modal.classList.contains('hidden')) {
-                modal.classList.remove('hidden', 'pointer-events-none');
-                requestAnimationFrame(() => {
-                    modal.classList.remove('opacity-0');
-                    content.classList.remove('scale-95');
-                    content.classList.add('scale-100');
-                });
-            } else {
-                modal.classList.add('opacity-0');
-                content.classList.remove('scale-100');
-                content.classList.add('scale-95');
-                setTimeout(() => modal.classList.add('hidden', 'pointer-events-none'), 300);
-            }
-        }
-
-        // --- FEATURES IMPLEMENTATION ---
-
-        // 1. History Search
-        function filterHistory(query) {
-            const list = document.getElementById('chat-history-list');
-            const items = list.querySelectorAll('div[onclick]');
-            query = query.toLowerCase();
-            
-            items.forEach(item => {
-                const text = item.querySelector('span').innerText.toLowerCase();
-                if (text.includes(query)) {
-                    item.style.display = 'flex';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-        }
-
-        // --- CONFIRM MODALS ---
-        let confirmCallback = null;
-
-        function showConfirmModal(title, message, callback, matchText = null) {
-            const modal = document.getElementById('confirm-modal');
-            const content = document.getElementById('confirm-modal-content');
-            
-            document.getElementById('confirm-title').innerText = title;
-            document.getElementById('confirm-message').innerText = message;
-            
-            const inputContainer = document.getElementById('confirm-input-container');
-            const input = document.getElementById('confirm-input');
-            const btn = document.getElementById('confirm-action-btn');
-
-            if (matchText) {
-                inputContainer.classList.remove('hidden');
-                document.getElementById('confirm-match-text').innerText = matchText;
-                input.value = '';
-                input.oninput = () => {
-                    if (input.value === matchText) {
-                        btn.disabled = false;
-                        btn.classList.remove('opacity-50', 'cursor-not-allowed');
-                    } else {
-                        btn.disabled = true;
-                        btn.classList.add('opacity-50', 'cursor-not-allowed');
-                    }
-                };
-                btn.disabled = true;
-                btn.classList.add('opacity-50', 'cursor-not-allowed');
-            } else {
-                inputContainer.classList.add('hidden');
-                btn.disabled = false;
-                btn.classList.remove('opacity-50', 'cursor-not-allowed');
-            }
-
-            confirmCallback = callback;
-            
-            modal.classList.remove('hidden');
-            requestAnimationFrame(() => {
-                modal.classList.remove('opacity-0');
-                content.classList.remove('scale-95');
-                content.classList.add('scale-100');
-            });
-            
-            btn.onclick = () => {
-                 closeConfirmModal();
-                 if (confirmCallback) confirmCallback();
-            };
-        }
-
-        function closeConfirmModal() {
-            const modal = document.getElementById('confirm-modal');
-            const content = document.getElementById('confirm-modal-content');
-            modal.classList.add('opacity-0');
-            content.classList.remove('scale-100');
-            content.classList.add('scale-95');
-            setTimeout(() => modal.classList.add('hidden'), 300);
-        }
-
-        function confirmSignOut() {
-            toggleProfileModal(); 
-            showConfirmModal('Sign Out', 'Are you sure you want to sign out?', signOutUser);
-        }
-
-        function confirmClearHistory() {
-            toggleSettingsModal();
-            if (!state.user || !state.user.email) return;
-            showConfirmModal(
-                'Clear Activity', 
-                'This will permanently delete all your chat history. Type your email to confirm.', 
-                clearHistory, 
-                state.user.email
-            );
-        }
-
-        async function clearHistory() {
-            if (!state.user) return;
-            const loading = document.getElementById('loading-overlay');
-            loading.classList.remove('opacity-0', 'pointer-events-none');
-            
-            try {
-                // FIXED: Use correct path users/{uid}/chats
-                const chatsRef = db.collection('users').doc(state.user.uid).collection('chats');
-                const snapshot = await chatsRef.get();
-                
-                const batch = db.batch();
-                snapshot.docs.forEach((doc) => {
-                    batch.delete(doc.ref);
-                });
-                await batch.commit();
-                
-                location.reload();
-            } catch (error) {
-                console.error("Error clearing history:", error);
-                loading.classList.add('opacity-0', 'pointer-events-none');
-                showToast("Failed to clear history.", "error");
-            }
-        }
-
-        function confirmDeleteChat(chatId) {
-            showConfirmModal('Delete Chat', 'This action cannot be undone.', () => deleteChat(chatId));
-        }
-
-        async function deleteChat(chatId) {
-            if (!state.user) return;
-            try {
-                // FIXED: Use correct path users/{uid}/chats/{chatId}
-                await db.collection('users').doc(state.user.uid).collection('chats').doc(chatId).delete();
-                
-                if (state.currentChatId === chatId) {
-                    location.reload();
-                } else {
-                    fetchChats(); 
-                    showToast("Chat deleted.", "success");
-                }
-            } catch (e) {
-                console.error("Delete Error:", e);
-                showToast("Failed to delete chat.", "error");
-            }
-        }
-
-        // --- CONTEXT MENU & EXPORT ---
-        function showChatContextMenu(e, chatId, chatTitle) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            const existing = document.querySelector('.context-menu');
-            if (existing) existing.remove();
-
-            const menu = document.createElement('div');
-            menu.className = 'context-menu';
-            
-            // Share Option
-            if (settings.allowSharing) {
-                const shareBtn = document.createElement('div');
-                shareBtn.className = 'context-menu-item';
-                shareBtn.innerHTML = `<i data-lucide="link" class="w-4 h-4"></i> Share Chat`;
-                shareBtn.onclick = async () => {
-                    const url = `${window.location.origin}?chat=${chatId}`;
-                    if (navigator.share) {
-                        try {
-                            await navigator.share({ title: 'Ada Chat', url: url });
-                        } catch (err) { /* Share cancelled */ }
-                    } else {
-                        navigator.clipboard.writeText(url).then(() => showToast('Link copied!', 'success'));
-                    }
-                    menu.remove();
-                };
-                menu.appendChild(shareBtn);
-            }
-
-            // Export Options (Expanded)
-            const jsonBtn = document.createElement('div');
-            jsonBtn.className = 'context-menu-item';
-            jsonBtn.innerHTML = `<i data-lucide="file-json" class="w-4 h-4"></i> Export JSON`;
-            jsonBtn.onclick = () => {
-                downloadChat(chatId, chatTitle, 'json');
-                menu.remove();
-            };
-            menu.appendChild(jsonBtn);
-
-            const mdBtn = document.createElement('div');
-            mdBtn.className = 'context-menu-item';
-            mdBtn.innerHTML = `<i data-lucide="file-text" class="w-4 h-4"></i> Export Markdown`;
-            mdBtn.onclick = () => {
-                downloadChat(chatId, chatTitle, 'md');
-                menu.remove();
-            };
-            menu.appendChild(mdBtn);
-
-            // Delete Option
-            const delBtn = document.createElement('div');
-            delBtn.className = 'context-menu-item danger';
-            delBtn.innerHTML = `<i data-lucide="trash-2" class="w-4 h-4"></i> Delete Chat`;
-            delBtn.onclick = () => {
-                confirmDeleteChat(chatId);
-                menu.remove();
-            };
-            menu.appendChild(delBtn);
-
-            document.body.appendChild(menu);
-            
-            // Position
-            const rect = e.target.getBoundingClientRect();
-            const menuWidth = 180;
-            const menuHeight = 200;
-            
-            let left = rect.left;
-            let top = rect.bottom + 5;
-
-            if (left + menuWidth > window.innerWidth) left = window.innerWidth - menuWidth - 16;
-            if (left < 16) left = 16;
-            if (top + menuHeight > window.innerHeight) top = rect.top - menuHeight - 5;
-
-            menu.style.top = `${top}px`;
-            menu.style.left = `${left}px`;
-            
-            lucide.createIcons();
-        }
-
-        async function downloadChat(chatId, title, format) {
-             try {
-                const token = await state.user.getIdToken();
-                const res = await fetch(`${API_BASE_URL}/chats/${chatId}`, { headers: { 'Authorization': `Bearer ${token}` } });
-                const data = await res.json();
-                
-                let content, type, ext;
-                if (format === 'json') {
-                    content = JSON.stringify(data, null, 2);
-                    type = 'application/json';
-                    ext = 'json';
-                } else {
-                    // Markdown conversion
-                    content = `# ${title}\n\n`;
-                    data.messages.forEach(msg => {
-                        content += `### ${msg.role === 'user' ? 'User' : 'Ada AI'}\n${msg.content}\n\n`;
-                    });
-                    type = 'text/markdown';
-                    ext = 'md';
-                }
-                
-                const blob = new Blob([content], { type: type });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `ada_chat_${title.replace(/\s+/g, '_')}.${ext}`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                showToast("Chat exported.", "success");
-             } catch(e) { 
-                 console.error(e);
-                 showToast("Export failed.", "error");
-             }
-        }
-
-        // --- AUTH & FIREBASE ---
-        function checkAuth() {
-            auth.onAuthStateChanged(user => {
-                const loadingOverlay = document.getElementById('loading-overlay');
-                const authModal = document.getElementById('auth-modal');
-                
-                if (user) {
-                    state.user = user;
-                    localStorage.setItem('ada_user_cached', 'true');
+                    // Typing done, show "Create." with fade-in
+                    createTextElement.classList.remove('hidden');
                     
-                    loadingOverlay.classList.add('opacity-0', 'pointer-events-none');
-                    authModal.classList.add('hidden');
-
-                    document.getElementById('user-email').innerText = user.email || '';
-                    document.getElementById('user-initial').innerText = (user.displayName || 'U')[0];
-                    
-                    const welcomeName = document.getElementById('welcome-name');
-                    if (welcomeName) {
-                        const name = user.email || user.displayName || 'Student';
-                        welcomeName.innerText = name;
-                        welcomeName.title = name;
-                    }
-
-                    if (user.photoURL) {
-                        const img = document.getElementById('user-avatar');
-                        img.src = user.photoURL;
-                        img.classList.remove('hidden');
-                        document.getElementById('user-initial').classList.add('hidden');
-                    }
-
-                    if(!state.currentChatId) state.currentChatId = 'session_' + Date.now();
-                    fetchChats();
-                } else {
-                    state.user = null;
-                    localStorage.removeItem('ada_user_cached');
-                    loadingOverlay.classList.add('opacity-0', 'pointer-events-none');
-                    authModal.classList.remove('hidden', 'opacity-0', 'pointer-events-none');
-                }
-            });
-        }
-
-        function signInWithGoogle() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider).catch(e => {
-                console.error(e);
-                showToast("Sign in failed.", "error");
-            });
-        }
-
-        function signOutUser() {
-            auth.signOut().then(() => {
-                localStorage.removeItem('ada_user_cached');
-                location.reload();
-            });
-        }
-
-        async function fetchChats() {
-            if (!state.user) return;
-            try {
-                // Skeleton loading for sidebar could go here
-                
-                const token = await state.user.getIdToken();
-                const res = await fetch(`${API_BASE_URL}/chats`, { headers: { 'Authorization': `Bearer ${token}` } });
-                const data = await res.json();
-                
-                const list = document.getElementById('chat-history-list');
-                list.innerHTML = '';
-                
-                if (data.chats && data.chats.length > 0) {
-                    data.chats.forEach(chat => {
-                        const div = document.createElement('div');
-                        const isActive = chat.id === state.currentChatId;
-                        div.className = `group relative p-2.5 rounded-full cursor-pointer text-sm flex items-center gap-3 transition-colors truncate ${isActive ? 'bg-[#004A77] text-white font-medium' : 'text-gemini-textSecondary hover:bg-gemini-surfaceHover hover:text-white'}`;
-                        div.onclick = () => loadChat(chat.id);
-                        
-                        let pressTimer;
-                        div.ontouchstart = (e) => {
-                             pressTimer = setTimeout(() => showChatContextMenu(e, chat.id, chat.title), 500);
-                        };
-                        div.ontouchend = () => clearTimeout(pressTimer);
-                        div.oncontextmenu = (e) => showChatContextMenu(e, chat.id, chat.title);
-
-                        div.innerHTML = `
-                            <i data-lucide="message-square" class="w-4 h-4 flex-shrink-0"></i>
-                            <span class="truncate flex-1">${chat.title}</span>
-                            <button class="opacity-0 group-hover:opacity-100 p-1 hover:bg-white/10 rounded-full transition-opacity" onclick="showChatContextMenu(event, '${chat.id}', '${chat.title}')">
-                                <i data-lucide="more-vertical" class="w-3 h-3"></i>
-                            </button>
-                        `;
-                        list.appendChild(div);
-                    });
-                } else {
-                    list.innerHTML = `<div class="p-4 text-center text-xs text-gemini-textSecondary">No recent chats</div>`;
-                }
-                lucide.createIcons();
-            } catch (e) { console.error(e); }
-        }
-
-        async function loadChat(chatId) {
-            if (state.isTyping) return;
-            state.currentChatId = chatId;
-            
-            // Skeleton Loading
-            const container = document.querySelector('#chat-container > div');
-            container.innerHTML = `
-                <div class="flex flex-col space-y-4 p-4 animate-pulse">
-                    <div class="flex justify-end"><div class="h-10 w-2/3 bg-gemini-surfaceHover rounded-xl"></div></div>
-                    <div class="flex justify-start"><div class="h-20 w-3/4 bg-gemini-surfaceHover rounded-xl"></div></div>
-                    <div class="flex justify-end"><div class="h-8 w-1/2 bg-gemini-surfaceHover rounded-xl"></div></div>
-                </div>`;
-            
-            try {
-                const token = await state.user.getIdToken();
-                const res = await fetch(`${API_BASE_URL}/chats/${chatId}`, { headers: { 'Authorization': `Bearer ${token}` } });
-                const data = await res.json();
-                
-                state.messages = [];
-                container.innerHTML = '';
-
-                if (data.messages && data.messages.length > 0) {
-                    data.messages.forEach(msg => {
-                        const role = msg.role === 'model' ? 'ai' : 'user';
-                        state.messages.push({ role, content: msg.content });
-                        renderMessage(role, msg.content);
-                    });
-                } else {
-                    container.innerHTML = `<div class="text-center p-8 text-gemini-textSecondary">Start conversation...</div>`;
-                }
-                
-                if(!state.isSharedView) fetchChats();
-            } catch (e) { 
-                console.error(e); 
-                container.innerHTML = `<div class="text-center text-red-400 p-4">Failed to load chat.</div>`;
-            }
-        }
-
-        function setPrompt(text) {
-            const input = document.getElementById('user-input');
-            if(input) {
-                input.value = text;
-                input.focus();
-                autoResize(input);
-            }
-        }
-
-        function scrollToBottom() {
-            const container = document.getElementById('chat-container');
-            container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
-        }
-
-        function renderMessage(role, content) {
-            const container = document.querySelector('#chat-container > div');
-            const welcome = document.getElementById('welcome-message');
-            if (welcome) welcome.remove();
-
-            let wrapper = container.lastElementChild;
-            let bubble = null;
-            
-            if (role === 'ai' && wrapper && wrapper.dataset.role === 'ai' && state.isTyping) {
-                 bubble = wrapper.querySelector('.prose');
-            } else {
-                 wrapper = document.createElement('div');
-                 wrapper.className = `flex gap-4 w-full animate-fade-in ${role === 'user' ? 'justify-end' : 'justify-start group'}`;
-                 wrapper.dataset.role = role;
-                 
-                 if (role === 'user') {
-                     wrapper.innerHTML = `<div class="msg-user text-sm md:text-base">${content}</div>`;
-                 } else {
-                     wrapper.innerHTML = `
-                        <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center mt-1">
-                            <svg class="w-6 h-6 animate-spin-slow-entry"><use href="#icon-ada"></use></svg>
-                        </div>
-                        <div class="flex-1 min-w-0 py-1">
-                            <div class="prose prose-invert max-w-none text-sm md:text-base"></div>
-                        </div>
-                     `;
-                     bubble = wrapper.querySelector('.prose');
-                 }
-                 container.appendChild(wrapper);
-            }
-
-            if (role === 'ai') {
-                if(!bubble) bubble = wrapper.querySelector('.prose');
-                
-                const customTagRegex = /<<<CODE_START>>>([\s\S]*?)<<<CODE_END>>>/g;
-                const markdownRegex = /```(\w*)([\s\S]*?)```/g;
-                
-                let processedContent = content;
-                let extractedCode = "";
-                let lang = "PLAINTEXT";
-
-                const cardReplacement = (code, language) => {
-                    extractedCode = code.trim();
-                    if(language) lang = language.toUpperCase();
-                    return `<div class="code-card group" onclick="toggleArtifactPanel()">
-                                <div class="px-4 py-3 bg-[#252526] border-b border-[#333] flex items-center justify-between">
-                                    <div class="flex items-center gap-2">
-                                        <i data-lucide="code-2" class="w-4 h-4 text-gemini-blue"></i>
-                                        <span class="text-xs font-mono text-[#cccccc]">Generated Code</span>
-                                    </div>
-                                    <span class="text-xs text-gemini-blue group-hover:underline">View Code &rarr;</span>
-                                </div>
-                                <div class="px-4 py-3 text-xs font-mono text-gray-400 bg-[#1e1e1e]">
-                                    // Code extracted to workspace...
-                                </div>
-                            </div>`;
-                };
-
-                processedContent = processedContent.replace(customTagRegex, (m, c) => cardReplacement(c));
-                processedContent = processedContent.replace(markdownRegex, (m, l, c) => cardReplacement(c, l));
-
-                try {
-                    bubble.innerHTML = marked.parse(processedContent);
-                } catch (e) {
-                    bubble.innerText = content;
-                }
-
-                if (extractedCode) {
-                    updateArtifactPanel(extractedCode, lang);
-                    const indicator = document.getElementById('artifact-indicator');
-                    if(indicator) indicator.classList.remove('hidden');
-                    
-                    if (window.innerWidth >= 1280) {
-                        const panel = document.getElementById('artifact-panel');
-                        if (panel.classList.contains('translate-x-full')) {
-                            toggleArtifactPanel();
-                        }
-                    }
+                    // Trigger subtext fade
+                    document.querySelector('.sub-text-fade').style.animation = 'fadeInDown 2s ease-in-out forwards 0.5s';
                 }
             }
-
-            scrollToBottom();
-            lucide.createIcons();
-        }
-
-        function renderTypingIndicator() {
-            const container = document.querySelector('#chat-container > div');
-            const wrapper = document.createElement('div');
-            wrapper.id = 'typing-indicator';
-            wrapper.className = 'flex gap-4 w-full justify-start animate-fade-in';
-            wrapper.innerHTML = `
-                <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center mt-1">
-                    <svg class="w-6 h-6 animate-pulse"><use href="#icon-ada"></use></svg>
-                </div>
-                <div class="py-3">
-                    <div class="flex gap-1">
-                        <div class="typing-dot"></div>
-                        <div class="typing-dot"></div>
-                        <div class="typing-dot"></div>
-                    </div>
-                </div>
-            `;
-            container.appendChild(wrapper);
-            scrollToBottom();
-            lucide.createIcons();
-        }
-
-        function removeTypingIndicator() {
-            const el = document.getElementById('typing-indicator');
-            if (el) el.remove();
-        }
-
-        function updateArtifactPanel(code, lang) {
-            const langDisplay = document.getElementById('lang-display');
-            if(lang) {
-                langDisplay.innerText = lang;
-                const modeMap = {
-                    'PYTHON': 'python',
-                    'JAVASCRIPT': 'javascript',
-                    'JS': 'javascript',
-                    'HTML': 'xml',
-                    'CSS': 'css'
-                };
-                if(editor) editor.setOption("mode", modeMap[lang] || "javascript");
-            }
             
-            if(editor) {
-                editor.setValue(code);
-                setTimeout(() => editor.refresh(), 100);
-            }
-        }
-        
-        function copyArtifact() {
-            if(editor) {
-                const content = editor.getValue();
-                navigator.clipboard.writeText(content);
-                showToast("Code copied to clipboard!", "success");
-            }
-        }
-
-        function handleEnter(e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                handleFormSubmit(e);
-            }
-        }
-
-        async function handleFormSubmit(e) {
-            if (e) e.preventDefault();
-            const input = document.getElementById('user-input');
-            const message = input.value.trim();
-            if (!message || state.isTyping || !state.user) return;
-
-            // UI Updates
-            renderMessage('user', message);
-            input.value = '';
-            autoResize(input);
-            state.isTyping = true;
-            renderTypingIndicator();
-            
-            try {
-                const token = await state.user.getIdToken();
-                const response = await fetch(`${API_BASE_URL}/chat`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({ 
-                        message: message, 
-                        history: state.messages.map(m => ({ user: m.role === 'user' ? m.content : '', model: m.role === 'ai' ? m.content : '' })),
-                        sessionId: state.currentChatId
-                    })
-                });
-
-                if (!response.ok) throw new Error("API Error");
-
-                removeTypingIndicator();
-                const reader = response.body.getReader();
-                const decoder = new TextDecoder();
-                let fullText = "";
-                renderMessage('ai', '');
-
-                while (true) {
-                    const { done, value } = await reader.read();
-                    if (done) break;
-                    fullText += decoder.decode(value);
-                    renderMessage('ai', fullText);
-                }
-
-                state.messages.push({ role: 'user', content: message });
-                state.messages.push({ role: 'ai', content: fullText });
-                setTimeout(fetchChats, 1500);
-
-            } catch (error) {
-                removeTypingIndicator();
-                renderMessage('ai', "I'm having trouble connecting right now.");
-                showToast("Error generating response", "error");
-            } finally {
-                state.isTyping = false;
-            }
-        }
-        
-        function startNewChat() {
-            state.messages = [];
-            state.currentChatId = 'session_' + Date.now();
-            
-            const userName = state.user ? (state.user.email || state.user.displayName || 'Student') : 'Student';
-            
-            const container = document.querySelector('#chat-container > div');
-            container.innerHTML = `
-                <div id="welcome-message" class="flex flex-col items-start justify-center min-h-[50vh] space-y-8 animate-slide-up px-2">
-                    <div class="space-y-2 w-full">
-                        <div class="w-12 h-12 mb-4 animate-spin-slow-entry">
-                            <svg class="w-full h-full drop-shadow-[0_0_15px_rgba(168,199,250,0.5)]"><use href="#icon-ada"></use></svg>
-                        </div>
-                        <h1 class="text-4xl md:text-5xl font-medium text-transparent bg-clip-text bg-gradient-to-r from-[#4285F4] via-[#9B72CB] to-[#D96570] pb-2">
-                            Hello, <span id="welcome-name" class="text-white truncate block md:inline max-w-[200px] md:max-w-none">${userName}</span>
-                        </h1>
-                        <h2 class="text-3xl md:text-5xl font-medium text-gemini-surfaceHover/50">How can I help you code today?</h2>
-                    </div>
-                    <div class="hidden md:flex flex-wrap gap-3 w-full">
-                        <button onclick="setPrompt('Debug this Python script')" class="group bg-gemini-surface hover:bg-gemini-surfaceHover text-gemini-text px-5 py-4 rounded-2xl text-sm font-medium transition-all text-left flex-1 min-w-[200px] border border-transparent hover:border-gemini-surfaceHover">
-                            <span class="block mb-1 text-gemini-blue group-hover:translate-x-1 transition-transform"><i data-lucide="bug" class="w-4 h-4 inline mr-1"></i> Debug</span>
-                        </button>
-                        <button onclick="setPrompt('Explain this concept')" class="group bg-gemini-surface hover:bg-gemini-surfaceHover text-gemini-text px-5 py-4 rounded-2xl text-sm font-medium transition-all text-left flex-1 min-w-[200px] border border-transparent hover:border-gemini-surfaceHover">
-                            <span class="block mb-1 text-gemini-purple group-hover:translate-x-1 transition-transform"><i data-lucide="book-open" class="w-4 h-4 inline mr-1"></i> Explain</span>
-                        </button>
-                        <button onclick="setPrompt('Refactor this function')" class="group bg-gemini-surface hover:bg-gemini-surfaceHover text-gemini-text px-5 py-4 rounded-2xl text-sm font-medium transition-all text-left flex-1 min-w-[200px] border border-transparent hover:border-gemini-surfaceHover">
-                            <span class="block mb-1 text-green-400 group-hover:translate-x-1 transition-transform"><i data-lucide="wand-2" class="w-4 h-4 inline mr-1"></i> Refactor</span>
-                        </button>
-                    </div>
-                </div>`;
-            lucide.createIcons();
-            fetchChats();
-        }
-
-        window.onload = initApp;
-
+            // Start typing after a short delay
+            setTimeout(typeWriter, 500);
+        });
     </script>
 </body>
 </html>

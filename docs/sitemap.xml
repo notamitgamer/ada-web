@@ -4,18 +4,23 @@
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
             http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-<!-- created with Free Online Sitemap Generator www.xml-sitemaps.com -->
 
 
 <url>
-  <loc>https://ada.amit.is-a.dev/</loc>
-  <lastmod>2026-01-05T13:26:08+00:00</lastmod>
-  <priority>1.00</priority>
+  <loc>https://compiler.amit.is-a.dev/</loc>
+  <lastmod>2026-01-05T13:27:42+00:00</lastmod>
 </url>
 <url>
-  <loc>https://ada.amit.is-a.dev/terms.html</loc>
-  <lastmod>2026-01-05T13:26:08+00:00</lastmod>
-  <priority>0.80</priority>
+  <loc>https://compiler.amit.is-a.dev/c/</loc>
+  <lastmod>2026-01-05T13:27:42+00:00</lastmod>
+</url>
+<url>
+  <loc>https://compiler.amit.is-a.dev/cpp/</loc>
+  <lastmod>2026-01-05T13:27:42+00:00</lastmod>
+</url>
+<url>
+  <loc>https://compiler.amit.is-a.dev/python/</loc>
+  <lastmod>2026-01-05T13:27:42+00:00</lastmod>
 </url>
 
 

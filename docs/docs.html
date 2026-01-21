@@ -1,519 +1,247 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Documentation // Cloud Code Compiler</title>
-    <link rel="icon" type="image/x-icon" href="https://compiler.aranag.site/logo.png">
-    
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
-    
-    <!-- Libraries -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <title>Ada AI - Documentation</title>
+<link rel="icon" type="image/png" href="logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
-    
-    <style>
-        :root {
-            --bg-main: #050505;
-            --accent: #bef264; /* Lime 300 */
-            --text-muted: #737373;
-            --border-color: rgba(255, 255, 255, 0.1);
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        gemini: {
+                            bg: '#131314',
+                            surface: '#1E1F20',
+                            text: '#E3E3E3',
+                            blue: '#A8C7FA'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
         }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-main);
-            color: #f5f5f5;
-            line-height: 1.6;
-        }
-
-        .font-mono { font-family: 'JetBrains Mono', monospace; }
-        .font-heading { font-family: 'Space Grotesk', sans-serif; }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #050505; }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #555; }
-
-        /* Doc Sections */
-        .doc-section {
-            margin-bottom: 4rem;
-            scroll-margin-top: 6rem;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            padding-bottom: 3rem;
-        }
-        .doc-section:last-child { border-bottom: none; }
-
-        .code-block {
-            background: #0f1115;
-            border: 1px solid var(--border-color);
-            border-radius: 0.75rem;
-            padding: 1rem;
-            margin: 1.5rem 0;
-            font-size: 0.9rem;
-            overflow-x: auto;
-        }
-
-        .nav-link {
-            display: block;
-            padding: 0.5rem 1rem;
-            color: var(--text-muted);
-            border-left: 2px solid transparent;
-            transition: all 0.2s;
-        }
-        .nav-link:hover, .nav-link.active {
-            color: var(--accent);
-            border-left-color: var(--accent);
-            background: rgba(190, 242, 100, 0.05);
-        }
-
-        /* Noise Overlay */
-        .bg-noise {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 0; opacity: 0.03;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-        }
-    </style>
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
-<body class="antialiased selection:bg-lime-300 selection:text-black">
-
-    <div class="bg-noise"></div>
-
-    <!-- Layout Grid -->
-    <div class="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 lg:grid-cols-4 gap-12 relative z-10">
+<body class="bg-gemini-bg text-gemini-text font-sans p-6 md:p-12 leading-relaxed selection:bg-gemini-blue selection:text-black">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <header class="mb-12 border-b border-gray-800 pb-8">
+            <a href="/" class="inline-flex items-center text-gemini-blue hover:text-white transition-colors mb-6 font-medium text-sm">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                Back to App
+            </a>
+            <h1 class="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">Ada AI Documentation</h1>
+            <p class="text-xl text-gray-400 font-light">Comprehensive guide to the architecture, usage, and contribution workflow for the Ada AI Coding Assistant.</p>
+        </header>
         
-        <!-- Sidebar Navigation -->
-        <aside class="hidden lg:block col-span-1 sticky top-12 h-[calc(100vh-6rem)] overflow-y-auto pr-4">
-            <div class="mb-8">
-                <a href="./index.html" class="flex items-center gap-2 group">
-                    <i class="fas fa-arrow-left text-neutral-500 group-hover:text-white transition-colors"></i>
-                    <span class="font-heading font-bold text-xl text-white">Back to Home</span>
-                </a>
-            </div>
-            
-            <nav class="space-y-1">
-                <p class="px-4 text-xs font-mono text-neutral-500 uppercase tracking-widest mb-2">Core System</p>
-                <a href="#architecture" class="nav-link font-mono text-sm">01. Architecture</a>
-                <a href="#editor" class="nav-link font-mono text-sm text-lime-300">02. Editor & Tools (NEW)</a>
-                <a href="#communication" class="nav-link font-mono text-sm">03. WebSocket I/O</a>
-                
-                <p class="px-4 text-xs font-mono text-neutral-500 uppercase tracking-widest mb-2 mt-6">Engines</p>
-                <a href="#engines" class="nav-link font-mono text-sm">04. Execution Engines</a>
-                
-                <p class="px-4 text-xs font-mono text-neutral-500 uppercase tracking-widest mb-2 mt-6">Intelligence</p>
-                <a href="#ai-debug" class="nav-link font-mono text-sm">05. AI Auto-Debug</a>
-                
-                <p class="px-4 text-xs font-mono text-neutral-500 uppercase tracking-widest mb-2 mt-6">Data</p>
-                <a href="#persistence" class="nav-link font-mono text-sm">06. Sharing & Persistence</a>
-                <a href="#lifecycle" class="nav-link font-mono text-sm">07. Data Lifecycle</a>
-                <a href="#security" class="nav-link font-mono text-sm">08. Security</a>
-                
-                <p class="px-4 text-xs font-mono text-neutral-500 uppercase tracking-widest mb-2 mt-6">Community</p>
-                <a href="#contribution" class="nav-link font-mono text-sm">09. Contribution</a>
-                <a href="#disclaimer" class="nav-link font-mono text-sm text-red-400">10. Disclaimer</a>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <!-- Sidebar Nav -->
+            <nav class="hidden md:block col-span-1 space-y-1 sticky top-8 h-fit">
+                <a href="#introduction" class="block py-2 px-3 rounded-lg hover:bg-gemini-surface text-gray-400 hover:text-white transition-colors text-sm">1. Introduction</a>
+                <a href="#how-it-works" class="block py-2 px-3 rounded-lg hover:bg-gemini-surface text-gray-400 hover:text-white transition-colors text-sm">2. System Architecture</a>
+                <a href="#data-privacy" class="block py-2 px-3 rounded-lg hover:bg-gemini-surface text-gray-400 hover:text-white transition-colors text-sm">3. Data & Privacy</a>
+                <a href="#features" class="block py-2 px-3 rounded-lg hover:bg-gemini-surface text-gray-400 hover:text-white transition-colors text-sm">4. Features Guide</a>
+                <a href="#contributing" class="block py-2 px-3 rounded-lg hover:bg-gemini-surface text-gray-400 hover:text-white transition-colors text-sm">5. Contributing</a>
+                <a href="#support" class="block py-2 px-3 rounded-lg hover:bg-gemini-surface text-gray-400 hover:text-white transition-colors text-sm">6. Support</a>
             </nav>
 
-            <div class="mt-12 p-4 rounded-xl bg-white/5 border border-white/10">
-                <p class="text-xs text-neutral-400 mb-2">Tech Stack</p>
-                <div class="flex flex-wrap gap-2">
-                    <span class="text-xs px-2 py-1 rounded bg-black border border-white/10 text-lime-300 font-mono">CodeMirror</span>
-                    <span class="text-xs px-2 py-1 rounded bg-black border border-white/10 text-lime-300 font-mono">Gemini 2.5</span>
-                    <span class="text-xs px-2 py-1 rounded bg-black border border-white/10 text-lime-300 font-mono">Firebase</span>
-                    <span class="text-xs px-2 py-1 rounded bg-black border border-white/10 text-lime-300 font-mono">aiohttp</span>
-                </div>
-            </div>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="col-span-1 lg:col-span-3">
-            
-            <!-- Mobile Header -->
-            <div class="lg:hidden mb-12">
-                <a href="./index.html" class="flex items-center gap-2 text-neutral-400 hover:text-white mb-6">
-                    <i class="fas fa-arrow-left"></i> Return Home
-                </a>
-                <h1 class="text-4xl font-heading font-bold text-white">System Documentation</h1>
-            </div>
-
-            <!-- Intro -->
-            <div class="mb-16 border-b border-white/10 pb-12">
-                <h1 class="hidden lg:block text-5xl font-heading font-bold text-white mb-6">System Documentation</h1>
-                <p class="text-xl text-neutral-400 leading-relaxed max-w-3xl">
-                    A comprehensive technical overview of the Cloud Code Compiler v2.0. This document covers the full stack, from the CodeMirror-enhanced frontend to the AI-powered debugging backend and real-time execution engines.
-                </p>
-            </div>
-
-            <!-- 01 Architecture -->
-            <section id="architecture" class="doc-section">
-                <h2 class="text-2xl font-heading font-bold text-lime-300 mb-6 flex items-center">
-                    <span class="mr-3 text-neutral-600">01.</span> Architecture
-                </h2>
-                <p class="text-neutral-300 mb-4">
-                    The platform operates as a distributed system designed for low-latency feedback. It replaces traditional HTTP polling with persistent WebSocket connections, enabling interactive coding (REPL-like behavior) over the web.
-                </p>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
-                    <div class="p-6 rounded-xl bg-white/5 border border-white/10">
-                        <h3 class="text-white font-bold mb-2"><i class="fas fa-laptop-code text-lime-300 mr-2"></i> Frontend (Client)</h3>
-                        <ul class="text-sm text-neutral-400 space-y-2">
-                            <li>• <strong>Editor:</strong> CodeMirror 5 (Dracula Theme)</li>
-                            <li>• <strong>Terminal:</strong> Xterm.js with FitAddon</li>
-                            <li>• <strong>State:</strong> Browser LocalStorage</li>
-                            <li>• <strong>Intelligence:</strong> Client-side Error Parsing</li>
-                        </ul>
+            <!-- Content -->
+            <div class="col-span-1 md:col-span-3 space-y-16">
+                
+                <!-- Section 1: Introduction -->
+                <section id="introduction">
+                    <h2 class="text-2xl font-semibold text-white mb-6 flex items-center">
+                        <span class="bg-gemini-surface w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3 border border-gray-700">1</span>
+                        Introduction
+                    </h2>
+                    <p class="text-gray-300 mb-4">
+                        Ada AI is a specialized coding assistant built to provide students and developers with accurate, context-aware debugging and refactoring help. Unlike generic AI chatbots, Ada is engineered specifically for software development workflows, integrating a real-time code editor directly into the conversation loop.
+                    </p>
+                    <div class="bg-gemini-surface border-l-4 border-gemini-blue p-4 rounded-r-lg">
+                        <p class="text-sm text-gray-300"><strong>Core Philosophy:</strong> Simplicity, Speed, and Strict Data Segregation. Ada connects you to Google's Gemini 2.5 Flash model while keeping your data isolated within your own Firebase document scope.</p>
                     </div>
-                    <div class="p-6 rounded-xl bg-white/5 border border-white/10">
-                        <h3 class="text-white font-bold mb-2"><i class="fas fa-server text-lime-300 mr-2"></i> Backend (Server)</h3>
-                        <ul class="text-sm text-neutral-400 space-y-2">
-                            <li>• <strong>Server:</strong> Python <code>aiohttp</code> (AsyncIO)</li>
-                            <li>• <strong>Runtime:</strong> <code>subprocess</code> pipelines</li>
-                            <li>• <strong>AI Engine:</strong> Google Gemini 2.5 Flash</li>
-                            <li>• <strong>Database:</strong> Firebase Firestore (NoSQL)</li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
+                </section>
 
-            <!-- 02 Editor -->
-            <section id="editor" class="doc-section">
-                <h2 class="text-2xl font-heading font-bold text-lime-300 mb-6 flex items-center">
-                    <span class="mr-3 text-neutral-600">02.</span> Professional Editor Experience
-                </h2>
-                <p class="text-neutral-300 mb-4">
-                    Replaced the standard textarea with <strong>CodeMirror</strong> to provide an IDE-grade environment directly in the browser.
-                </p>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                    <div class="p-4 border border-lime-300/20 bg-lime-300/5 rounded-lg">
-                        <h4 class="text-lime-300 font-bold mb-2">Visual & Editing</h4>
-                        <ul class="text-xs text-neutral-300 space-y-1">
-                            <li>• <strong>Syntax Highlighting:</strong> Dracula theme for easy reading.</li>
-                            <li>• <strong>Line Numbers:</strong> Essential for debugging.</li>
-                            <li>• <strong>Bracket Matching:</strong> Visual cues for matching parentheses.</li>
-                            <li>• <strong>Auto-Indent:</strong> Smart indentation for Python and C++.</li>
-                        </ul>
-                    </div>
-                    <div class="p-4 border border-white/10 bg-white/5 rounded-lg">
-                        <h4 class="text-white font-bold mb-2">Developer Tools</h4>
-                        <ul class="text-xs text-neutral-300 space-y-1">
-                            <li>• <strong>Undo/Redo:</strong> <code>Ctrl+Z</code> / <code>Ctrl+Y</code> support with history stack.</li>
-                            <li>• <strong>Mobile Helper Bar:</strong> Sticky keys for <code>{ } [ ] ;</code> on touch devices.</li>
-                            <li>• <strong>Export:</strong> Download code as <code>.py</code>, <code>.c</code>, or <code>.cpp</code> files.</li>
-                            <li>• <strong>Clear Code:</strong> Quick reset with confirmation modal.</li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 03 Communication -->
-            <section id="communication" class="doc-section">
-                <h2 class="text-2xl font-heading font-bold text-lime-300 mb-6 flex items-center">
-                    <span class="mr-3 text-neutral-600">03.</span> WebSocket I/O Protocol
-                </h2>
-                <p class="text-neutral-300 mb-4">
-                    Real-time interaction handles input/output streams efficiently. The server streams <code>stdout</code> characters immediately, preventing "hanging" on long-running processes.
-                </p>
-
-                <div class="code-block">
-                    <pre><code class="language-json">// 1. Run Command (Client -> Server)
-{ "type": "run", "language": "python", "code": "print('Hello')" }
-
-// 2. Output Stream (Server -> Client)
-// Streamed character-by-character or line-by-line
-{ "type": "stdout", "data": "H" }
-{ "type": "stdout", "data": "e" } ...
-
-// 3. User Input (Client -> Server)
-// Sent when user types in terminal
-{ "type": "input", "data": "user_input\n" }</code></pre>
-                </div>
-            </section>
-
-            <!-- 04 Engines -->
-            <section id="engines" class="doc-section">
-                <h2 class="text-2xl font-heading font-bold text-lime-300 mb-6 flex items-center">
-                    <span class="mr-3 text-neutral-600">04.</span> Execution Engines
-                </h2>
-                <p class="text-neutral-300 mb-6">
-                    Each language runs in a specialized, isolated subprocess on the backend.
-                </p>
-
-                <div class="space-y-6">
-                    <div class="p-6 bg-white/5 rounded-xl border border-white/10">
-                        <div class="flex items-center gap-3 mb-4">
-                            <i class="fab fa-python text-2xl text-blue-400"></i>
-                            <h3 class="text-xl font-bold text-white">Python 3 Engine</h3>
-                        </div>
-                        <p class="text-sm text-neutral-400 mb-4">
-                            The Python environment runs on the latest stable <strong>Python 3</strong> release.
-                        </p>
-                        <ul class="list-disc list-inside text-sm text-neutral-300 space-y-1">
-                            <li><strong>Execution:</strong> Code is written to a temporary file and executed via `python3 -u` (unbuffered) to ensure real-time output.</li>
-                            <li><strong>Pip Packages:</strong> The environment comes pre-configured with standard libraries. <code>pip</code> is available in the backend environment, allowing for pre-installed packages to be imported (e.g., math, time, random).</li>
-                            <li><strong>Indentation:</strong> The editor converts Tabs to 4 Spaces automatically to prevent <code>IndentationError</code>.</li>
-                        </ul>
-                    </div>
-
-                    <div class="p-6 bg-white/5 rounded-xl border border-white/10">
-                        <div class="flex items-center gap-3 mb-4">
-                            <i class="fas fa-microchip text-2xl text-blue-600"></i>
-                            <h3 class="text-xl font-bold text-white">C / C++ Compiler</h3>
-                        </div>
-                        <p class="text-sm text-neutral-400 mb-4">
-                            Powered by the <strong>GNU Compiler Collection (GCC)</strong>.
-                        </p>
-                        <ul class="list-disc list-inside text-sm text-neutral-300 space-y-1">
-                            <li><strong>C Language:</strong> Compiles via `gcc source.c -o app -lm -pthread`. Uses standard C11/C17 standards.</li>
-                            <li><strong>C++ Language:</strong> Compiles via `g++ source.cpp -o app -lm -pthread`. Supports modern C++ standards.</li>
-                            <li><strong>Extended Support:</strong> Explicitly links against the Math library (<code>-lm</code>) and Threads library (<code>-pthread</code>), enabling advanced mathematical operations and multi-threaded applications.</li>
-                            <li><strong>Binary Execution:</strong> After compilation, the binary is immediately executed (`./app`), and output is piped to the WebSocket.</li>
-                            <li><strong>Error Handling:</strong> Compilation errors (stderr) are captured and displayed in red in the terminal.</li>
-                        </ul>
-                    </div>
-
-                    <!-- NEW PERFORMANCE BLOCK -->
-                    <div class="p-6 bg-amber-500/5 rounded-xl border border-amber-500/20 mt-8">
-                        <div class="flex items-center gap-3 mb-4 text-amber-500">
-                            <i class="fas fa-tachometer-alt text-xl"></i>
-                            <h3 class="text-lg font-bold">Performance Notes</h3>
-                        </div>
-                        <div class="text-sm text-neutral-300 leading-relaxed space-y-4">
-                            <p>
-                                This project is currently hosted on <strong>Render’s free tier</strong>, which utilizes automatic sleep cycles to conserve resources. This introduces specific behavior patterns:
+                <!-- Section 2: How It Works -->
+                <section id="how-it-works">
+                    <h2 class="text-2xl font-semibold text-white mb-6 flex items-center">
+                        <span class="bg-gemini-surface w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3 border border-gray-700">2</span>
+                        System Architecture
+                    </h2>
+                    
+                    <div class="space-y-8">
+                        <div>
+                            <h3 class="text-lg font-medium text-white mb-3">Authentication Layer</h3>
+                            <p class="text-gray-400 text-sm mb-3">
+                                Security is handled via <span class="text-white">Google Firebase Authentication</span>. We support:
                             </p>
-                            <ul class="list-disc list-inside space-y-2 text-neutral-400">
-                                <li><strong>Cold Starts:</strong> The first execution after a period of inactivity may take several seconds due to the container waking up.</li>
-                                <li><strong>Warm Execution:</strong> Subsequent runs happen in real-time and are significantly faster.</li>
-                                <li><strong>CPU Limits:</strong> CPU-intensive Python benchmarks are not representative of real-world interactive usage on this deployment.</li>
+                            <ul class="list-disc pl-5 space-y-2 text-sm text-gray-400">
+                                <li><strong>Google OAuth:</strong> One-click secure sign-in.</li>
+                                <li><strong>Email/Password:</strong> Traditional credential access.</li>
+                            </ul>
+                            <p class="text-gray-400 text-sm mt-3">
+                                Upon login, a unique User ID (UID) is generated. This UID acts as the primary key for all database operations, ensuring you never access data belonging to another user.
+                            </p>
+                        </div>
+
+                        <div>
+                            <h3 class="text-lg font-medium text-white mb-3">Request Lifecycle</h3>
+                            <ol class="list-decimal pl-5 space-y-4 text-sm text-gray-400">
+                                <li>
+                                    <strong class="text-white">Input Capture:</strong> The frontend captures your message, active code editor content, and any uploaded file context.
+                                </li>
+                                <li>
+                                    <strong class="text-white">Secure Transmission:</strong> Data is sent to our Python Flask backend (hosted on Render) over HTTPS, accompanied by your Firebase ID Token.
+                                </li>
+                                <li>
+                                    <strong class="text-white">Server-Side Verification:</strong> The backend validates your ID Token using the Firebase Admin SDK before processing any request.
+                                </li>
+                                <li>
+                                    <strong class="text-white">AI Processing:</strong> Validated requests are forwarded to the Gemini 2.5 API. The system prompt enforces a "Coding Assistant Only" persona.
+                                </li>
+                                <li>
+                                    <strong class="text-white">Response Streaming:</strong> The AI response is streamed back to your browser in real-time chunks, reducing perceived latency.
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 3: Data & Privacy -->
+                <section id="data-privacy">
+                    <h2 class="text-2xl font-semibold text-white mb-6 flex items-center">
+                        <span class="bg-gemini-surface w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3 border border-gray-700">3</span>
+                        Data Storage & Privacy
+                    </h2>
+                    <p class="text-gray-300 mb-6">
+                        We use <span class="text-white">Google Cloud Firestore</span> (NoSQL) for persistence. Your data is structured to maximize privacy and ease of deletion.
+                    </p>
+
+                    <div class="grid md:grid-cols-2 gap-6 mb-6">
+                        <div class="bg-gemini-surface p-5 rounded-xl border border-gray-800">
+                            <h4 class="text-white font-medium mb-2">Data Structure</h4>
+                            <code class="text-xs font-mono text-blue-300 block mb-2">/users/{userId}/chats/{chatId}</code>
+                            <p class="text-xs text-gray-400">All your chats live exclusively under your user document. No data is stored in global collections.</p>
+                        </div>
+                        <div class="bg-gemini-surface p-5 rounded-xl border border-gray-800">
+                            <h4 class="text-white font-medium mb-2">Deletion Policy</h4>
+                            <p class="text-xs text-gray-400 mb-2">You have full control over your data:</p>
+                            <ul class="text-xs text-gray-400 list-disc pl-4 space-y-1">
+                                <li><strong>Single Chat:</strong> Instantly removed via the context menu.</li>
+                                <li><strong>Clear History:</strong> A batch operation wipes your entire `/chats` subcollection.</li>
                             </ul>
                         </div>
                     </div>
+                </section>
 
-                </div>
-            </section>
-
-            <!-- 05 AI Auto-Debug -->
-            <section id="ai-debug" class="doc-section">
-                <h2 class="text-2xl font-heading font-bold text-lime-300 mb-6 flex items-center">
-                    <span class="mr-3 text-neutral-600">05.</span> AI Auto-Debug System
-                </h2>
-                <p class="text-neutral-300 mb-4">
-                    The compiler monitors the output stream for common error patterns (e.g., <code>Traceback</code>, <code>Segmentation fault</code>, <code>error:</code>).
-                </p>
-                <div class="bg-black/30 p-4 rounded-lg border-l-2 border-lime-300">
-                    <h4 class="text-sm font-bold text-white mb-2">How it works:</h4>
-                    <ol class="list-decimal list-inside text-xs text-neutral-400 space-y-2">
-                        <li><strong>Capture:</strong> The client buffers the last 4KB of terminal output.</li>
-                        <li><strong>Trigger:</strong> If an error keyword is found, the "Ask AI" button appears.</li>
-                        <li><strong>Processing:</strong> Code + Error Log is sent to <strong>Gemini 2.5 Flash</strong>.</li>
-                        <li><strong>Response:</strong> The AI generates a JSON object containing a plain-English explanation and the corrected code block.</li>
-                        <li><strong>Patch:</strong> The user can review the fix in a modal and apply it to the editor instantly.</li>
-                    </ol>
-                </div>
-            </section>
-
-            <!-- 06 Persistence -->
-            <section id="persistence" class="doc-section">
-                <h2 class="text-2xl font-heading font-bold text-lime-300 mb-6 flex items-center">
-                    <span class="mr-3 text-neutral-600">06.</span> Sharing & Persistence
-                </h2>
-                <p class="text-neutral-300 mb-6">
-                    Data storage is handled in two distinct layers to balance privacy and collaboration.
-                </p>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="border border-white/10 rounded-xl p-5">
-                        <div class="flex items-center gap-2 mb-3 text-lime-300">
-                            <i class="fas fa-hdd"></i>
-                            <h3 class="font-bold">Local Persistence</h3>
+                <!-- Section 4: Features Guide -->
+                <section id="features">
+                    <h2 class="text-2xl font-semibold text-white mb-6 flex items-center">
+                        <span class="bg-gemini-surface w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3 border border-gray-700">4</span>
+                        Key Features
+                    </h2>
+                    
+                    <div class="space-y-6">
+                        <div class="group">
+                            <h3 class="text-lg font-medium text-white mb-2 group-hover:text-gemini-blue transition-colors">Smart Code Artifacts</h3>
+                            <p class="text-sm text-gray-400">
+                                When Ada writes code, it automatically detects the language and extracts it into the dedicated <strong>Artifact Panel</strong> on the right. This keeps your chat clean and gives you a dedicated workspace to view, copy, or format the code.
+                            </p>
                         </div>
-                        <p class="text-xs text-neutral-400 leading-relaxed">
-                            Every keystroke is saved to the browser's <code>localStorage</code>. This data never leaves your device until you execute or share it.
-                        </p>
-                    </div>
 
-                    <div class="border border-white/10 rounded-xl p-5">
-                        <div class="flex items-center gap-2 mb-3 text-lime-300">
-                            <i class="fas fa-share-alt"></i>
-                            <h3 class="font-bold">Cloud Sharing</h3>
+                        <div class="group">
+                            <h3 class="text-lg font-medium text-white mb-2 group-hover:text-gemini-blue transition-colors">Chat Sharing</h3>
+                            <p class="text-sm text-gray-400">
+                                Need to share a solution? You can generate a unique link for any chat conversation.
+                            </p>
+                            <ul class="list-disc pl-5 mt-2 space-y-1 text-sm text-gray-500">
+                                <li><strong>Public Access:</strong> Anyone with the link can view the conversation (Read-Only).</li>
+                                <li><strong>Forking:</strong> If the viewer logs in, they can save a copy of the chat to their own history and continue the conversation.</li>
+                            </ul>
                         </div>
-                        <p class="text-xs text-neutral-400 leading-relaxed">
-                            Uploads a snapshot to <strong>Firebase</strong> generating a short 7-char ID (e.g., <code>?share=AbC123X</code>).
-                        </p>
-                    </div>
 
-                    <div class="border border-white/10 rounded-xl p-5">
-                        <div class="flex items-center gap-2 mb-3 text-lime-300">
-                            <i class="fas fa-link"></i>
-                            <h3 class="font-bold">Base64 / LZ Fallback</h3>
-                        </div>
-                        <p class="text-xs text-neutral-400 leading-relaxed">
-                            Code can be encoded directly into the URL (e.g., <code>?code=...</code>). 
-                            <br><span class="text-lime-300/80 mt-2 block">Pro Tip: Use <strong>LZ-String</strong> compression to reduce URL length by ~60% vs standard Base64.</span>
-                        </p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 07 Lifecycle -->
-            <section id="lifecycle" class="doc-section">
-                <h2 class="text-2xl font-heading font-bold text-lime-300 mb-6 flex items-center">
-                    <span class="mr-3 text-neutral-600">07.</span> Data Lifecycle
-                </h2>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-sm text-neutral-400">
-                        <thead class="bg-white/5 text-white font-mono uppercase text-xs">
-                            <tr>
-                                <th class="p-3">Stage</th>
-                                <th class="p-3">Storage Location</th>
-                                <th class="p-3">Duration</th>
-                                <th class="p-3">Accessibility</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-white/5">
-                            <tr>
-                                <td class="p-3 text-lime-300">Drafting</td>
-                                <td class="p-3">Browser LocalStorage</td>
-                                <td class="p-3">Persistent (User Control)</td>
-                                <td class="p-3">Private (Device Only)</td>
-                            </tr>
-                            <tr>
-                                <td class="p-3 text-lime-300">Execution</td>
-                                <td class="p-3">Server RAM / Temp File</td>
-                                <td class="p-3">Ephemeral (Seconds)</td>
-                                <td class="p-3">System (Deleted after run)</td>
-                            </tr>
-                            <tr>
-                                <td class="p-3 text-lime-300">Sharing</td>
-                                <td class="p-3">Firebase Firestore</td>
-                                <td class="p-3">Permanent</td>
-                                <td class="p-3">Public (Link Holders)</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <!-- 08 Security -->
-            <section id="security" class="doc-section">
-                <h2 class="text-2xl font-heading font-bold text-lime-300 mb-6 flex items-center">
-                    <span class="mr-3 text-neutral-600">08.</span> Security Implementation
-                </h2>
-                <p class="text-neutral-300 mb-4">
-                    Security is enforced at the environment level to prevent abuse.
-                </p>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="p-4 border border-white/10 bg-white/5 rounded-lg">
-                        <h4 class="text-white font-bold mb-2">Sanitized Environment</h4>
-                        <p class="text-xs text-neutral-400">
-                            Subprocesses run with a stripped environment (`safe_env`). API keys, system paths, and sensitive variables are removed from the execution context.
-                        </p>
-                    </div>
-                    <div class="p-4 border border-white/10 bg-white/5 rounded-lg">
-                        <h4 class="text-white font-bold mb-2">Session Isolation</h4>
-                        <p class="text-xs text-neutral-400">
-                            Each client connection generates a unique <strong>UUID-based session directory</strong> (e.g., `temp_sessions/abc-123`). All temporary files are created within this isolated sandbox and are automatically wiped upon disconnection, preventing data leakage between concurrent users.
-                        </p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 09 Developer / Contribution -->
-            <section id="contribution" class="doc-section">
-                <h2 class="text-2xl font-heading font-bold text-lime-300 mb-6 flex items-center">
-                    <span class="mr-3 text-neutral-600">09.</span> Developers & Contribution
-                </h2>
-                <p class="text-neutral-300 mb-6">
-                    We welcome contributions from the community. Whether you've found a bug, want to suggest a feature, or add support for a new language, here is how you can get involved.
-                </p>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                    <!-- Open Source Card -->
-                    <div class="p-6 bg-white/5 rounded-xl border border-white/10 hover:border-lime-300/50 transition-colors group">
-                        <i class="fab fa-github text-3xl text-white group-hover:text-lime-300 mb-4 transition-colors"></i>
-                        <h3 class="text-xl font-bold text-white mb-2">Open Source</h3>
-                        <p class="text-sm text-neutral-400 mb-6">
-                            The core infrastructure is open-source. Clone the repo, create a branch, and submit a Pull Request.
-                        </p>
-                        <div class="flex gap-3">
-                            <a href="https://github.com/notamitgamer/cloud-compiler/issues" target="_blank" class="px-3 py-1.5 rounded bg-white/10 text-xs font-mono hover:bg-white/20 transition-colors border border-white/10">
-                                <i class="fas fa-bug mr-1"></i> Report Bug
-                            </a>
-                            <a href="https://github.com/notamitgamer/cloud-compiler" target="_blank" class="px-3 py-1.5 rounded bg-lime-300/10 text-lime-300 text-xs font-mono hover:bg-lime-300/20 transition-colors border border-lime-300/20">
-                                <i class="fas fa-code-branch mr-1"></i> Fork Repo
-                            </a>
+                        <div class="group">
+                            <h3 class="text-lg font-medium text-white mb-2 group-hover:text-gemini-blue transition-colors">Export Data</h3>
+                            <p class="text-sm text-gray-400">
+                                You are not locked in. Export any chat session as a JSON file or Markdown document for your own records or documentation.
+                            </p>
                         </div>
                     </div>
+                </section>
 
-                    <!-- Contact Card -->
-                    <div class="p-6 bg-white/5 rounded-xl border border-white/10">
-                        <i class="fas fa-envelope-open-text text-3xl text-white mb-4"></i>
-                        <h3 class="text-xl font-bold text-white mb-2">Direct Contact</h3>
-                        <p class="text-sm text-neutral-400 mb-6">
-                            For security vulnerabilities, private feedback, or collaboration inquiries, please email directly.
-                        </p>
-                        <a href="mailto:amitdutta4255@gmail.com" class="text-lime-300 font-mono text-sm hover:underline flex items-center gap-2">
-                            <i class="fas fa-at"></i> amitdutta4255@gmail.com
+                <!-- Section 5: Contributing -->
+                <section id="contributing">
+                    <h2 class="text-2xl font-semibold text-white mb-6 flex items-center">
+                        <span class="bg-gemini-surface w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3 border border-gray-700">5</span>
+                        Contributing
+                    </h2>
+                    <p class="text-gray-300 mb-6">
+                        Ada AI is an open-source project licensed under MIT. We welcome pull requests, bug reports, and feature suggestions from the developer community.
+                    </p>
+
+                    <div class="bg-gemini-surface p-6 rounded-xl border border-gray-700">
+                        <h3 class="text-white font-medium mb-4">How to Contribute</h3>
+                        <ol class="list-decimal pl-5 space-y-3 text-sm text-gray-300 mb-6">
+                            <li><strong>Fork the Repository:</strong> Go to our GitHub and click "Fork".</li>
+                            <li><strong>Clone Locally:</strong> <code class="bg-black px-2 py-1 rounded text-gray-400 ml-2">git clone https://github.com/notamitgamer/ada-web.git</code></li>
+                            <li><strong>Create Branch:</strong> <code class="bg-black px-2 py-1 rounded text-gray-400 ml-2">git checkout -b feature/amazing-feature</code></li>
+                            <li><strong>Commit & Push:</strong> Make your changes and push to your fork.</li>
+                            <li><strong>Pull Request:</strong> Open a PR describing your changes.</li>
+                        </ol>
+                        
+                        <a href="https://github.com/notamitgamer/ada-web" target="_blank" class="inline-flex items-center justify-center w-full md:w-auto bg-white text-black px-6 py-3 rounded-lg font-bold hover:bg-gray-200 transition-colors">
+                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                            View on GitHub
                         </a>
                     </div>
-                </div>
-            </section>
+                </section>
 
-            <!-- 10 Disclaimer -->
-            <section id="disclaimer" class="doc-section">
-                <h2 class="text-2xl font-heading font-bold text-lime-300 mb-6 flex items-center">
-                    <span class="mr-3 text-neutral-600">10.</span> Legal & Disclaimer
-                </h2>
-                <div class="p-6 rounded-xl border border-red-500/20 bg-red-500/5">
-                    <p class="text-neutral-300 mb-4">
-                        This compiler infrastructure utilizes Google's Generative AI services and Firebase for data storage.
-                    </p>
-                    <ul class="text-lime-300 font-mono text-sm mb-6 space-y-1">
-                        <li><i class="fas fa-envelope mr-2"></i> <a href="mailto:amitdutta4255@gmail.com" class="hover:underline">amitdutta4255@gmail.com</a></li>
-                        <li><i class="fas fa-envelope mr-2"></i> <a href="mailto:mail@amit.is-a.dev" class="hover:underline">mail@amit.is-a.dev</a></li>
-                        <li><i class="fab fa-github mr-2"></i> <a href="https://github.com/notamitgamer" target="_blank" class="hover:underline">@notamitgamer</a></li>
-                    </ul>
-                    <div class="text-neutral-400 text-sm border-t border-white/10 pt-4 leading-relaxed">
-                        <p class="mb-4"><strong class="text-red-400 uppercase">Disclaimer of Liability:</strong> This tool is provided "as is". Amit Dutta assumes no responsibility or liability for any consequences, errors, or data loss arising from the use of this compiler. This project is provided for demonstration purposes only.</p>
-                        
-                        <p class="italic font-mono text-xs opacity-80 bg-black/20 p-3 border border-red-500/20 rounded">
-                            "I explicitly disclaim any affiliation with or responsibility for the ongoing operation of this project. I reserve the absolute right to modify, suspend, or permanently delete this compiler and its associated services at any time, for any reason, without prior notice."
-                        </p>
+                <!-- Section 6: Support -->
+                <section id="support">
+                    <h2 class="text-2xl font-semibold text-white mb-6 flex items-center">
+                        <span class="bg-gemini-surface w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3 border border-gray-700">6</span>
+                        Support & Contact
+                    </h2>
+                    <p class="text-gray-300 mb-6">Found a bug? Need a feature? Or just want to say hi? Here is how you can reach the developer.</p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <a href="mailto:amitdutta4255@gmail.com" class="group p-6 bg-gemini-surface border border-gray-800 rounded-xl hover:border-red-500/50 transition-all">
+                            <div class="flex items-center mb-2">
+                                <span class="w-2 h-2 rounded-full bg-red-500 mr-2"></span>
+                                <h4 class="text-white font-medium group-hover:text-red-400">Critical Support</h4>
+                            </div>
+                            <p class="text-sm text-gray-400 mb-4">For urgent issues, security vulnerabilities, or major bugs.</p>
+                            <span class="text-xs font-mono text-gray-500">amitdutta4255@gmail.com</span>
+                        </a>
+
+                        <a href="mailto:mail@amit.is-a.dev" class="group p-6 bg-gemini-surface border border-gray-800 rounded-xl hover:border-gemini-blue transition-all">
+                            <div class="flex items-center mb-2">
+                                <span class="w-2 h-2 rounded-full bg-blue-500 mr-2"></span>
+                                <h4 class="text-white font-medium group-hover:text-gemini-blue">General Inquiries</h4>
+                            </div>
+                            <p class="text-sm text-gray-400 mb-4">For feedback, feature requests, or general questions.</p>
+                            <span class="text-xs font-mono text-gray-500">mail@amit.is-a.dev</span>
+                        </a>
                     </div>
-                </div>
-            </section>
+                </section>
 
-        </main>
+            </div>
+        </div>
+
+        <footer class="mt-20 pt-8 border-t border-gray-800 text-center">
+            <p class="text-sm text-gray-500">&copy; 2026 Ada AI. All rights reserved.</p>
+            <div class="mt-2 space-x-4">
+                <a href="/terms.html" class="text-xs text-gray-600 hover:text-gray-300 transition-colors">Terms & Conditions</a>
+                <a href="https://github.com/notamitgamer/ada-web" class="text-xs text-gray-600 hover:text-gray-300 transition-colors">GitHub</a>
+            </div>
+        </footer>
     </div>
-
-    <script>
-        hljs.highlightAll();
-        
-        // Simple scroll spy for nav
-        window.addEventListener('scroll', () => {
-            const sections = document.querySelectorAll('.doc-section');
-            const navLinks = document.querySelectorAll('.nav-link');
-            
-            let current = '';
-            sections.forEach(section => {
-                const sectionTop = section.offsetTop;
-                if (pageYOffset >= sectionTop - 150) {
-                    current = section.getAttribute('id');
-                }
-            });
-
-            navLinks.forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('href').includes(current)) {
-                    link.classList.add('active');
-                }
-            });
-        });
-    </script>
 </body>
 </html>

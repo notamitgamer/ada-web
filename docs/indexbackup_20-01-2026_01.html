@@ -34,7 +34,6 @@
                         'fade-in': 'fadeIn 0.4s ease-out forwards',
                         'slide-up': 'slideUp 0.5s cubic-bezier(0.2, 0.0, 0, 1.0) forwards',
                         'spin-slow-entry': 'spinSlowEntry 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
-                        'shimmer': 'shimmer 2s linear infinite',
                     },
                     keyframes: {
                         fadeIn: {
@@ -48,10 +47,6 @@
                         spinSlowEntry: {
                             '0%': { opacity: '0', transform: 'rotate(-180deg) scale(0.5)' },
                             '100%': { opacity: '1', transform: 'rotate(0deg) scale(1)' }
-                        },
-                        shimmer: {
-                            '0%': { backgroundPosition: '-1000px 0' },
-                            '100%': { backgroundPosition: '1000px 0' }
                         }
                     }
                 }
@@ -179,15 +174,6 @@
         
         /* Custom Ada Icon Animation */
         .ada-icon path { transform-origin: center; }
-
-        /* Shimmer Effect for Skeletons */
-        .skeleton-shimmer {
-            background: #1E1F20;
-            background-image: linear-gradient(to right, #1E1F20 0%, #28292A 20%, #1E1F20 40%, #1E1F20 100%);
-            background-repeat: no-repeat;
-            background-size: 1000px 100%;
-            animation: shimmer 1.5s infinite linear forwards;
-        }
 
         /* Context Menu */
         .context-menu {
@@ -359,31 +345,6 @@
             -webkit-box-shadow: var(--circle-checked-shadow);
             box-shadow: var(--circle-checked-shadow);
         }
-        
-        /* Command Palette */
-        #command-palette {
-            transition: opacity 0.15s ease-out;
-        }
-        .cmd-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 16px;
-            cursor: pointer;
-            border-radius: 8px;
-            color: #E3E3E3;
-        }
-        .cmd-item:hover, .cmd-item.selected {
-            background: #28292A;
-        }
-        .cmd-shortcut {
-            font-size: 10px;
-            background: #3C4043;
-            padding: 2px 6px;
-            border-radius: 4px;
-            color: #C4C7C5;
-            font-family: sans-serif;
-        }
     </style>
 </head>
 <body class="mobile-height flex text-sm selection:bg-gemini-blue selection:text-black bg-gemini-bg">
@@ -412,20 +373,6 @@
         <p class="text-gemini-textSecondary text-sm font-medium animate-pulse">Verifying Identity...</p>
     </div>
 
-    <!-- Command Palette -->
-    <div id="command-palette" class="fixed inset-0 z-[150] bg-black/50 backdrop-blur-sm hidden flex items-start justify-center pt-24 opacity-0 pointer-events-none">
-        <div class="bg-gemini-surface w-full max-w-lg rounded-xl shadow-2xl border border-gemini-surfaceHover overflow-hidden flex flex-col max-h-[60vh]">
-            <div class="p-4 border-b border-gemini-surfaceHover flex items-center gap-3">
-                <i data-lucide="search" class="w-5 h-5 text-gemini-textSecondary"></i>
-                <input type="text" id="cmd-input" class="bg-transparent border-none outline-none text-white w-full placeholder-gemini-textSecondary/50" placeholder="Type a command...">
-                <span class="text-xs text-gemini-textSecondary border border-gemini-surfaceHover px-1.5 py-0.5 rounded">ESC</span>
-            </div>
-            <div id="cmd-list" class="p-2 overflow-y-auto">
-                <!-- Commands injected via JS -->
-            </div>
-        </div>
-    </div>
-
     <!-- Confirm Dialog -->
     <div id="confirm-modal" class="fixed inset-0 z-[210] flex items-center justify-center bg-black/70 backdrop-blur-sm hidden opacity-0 transition-opacity">
         <div class="bg-gemini-surface p-6 rounded-2xl w-full max-w-sm border border-gemini-surfaceHover transform scale-95 transition-transform" id="confirm-modal-content">
@@ -450,32 +397,19 @@
         <span id="toast-message" class="text-sm font-medium">Notification</span>
     </div>
 
-    <!-- Auth Modal (Updated for Multi-Auth) -->
+    <!-- Auth Modal -->
     <div id="auth-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-[#131314] transition-opacity duration-300 hidden opacity-0 pointer-events-none">
-        <div class="w-full max-w-md p-8 text-center bg-[#131314] rounded-2xl md:bg-[#131314] md:border-none relative max-h-[90vh] overflow-y-auto">
+        <div class="w-full max-w-md p-8 text-center">
             <div class="mx-auto w-20 h-20 mb-6 rounded-full bg-gemini-surface flex items-center justify-center relative overflow-hidden group">
                 <div class="absolute inset-0 bg-gradient-to-tr from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 <svg class="w-10 h-10 animate-spin-slow-entry drop-shadow-lg"><use href="#icon-ada"></use></svg>
             </div>
             <h1 class="text-3xl font-medium text-white mb-3">Welcome to Ada</h1>
-            <p class="text-gemini-textSecondary mb-8">Sign in to access your coding workspace.</p>
+            <p class="text-gemini-textSecondary mb-10">Sign in to access your coding workspace.</p>
             
-            
-            <!-- Google -->
-            <button onclick="signInWithGoogle()" class="w-full bg-white text-[#131314] hover:bg-gray-100 font-medium py-3 px-6 rounded-full flex items-center justify-center gap-3 transition-colors mb-3">
+            <button onclick="signInWithGoogle()" class="w-full bg-white text-[#131314] hover:bg-gray-100 font-medium py-3 px-6 rounded-full flex items-center justify-center gap-3 transition-colors">
                 <img src="https://www.google.com/favicon.ico" class="w-5 h-5" alt="G">
-                <span>Sign In with Google</span>
-            </button>
-            <br>
-<!-- Divider -->
-            <div class="relative mb-6">
-                <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gemini-surfaceHover"></div></div>
-                <div class="relative flex justify-center text-sm"><span class="px-2 bg-[#131314] text-gemini-textSecondary">Or continue with</span></div>
-            </div>
-            <!-- Guest -->
-            <button onclick="signInAsGuest()" class="w-full bg-[#3C4043] text-white hover:bg-[#494c50] font-medium py-3 px-6 rounded-full flex items-center justify-center gap-3 transition-colors">
-                <i data-lucide="user" class="w-5 h-5"></i>
-                <span>Continue as Guest</span>
+                <span>Continue with Google</span>
             </button>
         </div>
     </div>
@@ -646,9 +580,9 @@
             <button onclick="toggleSidebar()" class="p-2 text-gemini-textSecondary hover:text-white hover:bg-gemini-surfaceHover rounded-full transition-colors">
                 <i data-lucide="menu" class="w-5 h-5"></i>
             </button>
-            <span id="history-label" class="text-gemini-textSecondary text-xs font-medium uppercase tracking-wider">History</span>
+            <span class="text-gemini-textSecondary text-xs font-medium uppercase tracking-wider">History</span>
             
-            <div id="history-search-container" class="relative w-full max-w-[140px] ml-4">
+            <div class="relative w-full max-w-[140px] ml-4">
                <input type="text" id="history-search" placeholder="Search..." oninput="filterHistory(this.value)" class="w-full bg-[#131314] text-xs text-white border border-gemini-surfaceHover rounded-md px-2 py-1 focus:outline-none focus:border-gemini-blue">
                <i data-lucide="search" class="absolute right-2 top-1.5 w-3 h-3 text-gemini-textSecondary"></i>
             </div>
@@ -664,7 +598,9 @@
 
         <!-- Chat History List -->
         <div id="chat-history-list" class="flex-1 overflow-y-auto px-2 py-2 space-y-1">
-            <!-- Skeleton Loader injected via JS -->
+            <div class="flex items-center justify-center h-20 opacity-50">
+                <div class="w-5 h-5 border-2 border-gemini-textSecondary border-t-transparent rounded-full animate-spin"></div>
+            </div>
         </div>
 
         <!-- User Profile (Bottom) -->
@@ -730,8 +666,7 @@
                         <h1 class="text-4xl md:text-5xl font-medium text-transparent bg-clip-text bg-gradient-to-r from-[#4285F4] via-[#9B72CB] to-[#D96570] pb-2">
                             Hello, <span id="welcome-name" class="text-white truncate block md:inline max-w-[200px] md:max-w-none">Student</span>
                         </h1>
-                        <!-- UPDATED COLOR -->
-                        <h2 class="text-3xl md:text-5xl font-medium text-gemini-textSecondary/30">How can I help you code today?</h2>
+                        <h2 class="text-3xl md:text-5xl font-medium text-gemini-surfaceHover/50">How can I help you code today?</h2>
                     </div>
 
                     <!-- Suggestion Chips (Hidden on Mobile) -->
@@ -757,10 +692,9 @@
         <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-gemini-bg via-gemini-bg to-transparent z-20" id="input-area">
             <div class="max-w-3xl mx-auto">
                 <form id="chat-form" onsubmit="handleFormSubmit(event)" class="bg-gemini-surface rounded-[28px] flex items-end p-2 border border-gemini-surfaceHover focus-within:bg-gemini-surfaceHover focus-within:border-gemini-textSecondary/20 transition-all shadow-xl">
-                    <!-- ADDED: transition-all duration-200 for smooth growth -->
                     <textarea 
                         id="user-input"
-                        class="w-full bg-transparent text-white placeholder-gemini-textSecondary py-3.5 px-4 max-h-48 min-h-[52px] resize-none focus:outline-none text-base no-scrollbar transition-all duration-200 ease-in-out"
+                        class="w-full bg-transparent text-white placeholder-gemini-textSecondary py-3.5 px-4 max-h-48 min-h-[52px] resize-none focus:outline-none text-base no-scrollbar"
                         placeholder="Enter a prompt here"
                         rows="1"
                         oninput="autoResize(this)"
@@ -801,18 +735,6 @@
         <div class="flex-1 overflow-hidden relative bg-[#1e1e1e]">
             <textarea id="artifact-editor" class="w-full h-full"></textarea>
         </div>
-
-        <!-- ADDED: Status Bar -->
-        <div class="h-6 bg-[#007acc] text-white flex items-center px-3 text-xs justify-end gap-4 select-none">
-            <div class="flex items-center gap-1">
-                <i data-lucide="code" class="w-3 h-3"></i>
-                <span id="status-lang">JavaScript</span>
-            </div>
-            <div class="flex items-center gap-1">
-                <span id="status-cursor">Ln 1, Col 1</span>
-            </div>
-            <div>UTF-8</div>
-        </div>
     </aside>
 
     <script>
@@ -843,15 +765,6 @@
             fontSize: parseInt(localStorage.getItem('ada_font_size')) || 14
         };
 
-        // --- COMMAND PALETTE DATA ---
-        const commands = [
-            { name: "New Chat", icon: "plus", action: startNewChat, shortcut: "N" },
-            { name: "Toggle Sidebar", icon: "sidebar", action: toggleSidebar, shortcut: "Ctrl+/" },
-            { name: "Clear History", icon: "trash-2", action: confirmClearHistory, shortcut: "" },
-            { name: "Settings", icon: "settings", action: toggleSettingsModal, shortcut: "" },
-            { name: "Sign Out", icon: "log-out", action: confirmSignOut, shortcut: "" }
-        ];
-
         function initApp() {
             lucide.createIcons();
             
@@ -879,12 +792,6 @@
                 lineWrapping: true
             });
 
-            // ADDED: Cursor Activity Listener for Status Bar
-            editor.on("cursorActivity", () => {
-                const pos = editor.getCursor();
-                document.getElementById('status-cursor').innerText = `Ln ${pos.line + 1}, Col ${pos.ch + 1}`;
-            });
-
             // Initialize Firebase
             try {
                 firebase.initializeApp(firebaseConfig);
@@ -910,133 +817,11 @@
                 const menu = document.querySelector('.context-menu');
                 if (menu) menu.remove();
             });
-
-            // ADDED: Global Keyboard Shortcuts
-            document.addEventListener('keydown', handleGlobalKeydown);
-
-            // ADDED: Swipe Gestures
-            initSwipeGestures();
         }
 
         function autoResize(textarea) {
             textarea.style.height = 'auto';
             textarea.style.height = Math.min(textarea.scrollHeight, 200) + 'px';
-        }
-
-        // ADDED: Swipe Gesture Logic
-        function initSwipeGestures() {
-            let touchStartX = 0;
-            let touchStartY = 0;
-            
-            document.addEventListener('touchstart', e => {
-                touchStartX = e.changedTouches[0].screenX;
-                touchStartY = e.changedTouches[0].screenY;
-            }, {passive: true});
-
-            document.addEventListener('touchend', e => {
-                const touchEndX = e.changedTouches[0].screenX;
-                const touchEndY = e.changedTouches[0].screenY;
-                
-                handleSwipe(touchStartX, touchStartY, touchEndX, touchEndY);
-            }, {passive: true});
-        }
-
-        function handleSwipe(startX, startY, endX, endY) {
-            const diffX = endX - startX;
-            const diffY = endY - startY;
-
-            // Only trigger if horizontal swipe is dominant and significant
-            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
-                const sidebar = document.getElementById('sidebar');
-                const isClosed = sidebar.classList.contains('-translate-x-full');
-
-                // Swipe Right (Open) - Only works from left edge area (first 30px)
-                if (diffX > 0 && startX < 30 && isClosed) {
-                    toggleSidebar();
-                }
-                
-                // Swipe Left (Close)
-                if (diffX < 0 && !isClosed) {
-                    toggleSidebar();
-                }
-            }
-        }
-
-        // ADDED: Keyboard Shortcuts Handler
-        function handleGlobalKeydown(e) {
-            // Toggle Sidebar: Ctrl + / (or Cmd + /)
-            if ((e.ctrlKey || e.metaKey) && e.key === '/') {
-                e.preventDefault();
-                toggleSidebar();
-            }
-
-            // Command Palette: Ctrl + K (or Cmd + K)
-            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-                e.preventDefault();
-                toggleCommandPalette();
-            }
-
-            // Close Palette on ESC
-            if (e.key === 'Escape') {
-                const cmd = document.getElementById('command-palette');
-                if (!cmd.classList.contains('hidden')) {
-                    toggleCommandPalette();
-                }
-            }
-        }
-
-        // ADDED: Command Palette Logic
-        function toggleCommandPalette() {
-            const palette = document.getElementById('command-palette');
-            const input = document.getElementById('cmd-input');
-            const list = document.getElementById('cmd-list');
-
-            if (palette.classList.contains('hidden')) {
-                // Show
-                palette.classList.remove('hidden', 'pointer-events-none');
-                requestAnimationFrame(() => palette.classList.remove('opacity-0'));
-                input.value = '';
-                input.focus();
-                renderCommands(commands);
-            } else {
-                // Hide
-                palette.classList.add('opacity-0');
-                setTimeout(() => palette.classList.add('hidden', 'pointer-events-none'), 150);
-            }
-
-            input.oninput = (e) => {
-                const val = e.target.value.toLowerCase();
-                const filtered = commands.filter(c => c.name.toLowerCase().includes(val));
-                renderCommands(filtered);
-            };
-        }
-
-        function renderCommands(cmds) {
-            const list = document.getElementById('cmd-list');
-            list.innerHTML = '';
-            
-            if (cmds.length === 0) {
-                list.innerHTML = `<div class="text-gemini-textSecondary text-xs p-3 text-center">No commands found</div>`;
-                return;
-            }
-
-            cmds.forEach(cmd => {
-                const div = document.createElement('div');
-                div.className = 'cmd-item group';
-                div.onclick = () => {
-                    cmd.action();
-                    toggleCommandPalette();
-                };
-                div.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <i data-lucide="${cmd.icon}" class="w-4 h-4 text-gemini-textSecondary group-hover:text-white"></i>
-                        <span class="text-sm">${cmd.name}</span>
-                    </div>
-                    ${cmd.shortcut ? `<span class="cmd-shortcut">${cmd.shortcut}</span>` : ''}
-                `;
-                list.appendChild(div);
-            });
-            lucide.createIcons();
         }
 
         // --- SETTINGS ---
@@ -1170,28 +955,19 @@
                 });
                 
                 if (state.user) {
-                     // Handle Guest / User Display
-                     if (state.user.isAnonymous) {
-                         document.getElementById('profile-name').innerText = "Guest User";
-                         document.getElementById('profile-email').innerText = "Anonymous Session";
-                         document.getElementById('profile-initial').innerText = "G";
-                         document.getElementById('profile-avatar').classList.add('hidden');
-                         document.getElementById('profile-initial').classList.remove('hidden');
+                     document.getElementById('profile-name').innerText = state.user.displayName || 'User';
+                     document.getElementById('profile-email').innerText = state.user.email || '';
+                     const initial = document.getElementById('profile-initial');
+                     const avatar = document.getElementById('profile-avatar');
+                     
+                     if (state.user.photoURL) {
+                         avatar.src = state.user.photoURL;
+                         avatar.classList.remove('hidden');
+                         initial.classList.add('hidden');
                      } else {
-                         document.getElementById('profile-name').innerText = state.user.displayName || 'User';
-                         document.getElementById('profile-email').innerText = state.user.email || '';
-                         const initial = document.getElementById('profile-initial');
-                         const avatar = document.getElementById('profile-avatar');
-                         
-                         if (state.user.photoURL) {
-                             avatar.src = state.user.photoURL;
-                             avatar.classList.remove('hidden');
-                             initial.classList.add('hidden');
-                         } else {
-                             initial.innerText = (state.user.displayName || 'U')[0];
-                             avatar.classList.add('hidden');
-                             initial.classList.remove('hidden');
-                         }
+                         initial.innerText = (state.user.displayName || 'U')[0];
+                         avatar.classList.add('hidden');
+                         initial.classList.remove('hidden');
                      }
                 }
             } else {
@@ -1489,51 +1265,25 @@
                     loadingOverlay.classList.add('opacity-0', 'pointer-events-none');
                     authModal.classList.add('hidden');
 
-                    // --- SIDEBAR VISIBILITY LOGIC (Guest vs User) ---
-                    const historyLabel = document.getElementById('history-label');
-                    const historySearch = document.getElementById('history-search-container');
-                    const historyList = document.getElementById('chat-history-list');
-
-                    if (user.isAnonymous) {
-                        // GUEST: Hide History
-                        if(historyLabel) historyLabel.classList.add('hidden');
-                        if(historySearch) historySearch.classList.add('hidden');
-                        if(historyList) historyList.classList.add('hidden');
-                        
-                        document.getElementById('user-email').innerText = 'Guest Mode';
-                        document.getElementById('user-initial').innerText = 'G';
-                        document.getElementById('user-initial').classList.remove('hidden');
-                        document.getElementById('user-avatar').classList.add('hidden');
-                    } else {
-                        // USER: Show History
-                        if(historyLabel) historyLabel.classList.remove('hidden');
-                        if(historySearch) historySearch.classList.remove('hidden');
-                        if(historyList) historyList.classList.remove('hidden');
-
-                        document.getElementById('user-email').innerText = user.email || '';
-                        document.getElementById('user-initial').innerText = (user.displayName || 'U')[0];
-                        
-                        if (user.photoURL) {
-                            const img = document.getElementById('user-avatar');
-                            img.src = user.photoURL;
-                            img.classList.remove('hidden');
-                            document.getElementById('user-initial').classList.add('hidden');
-                        }
-                    }
+                    document.getElementById('user-email').innerText = user.email || '';
+                    document.getElementById('user-initial').innerText = (user.displayName || 'U')[0];
                     
                     const welcomeName = document.getElementById('welcome-name');
                     if (welcomeName) {
-                        const name = user.isAnonymous ? 'Guest' : (user.email || user.displayName || 'Student');
+                        const name = user.email || user.displayName || 'Student';
                         welcomeName.innerText = name;
                         welcomeName.title = name;
                     }
 
-                    if(!state.currentChatId) state.currentChatId = 'session_' + Date.now();
-                    
-                    // Only fetch history if not guest
-                    if (!user.isAnonymous) {
-                        fetchChats();
+                    if (user.photoURL) {
+                        const img = document.getElementById('user-avatar');
+                        img.src = user.photoURL;
+                        img.classList.remove('hidden');
+                        document.getElementById('user-initial').classList.add('hidden');
                     }
+
+                    if(!state.currentChatId) state.currentChatId = 'session_' + Date.now();
+                    fetchChats();
                 } else {
                     state.user = null;
                     localStorage.removeItem('ada_user_cached');
@@ -1543,44 +1293,11 @@
             });
         }
 
-        // --- AUTH HANDLERS ---
-
         function signInWithGoogle() {
             const provider = new firebase.auth.GoogleAuthProvider();
             auth.signInWithPopup(provider).catch(e => {
                 console.error(e);
                 showToast("Sign in failed.", "error");
-            });
-        }
-        
-        function signInAsGuest() {
-            auth.signInAnonymously().catch(e => {
-                console.error(e);
-                showToast("Guest login failed.", "error");
-            });
-        }
-
-        function handleEmailSignIn() {
-            const email = document.getElementById('auth-email').value;
-            const pass = document.getElementById('auth-password').value;
-            if(!email || !pass) {
-                showToast("Please enter email and password", "error");
-                return;
-            }
-            auth.signInWithEmailAndPassword(email, pass).catch(e => {
-                showToast(e.message, "error");
-            });
-        }
-
-        function handleEmailSignUp() {
-            const email = document.getElementById('auth-email').value;
-            const pass = document.getElementById('auth-password').value;
-            if(!email || !pass) {
-                showToast("Please enter email and password", "error");
-                return;
-            }
-            auth.createUserWithEmailAndPassword(email, pass).catch(e => {
-                showToast(e.message, "error");
             });
         }
 
@@ -1591,25 +1308,10 @@
             });
         }
 
-        // ADDED: Skeleton Loader Generator
-        function renderSkeletonLoader() {
-             const list = document.getElementById('chat-history-list');
-             list.innerHTML = '';
-             for(let i=0; i<5; i++) {
-                 list.innerHTML += `
-                    <div class="flex items-center gap-3 p-2.5 rounded-full skeleton-shimmer opacity-50 mb-1">
-                        <div class="w-4 h-4 bg-gemini-surfaceHover rounded-full"></div>
-                        <div class="h-4 bg-gemini-surfaceHover rounded w-24"></div>
-                    </div>
-                 `;
-             }
-        }
-
         async function fetchChats() {
-            if (!state.user || state.user.isAnonymous) return;
+            if (!state.user) return;
             try {
-                // USE SKELETON LOADER
-                renderSkeletonLoader();
+                // Skeleton loading for sidebar could go here
                 
                 const token = await state.user.getIdToken();
                 const res = await fetch(`${API_BASE_URL}/chats`, { headers: { 'Authorization': `Bearer ${token}` } });
@@ -1652,16 +1354,13 @@
             if (state.isTyping) return;
             state.currentChatId = chatId;
             
-            // Skeleton Loading for Main Chat
+            // Skeleton Loading
             const container = document.querySelector('#chat-container > div');
             container.innerHTML = `
-                <div class="flex flex-col space-y-6 p-4">
-                    <div class="flex justify-end"><div class="h-10 w-2/3 rounded-2xl skeleton-shimmer"></div></div>
-                    <div class="flex justify-start gap-4">
-                        <div class="w-8 h-8 rounded-full skeleton-shimmer flex-shrink-0"></div>
-                        <div class="h-24 w-3/4 rounded-2xl skeleton-shimmer"></div>
-                    </div>
-                    <div class="flex justify-end"><div class="h-10 w-1/2 rounded-2xl skeleton-shimmer"></div></div>
+                <div class="flex flex-col space-y-4 p-4 animate-pulse">
+                    <div class="flex justify-end"><div class="h-10 w-2/3 bg-gemini-surfaceHover rounded-xl"></div></div>
+                    <div class="flex justify-start"><div class="h-20 w-3/4 bg-gemini-surfaceHover rounded-xl"></div></div>
+                    <div class="flex justify-end"><div class="h-8 w-1/2 bg-gemini-surfaceHover rounded-xl"></div></div>
                 </div>`;
             
             try {
@@ -1682,8 +1381,7 @@
                     container.innerHTML = `<div class="text-center p-8 text-gemini-textSecondary">Start conversation...</div>`;
                 }
                 
-                // Only refresh history if NOT shared view AND NOT guest
-                if(!state.isSharedView && state.user && !state.user.isAnonymous) fetchChats();
+                if(!state.isSharedView) fetchChats();
             } catch (e) { 
                 console.error(e); 
                 container.innerHTML = `<div class="text-center text-red-400 p-4">Failed to load chat.</div>`;
@@ -1818,10 +1516,8 @@
 
         function updateArtifactPanel(code, lang) {
             const langDisplay = document.getElementById('lang-display');
-            const statusLang = document.getElementById('status-lang'); // Update status bar
             if(lang) {
                 langDisplay.innerText = lang;
-                statusLang.innerText = lang; // Sync status bar
                 const modeMap = {
                     'PYTHON': 'python',
                     'JAVASCRIPT': 'javascript',
@@ -1895,11 +1591,7 @@
 
                 state.messages.push({ role: 'user', content: message });
                 state.messages.push({ role: 'ai', content: fullText });
-                
-                // Only refresh history if not guest
-                if (!state.user.isAnonymous) {
-                    setTimeout(fetchChats, 1500);
-                }
+                setTimeout(fetchChats, 1500);
 
             } catch (error) {
                 removeTypingIndicator();
@@ -1914,7 +1606,7 @@
             state.messages = [];
             state.currentChatId = 'session_' + Date.now();
             
-            const userName = (state.user && !state.user.isAnonymous) ? (state.user.email || state.user.displayName || 'Student') : 'Guest';
+            const userName = state.user ? (state.user.email || state.user.displayName || 'Student') : 'Student';
             
             const container = document.querySelector('#chat-container > div');
             container.innerHTML = `
@@ -1926,8 +1618,7 @@
                         <h1 class="text-4xl md:text-5xl font-medium text-transparent bg-clip-text bg-gradient-to-r from-[#4285F4] via-[#9B72CB] to-[#D96570] pb-2">
                             Hello, <span id="welcome-name" class="text-white truncate block md:inline max-w-[200px] md:max-w-none">${userName}</span>
                         </h1>
-                        <!-- UPDATED COLOR -->
-                        <h2 class="text-3xl md:text-5xl font-medium text-gemini-textSecondary/5">How can I help you code today?</h2>
+                        <h2 class="text-3xl md:text-5xl font-medium text-gemini-surfaceHover/50">How can I help you code today?</h2>
                     </div>
                     <div class="hidden md:flex flex-wrap gap-3 w-full">
                         <button onclick="setPrompt('Debug this Python script')" class="group bg-gemini-surface hover:bg-gemini-surfaceHover text-gemini-text px-5 py-4 rounded-2xl text-sm font-medium transition-all text-left flex-1 min-w-[200px] border border-transparent hover:border-gemini-surfaceHover">
@@ -1942,7 +1633,7 @@
                     </div>
                 </div>`;
             lucide.createIcons();
-            if (state.user && !state.user.isAnonymous) fetchChats();
+            fetchChats();
         }
 
         window.onload = initApp;

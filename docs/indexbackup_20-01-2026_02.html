@@ -450,32 +450,19 @@
         <span id="toast-message" class="text-sm font-medium">Notification</span>
     </div>
 
-    <!-- Auth Modal (Updated for Multi-Auth) -->
+    <!-- Auth Modal -->
     <div id="auth-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-[#131314] transition-opacity duration-300 hidden opacity-0 pointer-events-none">
-        <div class="w-full max-w-md p-8 text-center bg-[#131314] rounded-2xl md:bg-[#131314] md:border-none relative max-h-[90vh] overflow-y-auto">
+        <div class="w-full max-w-md p-8 text-center">
             <div class="mx-auto w-20 h-20 mb-6 rounded-full bg-gemini-surface flex items-center justify-center relative overflow-hidden group">
                 <div class="absolute inset-0 bg-gradient-to-tr from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 <svg class="w-10 h-10 animate-spin-slow-entry drop-shadow-lg"><use href="#icon-ada"></use></svg>
             </div>
             <h1 class="text-3xl font-medium text-white mb-3">Welcome to Ada</h1>
-            <p class="text-gemini-textSecondary mb-8">Sign in to access your coding workspace.</p>
+            <p class="text-gemini-textSecondary mb-10">Sign in to access your coding workspace.</p>
             
-            
-            <!-- Google -->
-            <button onclick="signInWithGoogle()" class="w-full bg-white text-[#131314] hover:bg-gray-100 font-medium py-3 px-6 rounded-full flex items-center justify-center gap-3 transition-colors mb-3">
+            <button onclick="signInWithGoogle()" class="w-full bg-white text-[#131314] hover:bg-gray-100 font-medium py-3 px-6 rounded-full flex items-center justify-center gap-3 transition-colors">
                 <img src="https://www.google.com/favicon.ico" class="w-5 h-5" alt="G">
-                <span>Sign In with Google</span>
-            </button>
-            <br>
-<!-- Divider -->
-            <div class="relative mb-6">
-                <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gemini-surfaceHover"></div></div>
-                <div class="relative flex justify-center text-sm"><span class="px-2 bg-[#131314] text-gemini-textSecondary">Or continue with</span></div>
-            </div>
-            <!-- Guest -->
-            <button onclick="signInAsGuest()" class="w-full bg-[#3C4043] text-white hover:bg-[#494c50] font-medium py-3 px-6 rounded-full flex items-center justify-center gap-3 transition-colors">
-                <i data-lucide="user" class="w-5 h-5"></i>
-                <span>Continue as Guest</span>
+                <span>Continue with Google</span>
             </button>
         </div>
     </div>
@@ -540,7 +527,7 @@
                                         <path data-original="#000000" fill="currentColor" d="M243.188 182.86 356.32 69.726c12.5-12.5 12.5-32.766 0-45.247L341.238 9.398c-12.504-12.503-32.77-12.503-45.25 0L182.86 122.528 69.727 9.374c-12.5-12.5-32.766-12.5-45.247 0L9.375 24.457c-12.5 12.504-12.5 32.77 0 45.25l113.152 113.152L9.398 295.99c-12.503 12.503-12.503 32.769 0 45.25L24.48 356.32c12.5 12.5 32.766 12.5 45.247 0l113.132-113.132L295.99 356.32c12.503 12.5 32.769 12.5 45.25 0l15.081-15.082c12.5-12.504 12.5-32.77 0-45.25zm0 0"></path>
                                     </g>
                                 </svg>
-                                <svg class="checkmark" xml:space="preserve" style="enable-background:new 0 0 512 512" viewBox="0 0 24 24" y="0" x="0" height="10" width="10" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                                <svg class="checkmark" xml:space="preserve" style="enable-background:new 0 0 512 512" viewBox="0 0 24 24" y="0" x="0" height="10" width="10" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" xmlns="http://www.w3.org/1999/xlink" version="1.1" xmlns="http://www.w3.org/2000/svg">
                                     <g>
                                         <path class="" data-original="#000000" fill="currentColor" d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z"></path>
                                     </g>
@@ -646,9 +633,9 @@
             <button onclick="toggleSidebar()" class="p-2 text-gemini-textSecondary hover:text-white hover:bg-gemini-surfaceHover rounded-full transition-colors">
                 <i data-lucide="menu" class="w-5 h-5"></i>
             </button>
-            <span id="history-label" class="text-gemini-textSecondary text-xs font-medium uppercase tracking-wider">History</span>
+            <span class="text-gemini-textSecondary text-xs font-medium uppercase tracking-wider">History</span>
             
-            <div id="history-search-container" class="relative w-full max-w-[140px] ml-4">
+            <div class="relative w-full max-w-[140px] ml-4">
                <input type="text" id="history-search" placeholder="Search..." oninput="filterHistory(this.value)" class="w-full bg-[#131314] text-xs text-white border border-gemini-surfaceHover rounded-md px-2 py-1 focus:outline-none focus:border-gemini-blue">
                <i data-lucide="search" class="absolute right-2 top-1.5 w-3 h-3 text-gemini-textSecondary"></i>
             </div>
@@ -730,7 +717,7 @@
                         <h1 class="text-4xl md:text-5xl font-medium text-transparent bg-clip-text bg-gradient-to-r from-[#4285F4] via-[#9B72CB] to-[#D96570] pb-2">
                             Hello, <span id="welcome-name" class="text-white truncate block md:inline max-w-[200px] md:max-w-none">Student</span>
                         </h1>
-                        <!-- UPDATED COLOR -->
+                        <!-- UPDATED COLOR: Made brighter as requested -->
                         <h2 class="text-3xl md:text-5xl font-medium text-gemini-textSecondary/30">How can I help you code today?</h2>
                     </div>
 
@@ -1170,28 +1157,19 @@
                 });
                 
                 if (state.user) {
-                     // Handle Guest / User Display
-                     if (state.user.isAnonymous) {
-                         document.getElementById('profile-name').innerText = "Guest User";
-                         document.getElementById('profile-email').innerText = "Anonymous Session";
-                         document.getElementById('profile-initial').innerText = "G";
-                         document.getElementById('profile-avatar').classList.add('hidden');
-                         document.getElementById('profile-initial').classList.remove('hidden');
+                     document.getElementById('profile-name').innerText = state.user.displayName || 'User';
+                     document.getElementById('profile-email').innerText = state.user.email || '';
+                     const initial = document.getElementById('profile-initial');
+                     const avatar = document.getElementById('profile-avatar');
+                     
+                     if (state.user.photoURL) {
+                         avatar.src = state.user.photoURL;
+                         avatar.classList.remove('hidden');
+                         initial.classList.add('hidden');
                      } else {
-                         document.getElementById('profile-name').innerText = state.user.displayName || 'User';
-                         document.getElementById('profile-email').innerText = state.user.email || '';
-                         const initial = document.getElementById('profile-initial');
-                         const avatar = document.getElementById('profile-avatar');
-                         
-                         if (state.user.photoURL) {
-                             avatar.src = state.user.photoURL;
-                             avatar.classList.remove('hidden');
-                             initial.classList.add('hidden');
-                         } else {
-                             initial.innerText = (state.user.displayName || 'U')[0];
-                             avatar.classList.add('hidden');
-                             initial.classList.remove('hidden');
-                         }
+                         initial.innerText = (state.user.displayName || 'U')[0];
+                         avatar.classList.add('hidden');
+                         initial.classList.remove('hidden');
                      }
                 }
             } else {
@@ -1489,51 +1467,25 @@
                     loadingOverlay.classList.add('opacity-0', 'pointer-events-none');
                     authModal.classList.add('hidden');
 
-                    // --- SIDEBAR VISIBILITY LOGIC (Guest vs User) ---
-                    const historyLabel = document.getElementById('history-label');
-                    const historySearch = document.getElementById('history-search-container');
-                    const historyList = document.getElementById('chat-history-list');
-
-                    if (user.isAnonymous) {
-                        // GUEST: Hide History
-                        if(historyLabel) historyLabel.classList.add('hidden');
-                        if(historySearch) historySearch.classList.add('hidden');
-                        if(historyList) historyList.classList.add('hidden');
-                        
-                        document.getElementById('user-email').innerText = 'Guest Mode';
-                        document.getElementById('user-initial').innerText = 'G';
-                        document.getElementById('user-initial').classList.remove('hidden');
-                        document.getElementById('user-avatar').classList.add('hidden');
-                    } else {
-                        // USER: Show History
-                        if(historyLabel) historyLabel.classList.remove('hidden');
-                        if(historySearch) historySearch.classList.remove('hidden');
-                        if(historyList) historyList.classList.remove('hidden');
-
-                        document.getElementById('user-email').innerText = user.email || '';
-                        document.getElementById('user-initial').innerText = (user.displayName || 'U')[0];
-                        
-                        if (user.photoURL) {
-                            const img = document.getElementById('user-avatar');
-                            img.src = user.photoURL;
-                            img.classList.remove('hidden');
-                            document.getElementById('user-initial').classList.add('hidden');
-                        }
-                    }
+                    document.getElementById('user-email').innerText = user.email || '';
+                    document.getElementById('user-initial').innerText = (user.displayName || 'U')[0];
                     
                     const welcomeName = document.getElementById('welcome-name');
                     if (welcomeName) {
-                        const name = user.isAnonymous ? 'Guest' : (user.email || user.displayName || 'Student');
+                        const name = user.email || user.displayName || 'Student';
                         welcomeName.innerText = name;
                         welcomeName.title = name;
                     }
 
-                    if(!state.currentChatId) state.currentChatId = 'session_' + Date.now();
-                    
-                    // Only fetch history if not guest
-                    if (!user.isAnonymous) {
-                        fetchChats();
+                    if (user.photoURL) {
+                        const img = document.getElementById('user-avatar');
+                        img.src = user.photoURL;
+                        img.classList.remove('hidden');
+                        document.getElementById('user-initial').classList.add('hidden');
                     }
+
+                    if(!state.currentChatId) state.currentChatId = 'session_' + Date.now();
+                    fetchChats();
                 } else {
                     state.user = null;
                     localStorage.removeItem('ada_user_cached');
@@ -1543,44 +1495,11 @@
             });
         }
 
-        // --- AUTH HANDLERS ---
-
         function signInWithGoogle() {
             const provider = new firebase.auth.GoogleAuthProvider();
             auth.signInWithPopup(provider).catch(e => {
                 console.error(e);
                 showToast("Sign in failed.", "error");
-            });
-        }
-        
-        function signInAsGuest() {
-            auth.signInAnonymously().catch(e => {
-                console.error(e);
-                showToast("Guest login failed.", "error");
-            });
-        }
-
-        function handleEmailSignIn() {
-            const email = document.getElementById('auth-email').value;
-            const pass = document.getElementById('auth-password').value;
-            if(!email || !pass) {
-                showToast("Please enter email and password", "error");
-                return;
-            }
-            auth.signInWithEmailAndPassword(email, pass).catch(e => {
-                showToast(e.message, "error");
-            });
-        }
-
-        function handleEmailSignUp() {
-            const email = document.getElementById('auth-email').value;
-            const pass = document.getElementById('auth-password').value;
-            if(!email || !pass) {
-                showToast("Please enter email and password", "error");
-                return;
-            }
-            auth.createUserWithEmailAndPassword(email, pass).catch(e => {
-                showToast(e.message, "error");
             });
         }
 
@@ -1606,7 +1525,7 @@
         }
 
         async function fetchChats() {
-            if (!state.user || state.user.isAnonymous) return;
+            if (!state.user) return;
             try {
                 // USE SKELETON LOADER
                 renderSkeletonLoader();
@@ -1682,8 +1601,7 @@
                     container.innerHTML = `<div class="text-center p-8 text-gemini-textSecondary">Start conversation...</div>`;
                 }
                 
-                // Only refresh history if NOT shared view AND NOT guest
-                if(!state.isSharedView && state.user && !state.user.isAnonymous) fetchChats();
+                if(!state.isSharedView) fetchChats();
             } catch (e) { 
                 console.error(e); 
                 container.innerHTML = `<div class="text-center text-red-400 p-4">Failed to load chat.</div>`;
@@ -1895,11 +1813,7 @@
 
                 state.messages.push({ role: 'user', content: message });
                 state.messages.push({ role: 'ai', content: fullText });
-                
-                // Only refresh history if not guest
-                if (!state.user.isAnonymous) {
-                    setTimeout(fetchChats, 1500);
-                }
+                setTimeout(fetchChats, 1500);
 
             } catch (error) {
                 removeTypingIndicator();
@@ -1914,7 +1828,7 @@
             state.messages = [];
             state.currentChatId = 'session_' + Date.now();
             
-            const userName = (state.user && !state.user.isAnonymous) ? (state.user.email || state.user.displayName || 'Student') : 'Guest';
+            const userName = state.user ? (state.user.email || state.user.displayName || 'Student') : 'Student';
             
             const container = document.querySelector('#chat-container > div');
             container.innerHTML = `
@@ -1927,7 +1841,7 @@
                             Hello, <span id="welcome-name" class="text-white truncate block md:inline max-w-[200px] md:max-w-none">${userName}</span>
                         </h1>
                         <!-- UPDATED COLOR -->
-                        <h2 class="text-3xl md:text-5xl font-medium text-gemini-textSecondary/5">How can I help you code today?</h2>
+                        <h2 class="text-3xl md:text-5xl font-medium text-gemini-textSecondary/80">How can I help you code today?</h2>
                     </div>
                     <div class="hidden md:flex flex-wrap gap-3 w-full">
                         <button onclick="setPrompt('Debug this Python script')" class="group bg-gemini-surface hover:bg-gemini-surfaceHover text-gemini-text px-5 py-4 rounded-2xl text-sm font-medium transition-all text-left flex-1 min-w-[200px] border border-transparent hover:border-gemini-surfaceHover">
@@ -1942,7 +1856,7 @@
                     </div>
                 </div>`;
             lucide.createIcons();
-            if (state.user && !state.user.isAnonymous) fetchChats();
+            fetchChats();
         }
 
         window.onload = initApp;

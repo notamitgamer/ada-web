@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ada AI</title>
-    <link rel="icon" type="image/png" href="logo.png">
+<link rel="icon" type="image/png" href="logo.png">
+
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -444,64 +445,38 @@
     </div>
 
     <!-- Toast Notification (Custom Popups) -->
-    <div id="toast" class="fixed bottom-24 md:bottom-10 left-1/2 -translate-x-1/2 bg-gemini-surface border border-gemini-surfaceHover text-white px-6 py-3 rounded-full shadow-2xl z-[220] transition-all duration-300 transform translate-y-20 opacity-0 pointer-events-none flex items-center gap-2 max-w-[90vw] w-max">
-        <i data-lucide="info" class="w-4 h-4 text-gemini-blue flex-shrink-0"></i>
-        <span id="toast-message" class="text-sm font-medium whitespace-normal text-center">Notification</span>
+    <div id="toast" class="fixed bottom-24 md:bottom-10 left-1/2 -translate-x-1/2 bg-gemini-surface border border-gemini-surfaceHover text-white px-6 py-3 rounded-full shadow-2xl z-[220] transition-all duration-300 transform translate-y-20 opacity-0 pointer-events-none flex items-center gap-2">
+        <i data-lucide="info" class="w-4 h-4 text-gemini-blue"></i>
+        <span id="toast-message" class="text-sm font-medium">Notification</span>
     </div>
 
-    <!-- Auth Modal (Updated for Email/Pass + Verification) -->
+    <!-- Auth Modal (Updated for Multi-Auth) -->
     <div id="auth-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-[#131314] transition-opacity duration-300 hidden opacity-0 pointer-events-none">
         <div class="w-full max-w-md p-8 text-center bg-[#131314] rounded-2xl md:bg-[#131314] md:border-none relative max-h-[90vh] overflow-y-auto">
             <div class="mx-auto w-20 h-20 mb-6 rounded-full bg-gemini-surface flex items-center justify-center relative overflow-hidden group">
                 <div class="absolute inset-0 bg-gradient-to-tr from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 <svg class="w-10 h-10 animate-spin-slow-entry drop-shadow-lg"><use href="#icon-ada"></use></svg>
             </div>
+            <h1 class="text-3xl font-medium text-white mb-3">Welcome to Ada</h1>
+            <p class="text-gemini-textSecondary mb-8">Sign in to access your coding workspace.</p>
             
-            <h1 id="auth-title" class="text-3xl font-medium text-white mb-2">Welcome to Ada</h1>
-            <p id="auth-subtitle" class="text-gemini-textSecondary mb-8 text-sm">Sign in to access your workspace.</p>
             
-            <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-4 text-left">
-                <input type="email" id="auth-email" placeholder="Email" autocomplete="email" required class="w-full bg-gemini-surface border border-gemini-surfaceHover rounded-xl p-3 text-white focus:outline-none focus:border-gemini-blue placeholder-gemini-textSecondary">
-                
-                <div class="relative">
-                    <input type="password" id="auth-password" placeholder="Password" autocomplete="current-password" required class="w-full bg-gemini-surface border border-gemini-surfaceHover rounded-xl p-3 pr-10 text-white focus:outline-none focus:border-gemini-blue placeholder-gemini-textSecondary">
-                    <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3 top-1/2 -translate-y-1/2 text-gemini-textSecondary hover:text-white focus:outline-none">
-                        <i id="password-toggle-icon" data-lucide="eye" class="w-5 h-5"></i>
-                    </button>
-                </div>
-                
-                <div id="auth-feedback" class="hidden text-center text-sm mt-2"></div>
-
-                <div id="signin-extras" class="flex justify-end">
-                    <button type="button" onclick="handleForgotPassword()" class="text-xs text-gemini-textSecondary hover:text-gemini-blue hover:underline">Forgot Password?</button>
-                </div>
-
-                <button type="submit" id="auth-submit-btn" class="w-full bg-gemini-blue text-black font-semibold py-3 rounded-xl hover:bg-white transition-colors">
-                    Sign In
-                </button>
-            </form>
-
-            <div class="mt-6">
-                <button type="button" id="toggle-auth-mode" onclick="toggleAuthMode()" class="text-sm text-gemini-blue hover:underline">
-                    Don't have an account? Create one
-                </button>
-            </div>
-
-            <div class="relative my-8">
+            <!-- Google -->
+            <button onclick="signInWithGoogle()" class="w-full bg-white text-[#131314] hover:bg-gray-100 font-medium py-3 px-6 rounded-full flex items-center justify-center gap-3 transition-colors mb-3">
+                <img src="https://www.google.com/favicon.ico" class="w-5 h-5" alt="G">
+                <span>Sign In with Google</span>
+            </button>
+            <br>
+<!-- Divider -->
+            <div class="relative mb-6">
                 <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gemini-surfaceHover"></div></div>
-                <span class="relative px-3 bg-[#131314] text-xs text-gemini-textSecondary uppercase tracking-widest">Or</span>
+                <div class="relative flex justify-center text-sm"><span class="px-2 bg-[#131314] text-gemini-textSecondary">Or continue with</span></div>
             </div>
-
-            <div class="space-y-3">
-                <button onclick="signInWithGoogle()" class="w-full bg-white text-[#131314] hover:bg-gray-100 font-medium py-3 px-6 rounded-full flex items-center justify-center gap-3 transition-colors">
-                    <img src="https://www.google.com/favicon.ico" class="w-5 h-5" alt="G">
-                    <span>Sign In with Google</span>
-                </button>
-                <button onclick="signInAsGuest()" class="w-full bg-[#3C4043] text-white hover:bg-[#494c50] font-medium py-3 px-6 rounded-full flex items-center justify-center gap-3 transition-colors">
-                    <i data-lucide="user" class="w-5 h-5"></i>
-                    <span>Continue as Guest</span>
-                </button>
-            </div>
+            <!-- Guest -->
+            <button onclick="signInAsGuest()" class="w-full bg-[#3C4043] text-white hover:bg-[#494c50] font-medium py-3 px-6 rounded-full flex items-center justify-center gap-3 transition-colors">
+                <i data-lucide="user" class="w-5 h-5"></i>
+                <span>Continue as Guest</span>
+            </button>
         </div>
     </div>
 
@@ -855,7 +830,6 @@
         
         // --- STATE & INIT ---
         let auth, db;
-        let isSignUpMode = false;
         let state = {
             messages: [],
             isTyping: false,
@@ -1128,84 +1102,27 @@
         }
 
         // --- UI TOGGLES & HELPERS ---
-        let toastTimeout;
-
-        function showToast(msg, type = 'info') {
-            // Check for Mobile + Auth Modal Open case
-            const authModal = document.getElementById('auth-modal');
-            const isMobile = window.innerWidth < 768; // Tailwind md breakpoint
-            const isAuthOpen = !authModal.classList.contains('hidden') && !authModal.classList.contains('opacity-0');
-
-            if (isMobile && isAuthOpen) {
-                const feedback = document.getElementById('auth-feedback');
-                feedback.innerText = msg;
-                
-                // Style based on type
-                if (type === 'error') {
-                    feedback.className = 'text-center text-sm mt-3 p-3 rounded-lg bg-red-500/10 text-red-400 border border-red-500/20';
-                } else if (type === 'success') {
-                    feedback.className = 'text-center text-sm mt-3 p-3 rounded-lg bg-green-500/10 text-green-400 border border-green-500/20';
-                } else {
-                    feedback.className = 'text-center text-sm mt-3 p-3 rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/20';
-                }
-                
-                feedback.classList.remove('hidden');
-                
-                // Auto-hide inline feedback after 6s
-                if (toastTimeout) clearTimeout(toastTimeout);
-                toastTimeout = setTimeout(() => {
-                    feedback.classList.add('hidden');
-                }, 6000);
-                return;
-            }
-
-            // Standard Toast Logic (PC or Auth closed)
-            const t = document.getElementById('toast');
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            const icon = toast.querySelector('i');
+            document.getElementById('toast-message').innerText = message;
             
-            if (toastTimeout) clearTimeout(toastTimeout);
-
-            // 1. Determine icon and style based on type
-            let iconName = 'info';
-            let iconColor = 'text-gemini-blue';
-            let containerClass = 'bg-gemini-surface border-gemini-accent text-white';
-
             if (type === 'error') {
-                iconName = 'alert-circle';
-                iconColor = 'text-red-400';
-                containerClass = 'bg-red-500/10 border-red-500/20 text-red-400';
+                icon.setAttribute('data-lucide', 'alert-circle');
+                icon.className = 'w-4 h-4 text-red-400';
             } else if (type === 'success') {
-                iconName = 'check-circle';
-                iconColor = 'text-green-400';
-            }
-
-            // 2. Completely rebuild innerHTML to ensure we have a fresh <i> tag for Lucide
-            t.innerHTML = `<i data-lucide="${iconName}" class="w-4 h-4 ${iconColor} flex-shrink-0"></i><span id="toast-message" class="text-sm font-medium whitespace-normal text-center">${msg}</span>`;
-            
-            // 3. Set container classes and visibility
-            t.className = `fixed bottom-24 md:bottom-10 left-1/2 -translate-x-1/2 border px-6 py-3 rounded-full shadow-2xl z-[220] transition-all duration-300 transform translate-y-0 opacity-100 flex items-center gap-2 max-w-[90vw] w-max ${containerClass}`;
-            
-            // 4. Render icons
-            lucide.createIcons();
-            
-            // 5. Auto-hide
-            toastTimeout = setTimeout(() => {
-                 t.classList.remove('opacity-100', 'translate-y-0');
-                 t.classList.add('opacity-0', 'translate-y-20', 'pointer-events-none');
-            }, 3000);
-        }
-
-        function togglePasswordVisibility() {
-            const input = document.getElementById('auth-password');
-            const icon = document.getElementById('password-toggle-icon');
-            
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.setAttribute('data-lucide', 'eye-off');
+                icon.setAttribute('data-lucide', 'check-circle');
+                icon.className = 'w-4 h-4 text-green-400';
             } else {
-                input.type = 'password';
-                icon.setAttribute('data-lucide', 'eye');
+                icon.setAttribute('data-lucide', 'info');
+                icon.className = 'w-4 h-4 text-gemini-blue';
             }
             lucide.createIcons();
+
+            toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-20');
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-20');
+            }, 3000);
         }
 
         function toggleShareSetting(checkbox) {
@@ -1560,46 +1477,24 @@
         }
 
         // --- AUTH & FIREBASE ---
-        async function checkAuth() {
-            auth.onAuthStateChanged(async (user) => {
+        function checkAuth() {
+            auth.onAuthStateChanged(user => {
                 const loadingOverlay = document.getElementById('loading-overlay');
                 const authModal = document.getElementById('auth-modal');
                 
                 if (user) {
-                    try {
-                        // Force refresh user to get latest emailVerified status
-                        await user.reload();
-                    } catch (e) {
-                        console.log("Session reload failed, signing out.");
-                        auth.signOut();
-                        return;
-                    }
-
-                    const updatedUser = auth.currentUser;
-                    if (!updatedUser) return;
-
-                    // Check if email is verified for email/password users
-                    const isEmailProvider = updatedUser.providerData.some(p => p.providerId === 'password');
-                    if (isEmailProvider && !updatedUser.emailVerified) {
-                        showToast("Please verify your email. Check your inbox!", "error");
-                        auth.signOut();
-                        loadingOverlay.classList.add('opacity-0', 'pointer-events-none');
-                        authModal.classList.remove('hidden', 'opacity-0', 'pointer-events-none');
-                        return;
-                    }
-
-                    state.user = updatedUser;
+                    state.user = user;
                     localStorage.setItem('ada_user_cached', 'true');
                     
                     loadingOverlay.classList.add('opacity-0', 'pointer-events-none');
-                    authModal.classList.add('hidden', 'opacity-0', 'pointer-events-none');
+                    authModal.classList.add('hidden');
 
                     // --- SIDEBAR VISIBILITY LOGIC (Guest vs User) ---
                     const historyLabel = document.getElementById('history-label');
                     const historySearch = document.getElementById('history-search-container');
                     const historyList = document.getElementById('chat-history-list');
 
-                    if (updatedUser.isAnonymous) {
+                    if (user.isAnonymous) {
                         // GUEST: Hide History
                         if(historyLabel) historyLabel.classList.add('hidden');
                         if(historySearch) historySearch.classList.add('hidden');
@@ -1615,12 +1510,12 @@
                         if(historySearch) historySearch.classList.remove('hidden');
                         if(historyList) historyList.classList.remove('hidden');
 
-                        document.getElementById('user-email').innerText = updatedUser.email || '';
-                        document.getElementById('user-initial').innerText = (updatedUser.displayName || 'U')[0];
+                        document.getElementById('user-email').innerText = user.email || '';
+                        document.getElementById('user-initial').innerText = (user.displayName || 'U')[0];
                         
-                        if (updatedUser.photoURL) {
+                        if (user.photoURL) {
                             const img = document.getElementById('user-avatar');
-                            img.src = updatedUser.photoURL;
+                            img.src = user.photoURL;
                             img.classList.remove('hidden');
                             document.getElementById('user-initial').classList.add('hidden');
                         }
@@ -1628,7 +1523,7 @@
                     
                     const welcomeName = document.getElementById('welcome-name');
                     if (welcomeName) {
-                        const name = updatedUser.isAnonymous ? 'Guest' : (updatedUser.email || updatedUser.displayName || 'Student');
+                        const name = user.isAnonymous ? 'Guest' : (user.email || user.displayName || 'Student');
                         welcomeName.innerText = name;
                         welcomeName.title = name;
                     }
@@ -1636,7 +1531,7 @@
                     if(!state.currentChatId) state.currentChatId = 'session_' + Date.now();
                     
                     // Only fetch history if not guest
-                    if (!updatedUser.isAnonymous) {
+                    if (!user.isAnonymous) {
                         fetchChats();
                     }
                 } else {
@@ -1649,83 +1544,6 @@
         }
 
         // --- AUTH HANDLERS ---
-        function toggleAuthMode() {
-            isSignUpMode = !isSignUpMode;
-            const title = document.getElementById('auth-title');
-            const subtitle = document.getElementById('auth-subtitle');
-            const btn = document.getElementById('auth-submit-btn');
-            const toggle = document.getElementById('toggle-auth-mode');
-            const extras = document.getElementById('signin-extras');
-            
-            // Hide feedback when switching modes
-            document.getElementById('auth-feedback').classList.add('hidden');
-
-            if (isSignUpMode) {
-                title.innerText = "Create Account";
-                subtitle.innerText = "Join Ada to save your code history.";
-                btn.innerText = "Register";
-                toggle.innerText = "Already have an account? Sign In";
-                extras.classList.add('hidden');
-            } else {
-                title.innerText = "Welcome to Ada";
-                subtitle.innerText = "Sign in to access your workspace.";
-                btn.innerText = "Sign In";
-                toggle.innerText = "Don't have an account? Create one";
-                extras.classList.remove('hidden');
-            }
-        }
-
-        async function handleAuthSubmit(e) {
-            e.preventDefault();
-            const email = document.getElementById('auth-email').value;
-            const pass = document.getElementById('auth-password').value;
-            const btn = document.getElementById('auth-submit-btn');
-            
-            // Hide previous feedback
-            document.getElementById('auth-feedback').classList.add('hidden');
-
-            if (!email || !pass) return;
-
-            try {
-                btn.disabled = true;
-                btn.innerText = isSignUpMode ? "Registering..." : "Signing in...";
-
-                if (isSignUpMode) {
-                    // Create account
-                    const cred = await auth.createUserWithEmailAndPassword(email, pass);
-                    // Send verification email
-                    await cred.user.sendEmailVerification();
-                    // Sign out immediately so they can't log in without verification
-                    await auth.signOut();
-                    // Switch to Sign In mode FIRST so the toast can populate the correct feedback container
-                    toggleAuthMode();
-                    showToast("Verification email sent! Please check your inbox and spam folder.", "success");
-                } else {
-                    // Sign in
-                    const cred = await auth.signInWithEmailAndPassword(email, pass);
-                    // Reload to check verification status handled in checkAuth
-                }
-            } catch (err) {
-                showToast(err.message, "error");
-            } finally {
-                btn.disabled = false;
-                btn.innerText = isSignUpMode ? "Register" : "Sign In";
-            }
-        }
-
-        async function handleForgotPassword() {
-            const email = document.getElementById('auth-email').value;
-            if (!email) {
-                showToast("Enter your email first.", "error");
-                return;
-            }
-            try {
-                await auth.sendPasswordResetEmail(email);
-                showToast("Password reset link sent!", "success");
-            } catch (err) {
-                showToast(err.message, "error");
-            }
-        }
 
         function signInWithGoogle() {
             const provider = new firebase.auth.GoogleAuthProvider();
@@ -1739,6 +1557,30 @@
             auth.signInAnonymously().catch(e => {
                 console.error(e);
                 showToast("Guest login failed.", "error");
+            });
+        }
+
+        function handleEmailSignIn() {
+            const email = document.getElementById('auth-email').value;
+            const pass = document.getElementById('auth-password').value;
+            if(!email || !pass) {
+                showToast("Please enter email and password", "error");
+                return;
+            }
+            auth.signInWithEmailAndPassword(email, pass).catch(e => {
+                showToast(e.message, "error");
+            });
+        }
+
+        function handleEmailSignUp() {
+            const email = document.getElementById('auth-email').value;
+            const pass = document.getElementById('auth-password').value;
+            if(!email || !pass) {
+                showToast("Please enter email and password", "error");
+                return;
+            }
+            auth.createUserWithEmailAndPassword(email, pass).catch(e => {
+                showToast(e.message, "error");
             });
         }
 

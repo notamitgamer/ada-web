@@ -81,7 +81,7 @@ STRICT RULES:
 """
 
 model = genai.GenerativeModel(
-    model_name="models/gemini-2.5-flash-preview-09-2025",
+    model_name="models/gemini-2.5-flash",
     generation_config=generation_config,
     system_instruction=SYSTEM_PROMPT,
 )
@@ -147,7 +147,7 @@ def home():
         "status": "online",
         "service": "Ada AI Coding Backend",
         "version": "1.1.0",
-        "model": "gemini-2.5-flash-preview-09-2025"
+        "model": "gemini-2.5-flash"
     })
 
 @app.route('/health')
@@ -173,7 +173,7 @@ def generate_title():
     message = data.get('message', '')
     
     try:
-        title_model = genai.GenerativeModel("models/gemini-2.5-flash-preview-09-2025")
+        title_model = genai.GenerativeModel("models/gemini-2.5-flash")
         res = title_model.generate_content(f"Summarize this coding query into a 3-5 word title: '{message}'")
         return jsonify({"title": res.text.strip()})
     except Exception as e:
@@ -511,7 +511,7 @@ def chat():
                         # First message - generate title
                         chat_title = "New Chat"
                         try:
-                            title_model = genai.GenerativeModel("models/gemini-2.5-flash-preview-09-2025")
+                            title_model = genai.GenerativeModel("models/gemini-2.5-flash")
                             title_response = title_model.generate_content(f"Summarize this coding query into a 3-5 word title: '{user_msg}'")
                             chat_title = title_response.text.strip()
                         except Exception as title_err:
